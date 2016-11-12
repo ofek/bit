@@ -1,0 +1,14 @@
+[run]
+source =
+    bit
+    tests/
+branch = True
+concurrency = multiprocessing
+omit =
+    bit/__init__.py
+    bit/cli.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
