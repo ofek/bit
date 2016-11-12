@@ -12,8 +12,8 @@ matrix:
           env: TOXENV=pypy3
 
 install:
-  - "pip install tox-travis"
+  - "pip install tox"
   - "pip install codecov"
-script: "tox"
+script: ./.travis/run.py
 after_success:
   - codecov

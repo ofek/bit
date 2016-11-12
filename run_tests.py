@@ -1,9 +1,13 @@
+import os
 import subprocess
 
 
 def main():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
     subprocess.call(['coverage', 'run', '-m', 'pytest'])
     print('\n\nTests completed, checking coverage...\n\n')
+
     subprocess.call(['coverage', 'combine', '--append'])
     subprocess.call(['coverage', 'report', '-m'])
     input('\n\nPress enter to quit ')
