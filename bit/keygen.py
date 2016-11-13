@@ -51,15 +51,23 @@ def generate_matching_address(prefix, cores='all'):
 
     queue = Queue()
     match = Event()
+    workers = []
 
     for _ in range(cores):
-        Process(target=stream_key_address_pairs, args=(queue, match)).start()
+        workers.append(
+            Process(target=stream_key_address_pairs, args=(queue, match))
+        )
+
+    for worker in workers:
+        worker.start()
 
     while True:
         private_value, address = queue.get()
 
         if address.startswith(prefix):
             match.set()
+            for worker in workers:
+                worker.join()
             return int_to_hex(private_value), address
 
 
