@@ -28,13 +28,6 @@ def generate_key_address_pair():
 
 def generate_matching_address(prefix, cores='all'):  # pragma: no cover
 
-    available_cores = cpu_count()
-
-    if cores == 'all':
-        cores = available_cores
-    elif not cores or not 0 < cores <= available_cores:
-        cores = 1
-
     for char in prefix:
         if char not in BASE58_ALPHABET:
             raise ValueError('{} is an invalid base58 encoded '
@@ -44,6 +37,15 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
         return generate_key_address_pair()
     elif not prefix.startswith('1'):
         prefix = '1' + prefix
+
+    available_cores = cpu_count()
+
+    if cores == 'all':
+        cores = available_cores
+    elif 0 < cores <= available_cores:
+        cores = cores
+    else:
+        cores = 1
 
     queue = Queue()
     match = Event()
