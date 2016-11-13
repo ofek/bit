@@ -26,17 +26,13 @@ def generate_key_address_pair():
     ), bitcoin_address
 
 
-def generate_matching_address(prefix, cores='all'):
+def generate_matching_address(prefix, cores='all'):  # pragma: no cover
 
     available_cores = cpu_count()
 
-    if not cores:
-        cores = 1
-    elif cores == 'all':
+    if cores == 'all':
         cores = available_cores
-    elif 0 < cores <= available_cores:
-        cores = cores
-    else:
+    elif not cores or not 0 < cores <= available_cores:
         cores = 1
 
     for char in prefix:
@@ -71,7 +67,7 @@ def generate_matching_address(prefix, cores='all'):
             return int_to_hex(private_value), address
 
 
-def stream_key_address_pairs(queue, event):
+def stream_key_address_pairs(queue, event):  # pragma: no cover
 
     while True:
 

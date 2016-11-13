@@ -3,7 +3,6 @@ source =
     bit
     tests/
 branch = True
-concurrency = multiprocessing
 omit =
     bit/__init__.py
     bit/cli.py
