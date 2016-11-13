@@ -1,8 +1,8 @@
 bit
 ===
 
-.. image:: https://travis-ci.org/ofek/bit.svg?branch=master
+.. image:: https://img.shields.io/travis/ofek/bit.svg?style=flat-square
     :target: https://travis-ci.org/ofek/bit
 
-.. image:: https://codecov.io/gh/ofek/bit/coverage.svg?branch=master
+.. image:: https://img.shields.io/codecov/c/github/ofek/bit.svg?style=flat-square
     :target: https://codecov.io/gh/ofek/bit
