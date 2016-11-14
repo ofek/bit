@@ -28,5 +28,19 @@ class TestIntToUnknownBytes:
             int_to_unknown_bytes(BIG_INT, 'HUGE')
 
 
-def test_int_to_hex():
-    assert int_to_hex(BIG_INT) == HEX
+class TestIntToHex:
+    def test_int_to_hex_default(self):
+        assert int_to_hex(BIG_INT) == HEX
+
+    def test_int_to_hex_normal(self):
+        assert int_to_hex(BIG_INT, upper=False) == HEX.lower()
+
+
+
+
+
+
+
+
+
+

@@ -18,5 +18,6 @@ def bytes_to_hex(bytestr, upper=True):
     return hexlified.upper() if upper else hexlified
 
 
-def int_to_hex(num):
-    return bytes_to_hex(int_to_unknown_bytes(num))
+def int_to_hex(num, upper=True):
+    hexlified = hex(num)[2:]
+    return hexlified.upper() if upper else hexlified
