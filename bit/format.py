@@ -6,6 +6,11 @@ from bit.crypto import (
 from bit.curve import x_to_y
 from bit.utils import bytes_to_hex, int_to_unknown_bytes
 
+SATOSHI = 1
+uBTC = SATOSHI * 100
+mBTC = uBTC * 1000
+BTC = mBTC * 1000
+
 MAIN_PUBKEY_HASH = b'\x00'
 MAIN_SCRIPT_HASH = b'\x05'
 MAIN_PRIVATE_KEY = b'\x80'

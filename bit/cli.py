@@ -1,11 +1,13 @@
 import click
 
 from bit.keygen import generate_matching_address
+from bit.network import InsightAPI
 
 
 @click.group(invoke_without_command=True)
 def bit():
-    print()
+    print(generate_matching_address(''))
+    #print(InsightAPI.get_balance('mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS', version='test'))
 
 
 @bit.command()
