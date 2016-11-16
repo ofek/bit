@@ -45,15 +45,35 @@ class InsightAPI:
 
         return balances
 
+    @classmethod
+    def get_tx_list(cls, address, version='main'):
+        if version == 'main':
+            endpoint = InsightAPI.MAIN_ENDPOINT_ADDRESS
+        else:
+            endpoint = InsightAPI.TEST_ENDPOINT_ADDRESS
 
+        r = requests.get('{}/{}'.format(endpoint, address))
 
+        if r.status_code == 200:
+            return r.json()['transactions']
+        else:
+            return None
 
+    @classmethod
+    def get_tx_lists(cls, addresses, version='main'):
+        if version == 'main':
+            endpoint = InsightAPI.MAIN_ENDPOINT_ADDRESS
+        else:
+            endpoint = InsightAPI.TEST_ENDPOINT_ADDRESS
 
+        transactions = []
 
+        for address in addresses:
+            r = requests.get('{}/{}'.format(endpoint, address))
 
+            if r.status_code == 200:
+                transactions.append(r.json()['transactions'])
+            else:
+                transactions.append(None)
 
-
-
-
-
-
+        return transactions
