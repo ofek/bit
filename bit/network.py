@@ -82,6 +82,7 @@ class BlockrAPI:
     TEST_ENDPOINT_TRANSACTION = TEST_ENDPOINT_ADDRESS + 'txs/'
     TEST_ENDPOINT_TX_PUSH = TEST_ENDPOINT + 'tx/push'
     TX_PUSH_PARAM = 'hex'
+    REQUEST_PARAMS = {'verify': False}
 
     @classmethod
     def get_balance(cls, address, version='main'):
@@ -90,7 +91,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_BALANCE
 
-        r = requests.get(endpoint + address)
+        r = requests.get(endpoint + address, *BlockrAPI.REQUEST_PARAMS)
 
         return Decimal(str(r.json()['data']['balance']))
 
@@ -101,7 +102,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_BALANCE
 
-        r = requests.get(endpoint + ','.join(addresses))
+        r = requests.get(endpoint + ','.join(addresses), *BlockrAPI.REQUEST_PARAMS)
 
         balances = []
 
@@ -117,7 +118,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_TRANSACTION
 
-        r = requests.get(endpoint + address)
+        r = requests.get(endpoint + address, *BlockrAPI.REQUEST_PARAMS)
         tx_data = r.json()['data']['txs']
 
         return [d['tx'] for d in tx_data]
@@ -134,7 +135,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_TRANSACTION
 
-        r = requests.get(endpoint + ','.join(addresses))
+        r = requests.get(endpoint + ','.join(addresses), *BlockrAPI.REQUEST_PARAMS)
         transaction_lists = []
 
         for data in r.json()['data']:
