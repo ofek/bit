@@ -71,18 +71,17 @@ class InsightAPI:
 
 
 class BlockrAPI:
-    MAIN_ENDPOINT = 'https://btc.blockr.io/api/v1/'
+    MAIN_ENDPOINT = 'http://btc.blockr.io/api/v1/'
     MAIN_ENDPOINT_ADDRESS = MAIN_ENDPOINT + 'address/'
     MAIN_ENDPOINT_BALANCE = MAIN_ENDPOINT_ADDRESS + 'balance/'
     MAIN_ENDPOINT_TRANSACTION = MAIN_ENDPOINT_ADDRESS + 'txs/'
     MAIN_ENDPOINT_TX_PUSH = MAIN_ENDPOINT + 'tx/push'
-    TEST_ENDPOINT = 'https://tbtc.blockr.io/api/v1/'
+    TEST_ENDPOINT = 'http://tbtc.blockr.io/api/v1/'
     TEST_ENDPOINT_ADDRESS = TEST_ENDPOINT + 'address/'
     TEST_ENDPOINT_BALANCE = TEST_ENDPOINT_ADDRESS + 'balance/'
     TEST_ENDPOINT_TRANSACTION = TEST_ENDPOINT_ADDRESS + 'txs/'
     TEST_ENDPOINT_TX_PUSH = TEST_ENDPOINT + 'tx/push'
     TX_PUSH_PARAM = 'hex'
-    REQUEST_PARAMS = {'verify': False}
 
     @classmethod
     def get_balance(cls, address, version='main'):
@@ -91,7 +90,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_BALANCE
 
-        r = requests.get(endpoint + address, *BlockrAPI.REQUEST_PARAMS)
+        r = requests.get(endpoint + address)
 
         return Decimal(str(r.json()['data']['balance']))
 
@@ -102,7 +101,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_BALANCE
 
-        r = requests.get(endpoint + ','.join(addresses), *BlockrAPI.REQUEST_PARAMS)
+        r = requests.get(endpoint + ','.join(addresses))
 
         balances = []
 
@@ -118,7 +117,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_TRANSACTION
 
-        r = requests.get(endpoint + address, *BlockrAPI.REQUEST_PARAMS)
+        r = requests.get(endpoint + address)
         tx_data = r.json()['data']['txs']
 
         return [d['tx'] for d in tx_data]
@@ -135,7 +134,7 @@ class BlockrAPI:
         else:
             endpoint = BlockrAPI.TEST_ENDPOINT_TRANSACTION
 
-        r = requests.get(endpoint + ','.join(addresses), *BlockrAPI.REQUEST_PARAMS)
+        r = requests.get(endpoint + ','.join(addresses))
         transaction_lists = []
 
         for data in r.json()['data']:
