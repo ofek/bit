@@ -6,31 +6,23 @@ from bit.format import BTC
 
 
 class InsightAPI:
-    MAIN_ENDPOINT = 'https://insight.bitpay.com/api'
-    MAIN_ENDPOINT_ADDRESS = MAIN_ENDPOINT + '/addr'
-    MAIN_ENDPOINT_TX_PUSH = MAIN_ENDPOINT + '/tx/send'
-    TEST_ENDPOINT = 'https://test-insight.bitpay.com/api'
-    TEST_ENDPOINT_ADDRESS = TEST_ENDPOINT + '/addr'
-    TEST_ENDPOINT_TX_PUSH = TEST_ENDPOINT + '/tx/send'
-    TX_PUSH_PARAM = 'rawtx'
+    MAIN_ENDPOINT = ''
+    MAIN_ADDRESS_API = ''
+    MAIN_TX_PUSH_API = ''
+    TEST_ENDPOINT = ''
+    TEST_ADDRESS_API = ''
+    TEST_TX_PUSH_API = ''
+    TX_PUSH_PARAM = ''
 
     @classmethod
-    def get_balance(cls, address, version='main'):
-        if version == 'main':
-            endpoint = InsightAPI.MAIN_ENDPOINT_ADDRESS
-        else:
-            endpoint = InsightAPI.TEST_ENDPOINT_ADDRESS
-
-        r = requests.get('{}/{}/balance'.format(endpoint, address))
+    def get_balance(cls, address):
+        r = requests.get('{}/{}/balance'.format(cls.MAIN_ADDRESS_API, address))
 
         return Decimal(str(r.json())) / BTC
 
     @classmethod
-    def get_balances(cls, addresses, version='main'):
-        if version == 'main':
-            endpoint = InsightAPI.MAIN_ENDPOINT_ADDRESS
-        else:
-            endpoint = InsightAPI.TEST_ENDPOINT_ADDRESS
+    def get_balances(cls, addresses):
+        endpoint = cls.MAIN_ADDRESS_API
 
         balances = []
         url = '{}/{}/balance'
@@ -43,22 +35,14 @@ class InsightAPI:
         return balances
 
     @classmethod
-    def get_tx_list(cls, address, version='main'):
-        if version == 'main':
-            endpoint = InsightAPI.MAIN_ENDPOINT_ADDRESS
-        else:
-            endpoint = InsightAPI.TEST_ENDPOINT_ADDRESS
-
-        r = requests.get('{}/{}'.format(endpoint, address))
+    def get_tx_list(cls, address):
+        r = requests.get('{}/{}'.format(cls.MAIN_ADDRESS_API, address))
 
         return r.json()['transactions']
 
     @classmethod
-    def get_tx_lists(cls, addresses, version='main'):
-        if version == 'main':
-            endpoint = InsightAPI.MAIN_ENDPOINT_ADDRESS
-        else:
-            endpoint = InsightAPI.TEST_ENDPOINT_ADDRESS
+    def get_tx_lists(cls, addresses):
+        endpoint = cls.MAIN_ADDRESS_API
 
         transaction_lists = []
 
@@ -70,38 +54,97 @@ class InsightAPI:
         return transaction_lists
 
 
+class BitpayAPI(InsightAPI):
+    MAIN_ENDPOINT = 'https://insight.bitpay.com/api'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + '/addr'
+    MAIN_ENDPOINT_TX_PUSH = MAIN_ENDPOINT + '/tx/send'
+    TEST_ENDPOINT = 'https://test-insight.bitpay.com/api'
+    TEST_ADDRESS_API = TEST_ENDPOINT + '/addr'
+    TEST_ENDPOINT_TX_PUSH = TEST_ENDPOINT + '/tx/send'
+    TX_PUSH_PARAM = 'rawtx'
+
+    @classmethod
+    def get_test_balance(cls, address):
+        r = requests.get('{}/{}/balance'.format(cls.TEST_ADDRESS_API, address))
+
+        return Decimal(str(r.json())) / BTC
+
+    @classmethod
+    def get_test_balances(cls, addresses):
+        endpoint = cls.TEST_ADDRESS_API
+
+        balances = []
+        url = '{}/{}/balance'
+
+        for address in addresses:
+            r = requests.get(url.format(endpoint, address))
+
+            balances.append(Decimal(str(r.json())) / BTC)
+
+        return balances
+
+    @classmethod
+    def get_test_tx_list(cls, address):
+        r = requests.get('{}/{}'.format(cls.TEST_ADDRESS_API, address))
+
+        return r.json()['transactions']
+
+    @classmethod
+    def get_test_tx_lists(cls, addresses):
+        endpoint = cls.TEST_ADDRESS_API
+
+        transaction_lists = []
+
+        for address in addresses:
+            r = requests.get('{}/{}'.format(endpoint, address))
+
+            transaction_lists.append(r.json()['transactions'])
+
+        return transaction_lists
+
+
+class BlockexplorerAPI(InsightAPI):
+    MAIN_ENDPOINT = 'https://blockexplorer.com/api'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + '/addr'
+    MAIN_ENDPOINT_TX_PUSH = MAIN_ENDPOINT + '/tx/send'
+    TX_PUSH_PARAM = 'rawtx'
+
+
+class LocalbitcoinsAPI(InsightAPI):
+    MAIN_ENDPOINT = 'https://localbitcoinschain.com/api'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + '/addr'
+    MAIN_ENDPOINT_TX_PUSH = MAIN_ENDPOINT + '/tx/send'
+    TX_PUSH_PARAM = 'rawtx'
+
+
 class BlockrAPI:
     MAIN_ENDPOINT = 'http://btc.blockr.io/api/v1/'
-    MAIN_ENDPOINT_ADDRESS = MAIN_ENDPOINT + 'address/'
-    MAIN_ENDPOINT_BALANCE = MAIN_ENDPOINT_ADDRESS + 'balance/'
-    MAIN_ENDPOINT_TRANSACTION = MAIN_ENDPOINT_ADDRESS + 'txs/'
-    MAIN_ENDPOINT_TX_PUSH = MAIN_ENDPOINT + 'tx/push'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
+    MAIN_BALANCE_API = MAIN_ADDRESS_API + 'balance/'
+    MAIN_TRANSACTION_API = MAIN_ADDRESS_API + 'txs/'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/push'
     TEST_ENDPOINT = 'http://tbtc.blockr.io/api/v1/'
-    TEST_ENDPOINT_ADDRESS = TEST_ENDPOINT + 'address/'
-    TEST_ENDPOINT_BALANCE = TEST_ENDPOINT_ADDRESS + 'balance/'
-    TEST_ENDPOINT_TRANSACTION = TEST_ENDPOINT_ADDRESS + 'txs/'
-    TEST_ENDPOINT_TX_PUSH = TEST_ENDPOINT + 'tx/push'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
+    TEST_BALANCE_API = TEST_ADDRESS_API + 'balance/'
+    TEST_TRANSACTION_API = TEST_ADDRESS_API + 'txs/'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/push'
     TX_PUSH_PARAM = 'hex'
 
     @classmethod
-    def get_balance(cls, address, version='main'):
-        if version == 'main':
-            endpoint = BlockrAPI.MAIN_ENDPOINT_BALANCE
-        else:
-            endpoint = BlockrAPI.TEST_ENDPOINT_BALANCE
-
-        r = requests.get(endpoint + address)
+    def get_balance(cls, address):
+        r = requests.get(BlockrAPI.MAIN_BALANCE_API + address)
 
         return Decimal(str(r.json()['data']['balance']))
 
     @classmethod
-    def get_balances(cls, addresses, version='main'):
-        if version == 'main':
-            endpoint = BlockrAPI.MAIN_ENDPOINT_BALANCE
-        else:
-            endpoint = BlockrAPI.TEST_ENDPOINT_BALANCE
+    def get_test_balance(cls, address):
+        r = requests.get(BlockrAPI.TEST_BALANCE_API + address)
 
-        r = requests.get(endpoint + ','.join(addresses))
+        return Decimal(str(r.json()['data']['balance']))
+
+    @classmethod
+    def get_balances(cls, addresses):
+        r = requests.get(BlockrAPI.MAIN_BALANCE_API + ','.join(addresses))
 
         balances = []
 
@@ -111,33 +154,135 @@ class BlockrAPI:
         return balances
 
     @classmethod
-    def get_tx_list(cls, address, version='main'):
-        if version == 'main':
-            endpoint = BlockrAPI.MAIN_ENDPOINT_TRANSACTION
-        else:
-            endpoint = BlockrAPI.TEST_ENDPOINT_TRANSACTION
+    def get_test_balances(cls, addresses):
+        r = requests.get(BlockrAPI.TEST_BALANCE_API + ','.join(addresses))
 
-        r = requests.get(endpoint + address)
+        balances = []
+
+        for data in r.json()['data']:
+            balances.append(Decimal(str(data['balance'])))
+
+        return balances
+
+    @classmethod
+    def get_tx_list(cls, address):
+        r = requests.get(BlockrAPI.MAIN_TRANSACTION_API + address)
         tx_data = r.json()['data']['txs']
 
         return [d['tx'] for d in tx_data]
 
     @classmethod
-    def get_tx_lists(cls, addresses, version='main'):
+    def get_test_tx_list(cls, address):
+        r = requests.get(BlockrAPI.TEST_TRANSACTION_API + address)
+        tx_data = r.json()['data']['txs']
+
+        return [d['tx'] for d in tx_data]
+
+    @classmethod
+    def get_tx_lists(cls, addresses):
 
         # Blockr's API doesn't return a list for one address.
         if len(addresses) == 1:
-            return BlockrAPI.get_tx_list(addresses[0], version)
+            return BlockrAPI.get_tx_list(addresses[0])
 
-        if version == 'main':
-            endpoint = BlockrAPI.MAIN_ENDPOINT_TRANSACTION
-        else:
-            endpoint = BlockrAPI.TEST_ENDPOINT_TRANSACTION
-
-        r = requests.get(endpoint + ','.join(addresses))
+        r = requests.get(BlockrAPI.MAIN_TRANSACTION_API + ','.join(addresses))
         transaction_lists = []
 
         for data in r.json()['data']:
             transaction_lists.append([d['tx'] for d in data['txs']])
+
+        return transaction_lists
+
+    @classmethod
+    def get_test_tx_lists(cls, addresses):
+
+        # Blockr's API doesn't return a list for one address.
+        if len(addresses) == 1:
+            return BlockrAPI.get_test_tx_list(addresses[0])
+
+        r = requests.get(BlockrAPI.TEST_TRANSACTION_API + ','.join(addresses))
+        transaction_lists = []
+
+        for data in r.json()['data']:
+            transaction_lists.append([d['tx'] for d in data['txs']])
+
+        return transaction_lists
+
+
+class BlockchainAPI:
+    ENDPOINT = 'https://blockchain.info/'
+    ADDRESS_API = ENDPOINT + 'address/{}?format=json'
+    MULTI_ADDRESS_API = ENDPOINT + 'multiaddr?active='
+    TX_PUSH_API = ENDPOINT + 'pushtx'
+    TX_PUSH_PARAM = 'tx'
+    TEST_ENDPOINT = None
+
+    @classmethod
+    def get_balance(cls, address):
+        endpoint = BlockchainAPI.ADDRESS_API
+
+        r = requests.get(endpoint.format(address))
+
+        return Decimal(str(r.json()['final_balance'])) / BTC
+
+    @classmethod
+    def get_balances(cls, addresses):
+        endpoint = BlockchainAPI.MULTI_ADDRESS_API
+
+        r = requests.get(endpoint + '|'.join(addresses))
+
+        balances = []
+
+        for address in r.json()['addresses']:
+            balances.append(Decimal(str(address['final_balance'])))
+
+        return balances
+
+    @classmethod
+    def get_tx_list(cls, address):
+        endpoint = BlockchainAPI.ADDRESS_API
+
+        transaction_list = []
+        offset = 0
+        payload = {'offset': str(offset)}
+        txs_per_page = 50
+
+        response = requests.get(endpoint.format(address)).json()
+        total_txs = response['n_tx']
+
+        while total_txs > 0:
+            transaction_list.extend(tx['hash'] for tx in response['txs'])
+
+            total_txs -= txs_per_page
+            offset += txs_per_page
+            payload['offset'] = str(offset)
+            response = requests.get(endpoint.format(address), params=payload).json()
+
+        return transaction_list
+
+    @classmethod
+    def get_tx_lists(cls, addresses):
+        endpoint = BlockchainAPI.ADDRESS_API
+
+        transaction_lists = []
+        txs_per_page = 50
+
+        for address in addresses:
+            transactions = []
+            offset = 0
+            payload = {'offset': str(offset)}
+
+            response = requests.get(endpoint.format(address)).json()
+            total_txs = response['n_tx']
+
+            while total_txs > 0:
+                transactions.extend(tx['hash'] for tx in response['txs'])
+
+                total_txs -= txs_per_page
+                offset += txs_per_page
+                payload['offset'] = str(offset)
+                response = requests.get(endpoint.format(address), params=payload).json()
+
+            transaction_lists.append(transactions)
 
         return transaction_lists
