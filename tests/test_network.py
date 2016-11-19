@@ -1,6 +1,9 @@
 from decimal import Decimal
 
-from bit.network import BitpayAPI, BlockchainAPI, BlockexplorerAPI, BlockrAPI, LocalbitcoinsAPI
+from bit.network import (
+    BitpayAPI, BlockchainAPI, BlockexplorerAPI, BlockrAPI,
+    LocalbitcoinsAPI, SmartbitAPI
+)
 
 MAIN_ADDRESS_USED1 = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
 MAIN_ADDRESS_USED2 = '17SkEw2md5avVNyYgj6RiXuQKNwkXaxFyQ'
@@ -261,4 +264,71 @@ class TestBlockchainAPI:
     def test_get_tx_lists(self):
         txl1, txl2 = BlockchainAPI.get_tx_lists([MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED])
         assert len(txl1) >= 1066
+        assert len(txl2) == 0
+
+
+class TestSmartbitAPI:
+    def test_get_balance_return_type(self):
+        assert isinstance(SmartbitAPI.get_balance(MAIN_ADDRESS_USED1), Decimal)
+
+    def test_get_balance_main_used(self):
+        assert SmartbitAPI.get_balance(MAIN_ADDRESS_USED1) > 16
+
+    def test_get_balance_main_unused(self):
+        assert SmartbitAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
+
+    def test_get_balance_test_used(self):
+        assert SmartbitAPI.get_test_balance(TEST_ADDRESS_USED1) > 0
+
+    def test_get_balance_test_unused(self):
+        assert SmartbitAPI.get_test_balance(TEST_ADDRESS_UNUSED) == 0
+
+    def test_get_balances_return_type(self):
+        assert all(isinstance(a, Decimal) for a in SmartbitAPI.get_balances([
+            MAIN_ADDRESS_USED1
+        ]))
+        assert all(isinstance(a, Decimal) for a in SmartbitAPI.get_test_balances([
+            TEST_ADDRESS_USED1
+        ]))
+
+    def test_get_balances_main(self):
+        balance1, balance2 = SmartbitAPI.get_balances([
+            MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED
+        ])
+        assert balance1 > 16
+        assert balance2 == 0
+
+    def test_get_balances_test(self):
+        balance1, balance2 = SmartbitAPI.get_test_balances([
+            TEST_ADDRESS_USED1, TEST_ADDRESS_UNUSED
+        ])
+        assert balance1 > 0
+        assert balance2 == 0
+
+    def test_get_tx_list_return_type(self):
+        assert iter(SmartbitAPI.get_tx_list(MAIN_ADDRESS_USED1))
+
+    def test_get_tx_list_main_used(self):
+        assert len(SmartbitAPI.get_tx_list(MAIN_ADDRESS_USED1)) >= 1000
+
+    def test_get_tx_list_main_unused(self):
+        assert len(SmartbitAPI.get_tx_list(MAIN_ADDRESS_UNUSED)) == 0
+
+    def test_get_tx_list_test_used(self):
+        assert len(SmartbitAPI.get_test_tx_list(TEST_ADDRESS_USED1)) >= 444
+
+    def test_get_tx_list_test_unused(self):
+        assert len(SmartbitAPI.get_test_tx_list(TEST_ADDRESS_UNUSED)) == 0
+
+    def test_get_tx_lists_return_type(self):
+        assert iter(SmartbitAPI.get_tx_lists([MAIN_ADDRESS_USED1]))
+
+    def test_get_tx_lists_main(self):
+        txl1, txl2 = SmartbitAPI.get_tx_lists([MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED])
+        assert len(txl1) >= 1000
+        assert len(txl2) == 0
+
+    def test_get_tx_lists_test_used(self):
+        txl1, txl2 = SmartbitAPI.get_test_tx_lists([TEST_ADDRESS_USED1, TEST_ADDRESS_UNUSED])
+        assert len(txl1) >= 444
         assert len(txl2) == 0

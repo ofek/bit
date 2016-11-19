@@ -9,9 +9,6 @@ class InsightAPI:
     MAIN_ENDPOINT = ''
     MAIN_ADDRESS_API = ''
     MAIN_TX_PUSH_API = ''
-    TEST_ENDPOINT = ''
-    TEST_ADDRESS_API = ''
-    TEST_TX_PUSH_API = ''
     TX_PUSH_PARAM = ''
 
     @classmethod
@@ -132,19 +129,19 @@ class BlockrAPI:
 
     @classmethod
     def get_balance(cls, address):
-        r = requests.get(BlockrAPI.MAIN_BALANCE_API + address)
+        r = requests.get(cls.MAIN_BALANCE_API + address)
 
         return Decimal(str(r.json()['data']['balance']))
 
     @classmethod
     def get_test_balance(cls, address):
-        r = requests.get(BlockrAPI.TEST_BALANCE_API + address)
+        r = requests.get(cls.TEST_BALANCE_API + address)
 
         return Decimal(str(r.json()['data']['balance']))
 
     @classmethod
     def get_balances(cls, addresses):
-        r = requests.get(BlockrAPI.MAIN_BALANCE_API + ','.join(addresses))
+        r = requests.get(cls.MAIN_BALANCE_API + ','.join(addresses))
 
         balances = []
 
@@ -155,7 +152,7 @@ class BlockrAPI:
 
     @classmethod
     def get_test_balances(cls, addresses):
-        r = requests.get(BlockrAPI.TEST_BALANCE_API + ','.join(addresses))
+        r = requests.get(cls.TEST_BALANCE_API + ','.join(addresses))
 
         balances = []
 
@@ -166,14 +163,14 @@ class BlockrAPI:
 
     @classmethod
     def get_tx_list(cls, address):
-        r = requests.get(BlockrAPI.MAIN_TRANSACTION_API + address)
+        r = requests.get(cls.MAIN_TRANSACTION_API + address)
         tx_data = r.json()['data']['txs']
 
         return [d['tx'] for d in tx_data]
 
     @classmethod
     def get_test_tx_list(cls, address):
-        r = requests.get(BlockrAPI.TEST_TRANSACTION_API + address)
+        r = requests.get(cls.TEST_TRANSACTION_API + address)
         tx_data = r.json()['data']['txs']
 
         return [d['tx'] for d in tx_data]
@@ -183,9 +180,9 @@ class BlockrAPI:
 
         # Blockr's API doesn't return a list for one address.
         if len(addresses) == 1:
-            return BlockrAPI.get_tx_list(addresses[0])
+            return [cls.get_tx_list(addresses[0])]
 
-        r = requests.get(BlockrAPI.MAIN_TRANSACTION_API + ','.join(addresses))
+        r = requests.get(cls.MAIN_TRANSACTION_API + ','.join(addresses))
         transaction_lists = []
 
         for data in r.json()['data']:
@@ -198,9 +195,9 @@ class BlockrAPI:
 
         # Blockr's API doesn't return a list for one address.
         if len(addresses) == 1:
-            return BlockrAPI.get_test_tx_list(addresses[0])
+            return [cls.get_test_tx_list(addresses[0])]
 
-        r = requests.get(BlockrAPI.TEST_TRANSACTION_API + ','.join(addresses))
+        r = requests.get(cls.TEST_TRANSACTION_API + ','.join(addresses))
         transaction_lists = []
 
         for data in r.json()['data']:
@@ -219,17 +216,13 @@ class BlockchainAPI:
 
     @classmethod
     def get_balance(cls, address):
-        endpoint = BlockchainAPI.ADDRESS_API
-
-        r = requests.get(endpoint.format(address))
+        r = requests.get(cls.ADDRESS_API.format(address) + '&limit=0')
 
         return Decimal(str(r.json()['final_balance'])) / BTC
 
     @classmethod
     def get_balances(cls, addresses):
-        endpoint = BlockchainAPI.MULTI_ADDRESS_API
-
-        r = requests.get(endpoint + '|'.join(addresses))
+        r = requests.get(cls.MULTI_ADDRESS_API + '|'.join(addresses) + '&limit=0')
 
         balances = []
 
@@ -240,7 +233,7 @@ class BlockchainAPI:
 
     @classmethod
     def get_tx_list(cls, address):
-        endpoint = BlockchainAPI.ADDRESS_API
+        endpoint = cls.ADDRESS_API
 
         transaction_list = []
         offset = 0
@@ -262,7 +255,7 @@ class BlockchainAPI:
 
     @classmethod
     def get_tx_lists(cls, addresses):
-        endpoint = BlockchainAPI.ADDRESS_API
+        endpoint = cls.ADDRESS_API
 
         transaction_lists = []
         txs_per_page = 50
@@ -282,6 +275,124 @@ class BlockchainAPI:
                 offset += txs_per_page
                 payload['offset'] = str(offset)
                 response = requests.get(endpoint.format(address), params=payload).json()
+
+            transaction_lists.append(transactions)
+
+        return transaction_lists
+
+
+class SmartbitAPI:
+    MAIN_ENDPOINT = 'https://api.smartbit.com.au/v1/blockchain/'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'pushtx'
+    TEST_ENDPOINT = 'https://testnet-api.smartbit.com.au/v1/blockchain/'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'pushtx'
+    TX_PUSH_PARAM = 'hex'
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1')
+
+        return Decimal(r.json()['address']['total']['balance'])
+
+    @classmethod
+    def get_test_balance(cls, address):
+        r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1')
+
+        return Decimal(r.json()['address']['total']['balance'])
+
+    @classmethod
+    def get_balances(cls, addresses):
+
+        if len(addresses) == 1:
+            return [cls.get_balance(addresses[0])]
+
+        endpoint = cls.MAIN_ADDRESS_API
+
+        balances = []
+
+        for address in addresses:
+            r = requests.get(endpoint + address + '?limit=1')
+
+            balances.append(Decimal(r.json()['address']['total']['balance']))
+
+        return balances
+
+    @classmethod
+    def get_test_balances(cls, addresses):
+
+        if len(addresses) == 1:
+            return [cls.get_test_balance(addresses[0])]
+
+        endpoint = cls.TEST_ADDRESS_API
+
+        balances = []
+
+        for address in addresses:
+            r = requests.get(endpoint + address + '?limit=1')
+
+            balances.append(Decimal(r.json()['address']['total']['balance']))
+
+        return balances
+
+    @classmethod
+    def get_tx_list(cls, address):
+        r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1000')
+        data = r.json()['address']
+
+        transactions = []
+
+        if 'transactions' in data:
+            transactions.extend(t['hash'] for t in data['transactions'])
+
+        return transactions
+
+    @classmethod
+    def get_test_tx_list(cls, address):
+        r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1000')
+        data = r.json()['address']
+
+        transactions = []
+
+        if 'transactions' in data:
+            transactions.extend(t['hash'] for t in data['transactions'])
+
+        return transactions
+
+    @classmethod
+    def get_tx_lists(cls, addresses):
+        endpoint = cls.MAIN_ADDRESS_API
+
+        transaction_lists = []
+
+        for address in addresses:
+            r = requests.get(endpoint + address + '?limit=1000')
+            data = r.json()['address']
+
+            transactions = []
+
+            if 'transactions' in data:
+                transactions.extend(t['hash'] for t in data['transactions'])
+
+            transaction_lists.append(transactions)
+
+        return transaction_lists
+
+    @classmethod
+    def get_test_tx_lists(cls, addresses):
+        endpoint = cls.TEST_ADDRESS_API
+
+        transaction_lists = []
+
+        for address in addresses:
+            r = requests.get(endpoint + address + '?limit=1000')
+            data = r.json()['address']
+
+            transactions = []
+
+            if 'transactions' in data:
+                transactions.extend(t['hash'] for t in data['transactions'])
 
             transaction_lists.append(transactions)
 
