@@ -23,7 +23,7 @@ def all_items_common(seq):
 
 
 def throw_connection_error(address):
-    return requests.get('https://jibber.ish', timeout=0)
+    return requests.get('https://jibber.ish', timeout=0.01)
 
 
 class MockBackend(MultiBackend):
