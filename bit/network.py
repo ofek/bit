@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 import requests
+from requests.exceptions import ConnectionError, Timeout
 
 from bit.format import BTC
 
@@ -112,6 +113,25 @@ class LocalbitcoinsAPI(InsightAPI):
     MAIN_ADDRESS_API = MAIN_ENDPOINT + '/addr'
     MAIN_ENDPOINT_TX_PUSH = MAIN_ENDPOINT + '/tx/send'
     TX_PUSH_PARAM = 'rawtx'
+
+    @classmethod
+    def get_tx_list(cls, address):
+        r = requests.get('{}/{}'.format(cls.MAIN_ADDRESS_API, address))
+
+        return r.json()['transactions'][::-1]
+
+    @classmethod
+    def get_tx_lists(cls, addresses):
+        endpoint = cls.MAIN_ADDRESS_API
+
+        transaction_lists = []
+
+        for address in addresses:
+            r = requests.get('{}/{}'.format(endpoint, address))
+
+            transaction_lists.append(r.json()['transactions'][::-1])
+
+        return transaction_lists
 
 
 class BlockrAPI:
@@ -227,7 +247,7 @@ class BlockchainAPI:
         balances = []
 
         for address in r.json()['addresses']:
-            balances.append(Decimal(str(address['final_balance'])))
+            balances.append(Decimal(str(address['final_balance'])) / BTC)
 
         return balances
 
@@ -294,13 +314,13 @@ class SmartbitAPI:
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1')
 
-        return Decimal(r.json()['address']['total']['balance'])
+        return Decimal(str(r.json()['address']['total']['balance_int'])) / BTC
 
     @classmethod
     def get_test_balance(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1')
 
-        return Decimal(r.json()['address']['total']['balance'])
+        return Decimal(str(r.json()['address']['total']['balance_int'])) / BTC
 
     @classmethod
     def get_balances(cls, addresses):
@@ -315,7 +335,7 @@ class SmartbitAPI:
         for address in addresses:
             r = requests.get(endpoint + address + '?limit=1')
 
-            balances.append(Decimal(r.json()['address']['total']['balance']))
+            balances.append(Decimal(str(r.json()['address']['total']['balance_int'])) / BTC)
 
         return balances
 
@@ -332,7 +352,7 @@ class SmartbitAPI:
         for address in addresses:
             r = requests.get(endpoint + address + '?limit=1')
 
-            balances.append(Decimal(r.json()['address']['total']['balance']))
+            balances.append(Decimal(str(r.json()['address']['total']['balance_int'])) / BTC)
 
         return balances
 
@@ -397,3 +417,133 @@ class SmartbitAPI:
             transaction_lists.append(transactions)
 
         return transaction_lists
+
+
+class MultiBackend:
+    IGNORED_ERRORS = (ConnectionError, Timeout)
+
+    GET_BALANCE_MAIN = [BitpayAPI.get_balance,
+                        BlockchainAPI.get_balance,
+                        BlockrAPI.get_balance,
+                        BlockexplorerAPI.get_balance,
+                        SmartbitAPI.get_balance,
+                        LocalbitcoinsAPI.get_balance]
+    GET_BALANCES_MAIN = [BlockchainAPI.get_balances,
+                         BlockrAPI.get_balances,
+                         BitpayAPI.get_balances,
+                         BlockexplorerAPI.get_balances,
+                         SmartbitAPI.get_balances,
+                         LocalbitcoinsAPI.get_balances]
+    GET_TX_LIST_MAIN = [BlockchainAPI.get_tx_list,  # No tx limit, requires multiple requests
+                        LocalbitcoinsAPI.get_tx_list,  # Limit > 1000
+                        BitpayAPI.get_tx_list,  # Limit 1000
+                        SmartbitAPI.get_tx_list,  # Limit 1000
+                        BlockexplorerAPI.get_tx_list,  # Limit 1000
+                        BlockrAPI.get_tx_list]  # Limit 200
+    GET_TX_LISTS_MAIN = [BlockchainAPI.get_tx_lists,
+                         LocalbitcoinsAPI.get_tx_lists,
+                         BitpayAPI.get_tx_lists,
+                         SmartbitAPI.get_tx_lists,
+                         BlockexplorerAPI.get_tx_lists,
+                         BlockrAPI.get_tx_lists]
+
+    GET_BALANCE_TEST = [BitpayAPI.get_test_balance,
+                        BlockrAPI.get_test_balance,
+                        SmartbitAPI.get_test_balance]
+    GET_BALANCES_TEST = [BlockrAPI.get_test_balances,
+                         BitpayAPI.get_test_balances,
+                         SmartbitAPI.get_test_balances]
+    GET_TX_LIST_TEST = [BitpayAPI.get_test_tx_list,  # Limit 1000
+                        SmartbitAPI.get_test_tx_list,  # Limit 1000
+                        BlockrAPI.get_test_tx_list]  # Limit 200
+    GET_TX_LISTS_TEST = [BitpayAPI.get_test_tx_lists,
+                         SmartbitAPI.get_test_tx_lists,
+                         BlockrAPI.get_test_tx_lists]
+
+    @classmethod
+    def get_balance(cls, address):
+
+        for api_call in cls.GET_BALANCE_MAIN:
+            try:
+                return api_call(address)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def get_test_balance(cls, address):
+
+        for api_call in cls.GET_BALANCE_TEST:
+            try:
+                return api_call(address)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def get_balances(cls, addresses):
+
+        for api_call in cls.GET_BALANCES_MAIN:
+            try:
+                return api_call(addresses)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def get_test_balances(cls, addresses):
+
+        for api_call in cls.GET_BALANCES_TEST:
+            try:
+                return api_call(addresses)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def get_tx_list(cls, address):
+
+        for api_call in cls.GET_TX_LIST_MAIN:
+            try:
+                return api_call(address)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def get_test_tx_list(cls, address):
+
+        for api_call in cls.GET_TX_LIST_TEST:
+            try:
+                return api_call(address)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def get_tx_lists(cls, addresses):
+
+        for api_call in cls.GET_TX_LISTS_MAIN:
+            try:
+                return api_call(addresses)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def get_test_tx_lists(cls, addresses):
+
+        for api_call in cls.GET_TX_LISTS_TEST:
+            try:
+                return api_call(addresses)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
