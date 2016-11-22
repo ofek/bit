@@ -34,7 +34,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy'
     ),
 
-    install_requires=['click', 'cryptography', 'requests'],
+    install_requires=['click', 'cryptography>=1.6', 'requests'],
 
     packages=find_packages(),
     entry_points={
