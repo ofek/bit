@@ -5,7 +5,7 @@ from requests.exceptions import ConnectionError, Timeout
 
 from bit.network import (
     BitpayAPI, BlockchainAPI, BlockexplorerAPI, BlockrAPI,
-    LocalbitcoinsAPI, MultiBackend, SmartbitAPI
+    MultiBackend, SmartbitAPI
 )
 
 MAIN_ADDRESS_USED1 = '1L2JsXHPMYuAa9ugvHGLwkdstCPUDemNCf'
@@ -18,8 +18,13 @@ TEST_ADDRESS_UNUSED = 'mp1xDKvvZ4yd8h9mLC4P76syUirmxpXhuk'
 
 def all_items_common(seq):
     initial_set = set(seq[0])
-    intersections = [len(set(s) & initial_set) for s in seq]
-    return all(intersection == intersections[0] for intersection in intersections)
+    intersection_lengths = [len(set(s) & initial_set) for s in seq]
+    return all_items_equal(intersection_lengths)
+
+
+def all_items_equal(seq):
+    initial_item = seq[0]
+    return all(item == initial_item for item in seq)
 
 
 def throw_connection_error(address):
@@ -32,14 +37,14 @@ class MockBackend(MultiBackend):
     GET_BALANCES_MAIN = [throw_connection_error]
     GET_TX_LIST_MAIN = [throw_connection_error]
     GET_TX_LISTS_MAIN = [throw_connection_error]
-    GET_UNSPENT_TX_LIST_MAIN = [throw_connection_error]
-    GET_UNSPENT_TX_LISTS_MAIN = [throw_connection_error]
+    GET_UTXO_LIST_MAIN = [throw_connection_error]
+    GET_UTXO_LISTS_MAIN = [throw_connection_error]
     GET_BALANCE_TEST = [throw_connection_error]
     GET_BALANCES_TEST = [throw_connection_error]
     GET_TX_LIST_TEST = [throw_connection_error]
     GET_TX_LISTS_TEST = [throw_connection_error]
-    GET_UNSPENT_TX_LIST_TEST = [throw_connection_error]
-    GET_UNSPENT_TX_LISTS_TEST = [throw_connection_error]
+    GET_UTXO_LIST_TEST = [throw_connection_error]
+    GET_UTXO_LISTS_TEST = [throw_connection_error]
 
 
 class TestMultiBackend:
@@ -105,37 +110,37 @@ class TestMultiBackend:
     def test_get_tx_lists_test_failure(self):
         assert MockBackend.get_test_tx_lists([TEST_ADDRESS_USED1, TEST_ADDRESS_UNUSED]) is None
 
-    def test_get_unspent_tx_list_main_equal(self):
-        results = [call(MAIN_ADDRESS_USED1) for call in MultiBackend.GET_UNSPENT_TX_LIST_MAIN]
-        assert all_items_common(results)
+    def test_get_utxo_list_main_equal(self):
+        results = [call(MAIN_ADDRESS_USED1) for call in MultiBackend.GET_UTXO_LIST_MAIN]
+        assert all_items_equal(results)
 
-    def test_get_unspent_tx_list_main_failure(self):
-        assert MockBackend.get_unspent_tx_list(MAIN_ADDRESS_USED1) is None
+    def test_get_utxo_list_main_failure(self):
+        assert MockBackend.get_utxo_list(MAIN_ADDRESS_USED1) is None
 
-    def test_get_unspent_tx_list_test_equal(self):
-        results = [call(TEST_ADDRESS_USED2) for call in MultiBackend.GET_UNSPENT_TX_LIST_TEST]
-        assert all_items_common(results)
+    def test_get_utxo_list_test_equal(self):
+        results = [call(TEST_ADDRESS_USED2) for call in MultiBackend.GET_UTXO_LIST_TEST]
+        assert all_items_equal(results)
 
-    def test_get_unspent_tx_list_test_failure(self):
-        assert MockBackend.get_test_unspent_tx_list(TEST_ADDRESS_USED2) is None
+    def test_get_utxo_list_test_failure(self):
+        assert MockBackend.get_test_utxo_list(TEST_ADDRESS_USED2) is None
 
-    def test_get_unspent_tx_lists_main_equal(self):
+    def test_get_utxo_lists_main_equal(self):
         results = [call([MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED])
-                   for call in MultiBackend.GET_UNSPENT_TX_LISTS_MAIN]
-        assert all_items_common([result[0] for result in results])
-        assert all_items_common([result[1] for result in results])
+                   for call in MultiBackend.GET_UTXO_LISTS_MAIN]
+        assert all_items_equal(results)
+        assert all_items_equal(results)
 
-    def test_get_unspent_tx_lists_main_failure(self):
-        assert MockBackend.get_unspent_tx_lists([MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED]) is None
+    def test_get_utxo_lists_main_failure(self):
+        assert MockBackend.get_utxo_lists([MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED]) is None
 
-    def test_get_unspent_tx_lists_test_equal(self):
+    def test_get_utxo_lists_test_equal(self):
         results = [call([TEST_ADDRESS_USED2, TEST_ADDRESS_UNUSED])
-                   for call in MultiBackend.GET_UNSPENT_TX_LISTS_TEST]
-        assert all_items_common([result[0] for result in results])
-        assert all_items_common([result[1] for result in results])
+                   for call in MultiBackend.GET_UTXO_LISTS_TEST]
+        assert all_items_equal(results)
+        assert all_items_equal(results)
 
-    def test_get_unspent_tx_lists_test_failure(self):
-        assert MockBackend.get_test_unspent_tx_lists([TEST_ADDRESS_USED1, TEST_ADDRESS_UNUSED]) is None
+    def test_get_utxo_lists_test_failure(self):
+        assert MockBackend.get_test_utxo_lists([TEST_ADDRESS_USED1, TEST_ADDRESS_UNUSED]) is None
 
 
 class TestBitpayAPI:
@@ -201,31 +206,31 @@ class TestBitpayAPI:
         assert len(txl1) >= 444
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_list_return_type(self):
-        assert iter(BitpayAPI.get_unspent_tx_list(MAIN_ADDRESS_USED1))
+    def test_get_utxo_list_return_type(self):
+        assert iter(BitpayAPI.get_utxo_list(MAIN_ADDRESS_USED1))
 
-    def test_get_unspent_tx_list_main_used(self):
-        assert len(BitpayAPI.get_unspent_tx_list(MAIN_ADDRESS_USED2)) >= 1
+    def test_get_utxo_list_main_used(self):
+        assert len(BitpayAPI.get_utxo_list(MAIN_ADDRESS_USED2)) >= 1
 
-    def test_get_unspent_tx_list_main_unused(self):
-        assert len(BitpayAPI.get_unspent_tx_list(MAIN_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_main_unused(self):
+        assert len(BitpayAPI.get_utxo_list(MAIN_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_list_test_used(self):
-        assert len(BitpayAPI.get_test_unspent_tx_list(TEST_ADDRESS_USED2)) >= 194
+    def test_get_utxo_list_test_used(self):
+        assert len(BitpayAPI.get_test_utxo_list(TEST_ADDRESS_USED2)) >= 194
 
-    def test_get_unspent_tx_list_test_unused(self):
-        assert len(BitpayAPI.get_test_unspent_tx_list(TEST_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_test_unused(self):
+        assert len(BitpayAPI.get_test_utxo_list(TEST_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_lists_return_type(self):
-        assert iter(BitpayAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED1]))
+    def test_get_utxo_lists_return_type(self):
+        assert iter(BitpayAPI.get_utxo_lists([MAIN_ADDRESS_USED1]))
 
-    def test_get_unspent_tx_lists_main(self):
-        txl1, txl2 = BitpayAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
+    def test_get_utxo_lists_main(self):
+        txl1, txl2 = BitpayAPI.get_utxo_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
         assert len(txl1) >= 1
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_lists_test_used(self):
-        txl1, txl2 = BitpayAPI.get_test_unspent_tx_lists([TEST_ADDRESS_USED2, TEST_ADDRESS_UNUSED])
+    def test_get_utxo_lists_test_used(self):
+        txl1, txl2 = BitpayAPI.get_test_utxo_lists([TEST_ADDRESS_USED2, TEST_ADDRESS_UNUSED])
         assert len(txl1) >= 194
         assert len(txl2) == 0
 
@@ -269,77 +274,20 @@ class TestBlockexplorerAPI:
         assert len(txl1) >= 218
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_list_return_type(self):
-        assert iter(BlockexplorerAPI.get_unspent_tx_list(MAIN_ADDRESS_USED1))
+    def test_get_utxo_list_return_type(self):
+        assert iter(BlockexplorerAPI.get_utxo_list(MAIN_ADDRESS_USED1))
 
-    def test_get_unspent_tx_list_main_used(self):
-        assert len(BlockexplorerAPI.get_unspent_tx_list(MAIN_ADDRESS_USED2)) >= 1
+    def test_get_utxo_list_main_used(self):
+        assert len(BlockexplorerAPI.get_utxo_list(MAIN_ADDRESS_USED2)) >= 1
 
-    def test_get_unspent_tx_list_main_unused(self):
-        assert len(BlockexplorerAPI.get_unspent_tx_list(MAIN_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_main_unused(self):
+        assert len(BlockexplorerAPI.get_utxo_list(MAIN_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_lists_return_type(self):
-        assert iter(BlockexplorerAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED1]))
+    def test_get_utxo_lists_return_type(self):
+        assert iter(BlockexplorerAPI.get_utxo_lists([MAIN_ADDRESS_USED1]))
 
-    def test_get_unspent_tx_lists_main(self):
-        txl1, txl2 = BlockexplorerAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
-        assert len(txl1) >= 1
-        assert len(txl2) == 0
-
-
-class TestLocalbitcoinsAPI:
-    def test_get_balance_return_type(self):
-        assert isinstance(LocalbitcoinsAPI.get_balance(MAIN_ADDRESS_USED1), Decimal)
-
-    def test_get_balance_used(self):
-        assert LocalbitcoinsAPI.get_balance(MAIN_ADDRESS_USED1) > 0
-
-    def test_get_balance_unused(self):
-        assert LocalbitcoinsAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
-
-    def test_get_balances_return_type(self):
-        assert all(isinstance(a, Decimal) for a in LocalbitcoinsAPI.get_balances([
-            MAIN_ADDRESS_USED1, MAIN_ADDRESS_USED2
-        ]))
-
-    def test_get_balances(self):
-        balance1, balance2 = LocalbitcoinsAPI.get_balances([
-            MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED
-        ])
-        assert balance1 > 0
-        assert balance2 == 0
-
-    def test_get_tx_list_return_type(self):
-        assert iter(LocalbitcoinsAPI.get_tx_list(MAIN_ADDRESS_USED1))
-
-    def test_get_tx_list_used(self):
-        assert len(LocalbitcoinsAPI.get_tx_list(MAIN_ADDRESS_USED1)) >= 218
-
-    def test_get_tx_list_unused(self):
-        assert len(LocalbitcoinsAPI.get_tx_list(MAIN_ADDRESS_UNUSED)) == 0
-
-    def test_get_tx_lists_return_type(self):
-        assert iter(LocalbitcoinsAPI.get_tx_lists([MAIN_ADDRESS_USED1]))
-
-    def test_get_tx_lists(self):
-        txl1, txl2 = LocalbitcoinsAPI.get_tx_lists([MAIN_ADDRESS_USED1, MAIN_ADDRESS_UNUSED])
-        assert len(txl1) >= 218
-        assert len(txl2) == 0
-
-    def test_get_unspent_tx_list_return_type(self):
-        assert iter(LocalbitcoinsAPI.get_unspent_tx_list(MAIN_ADDRESS_USED1))
-
-    def test_get_unspent_tx_list_main_used(self):
-        assert len(LocalbitcoinsAPI.get_unspent_tx_list(MAIN_ADDRESS_USED2)) >= 1
-
-    def test_get_unspent_tx_list_main_unused(self):
-        assert len(LocalbitcoinsAPI.get_unspent_tx_list(MAIN_ADDRESS_UNUSED)) == 0
-
-    def test_get_unspent_tx_lists_return_type(self):
-        assert iter(LocalbitcoinsAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED1]))
-
-    def test_get_unspent_tx_lists_main(self):
-        txl1, txl2 = LocalbitcoinsAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
+    def test_get_utxo_lists_main(self):
+        txl1, txl2 = BlockexplorerAPI.get_utxo_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
         assert len(txl1) >= 1
         assert len(txl2) == 0
 
@@ -413,32 +361,32 @@ class TestBlockrAPI:
         assert len(txl1) >= 200
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_list_return_type(self):
-        assert iter(BlockrAPI.get_unspent_tx_list(MAIN_ADDRESS_USED1))
+    def test_get_utxo_list_return_type(self):
+        assert iter(BlockrAPI.get_utxo_list(MAIN_ADDRESS_USED1))
 
-    def test_get_unspent_tx_list_main_used(self):
-        assert len(BlockrAPI.get_unspent_tx_list(MAIN_ADDRESS_USED2)) >= 1
+    def test_get_utxo_list_main_used(self):
+        assert len(BlockrAPI.get_utxo_list(MAIN_ADDRESS_USED2)) >= 1
 
-    def test_get_unspent_tx_list_main_unused(self):
-        assert len(BlockrAPI.get_unspent_tx_list(MAIN_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_main_unused(self):
+        assert len(BlockrAPI.get_utxo_list(MAIN_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_list_test_used(self):
-        assert len(BlockrAPI.get_test_unspent_tx_list(TEST_ADDRESS_USED2)) >= 194
+    def test_get_utxo_list_test_used(self):
+        assert len(BlockrAPI.get_test_utxo_list(TEST_ADDRESS_USED2)) >= 194
 
-    def test_get_unspent_tx_list_test_unused(self):
-        assert len(BlockrAPI.get_test_unspent_tx_list(TEST_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_test_unused(self):
+        assert len(BlockrAPI.get_test_utxo_list(TEST_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_lists_return_type(self):
-        assert iter(BlockrAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED1]))
-        assert iter(BlockrAPI.get_test_unspent_tx_lists([TEST_ADDRESS_USED1]))
+    def test_get_utxo_lists_return_type(self):
+        assert iter(BlockrAPI.get_utxo_lists([MAIN_ADDRESS_USED1]))
+        assert iter(BlockrAPI.get_test_utxo_lists([TEST_ADDRESS_USED1]))
 
-    def test_get_unspent_tx_lists_main(self):
-        txl1, txl2 = BlockrAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
+    def test_get_utxo_lists_main(self):
+        txl1, txl2 = BlockrAPI.get_utxo_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
         assert len(txl1) >= 1
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_lists_test_used(self):
-        txl1, txl2 = BlockrAPI.get_test_unspent_tx_lists([TEST_ADDRESS_USED2, TEST_ADDRESS_UNUSED])
+    def test_get_utxo_lists_test_used(self):
+        txl1, txl2 = BlockrAPI.get_test_utxo_lists([TEST_ADDRESS_USED2, TEST_ADDRESS_UNUSED])
         assert len(txl1) >= 194
         assert len(txl2) == 0
 
@@ -482,20 +430,20 @@ class TestBlockchainAPI:
         assert len(txl1) >= 218
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_list_return_type(self):
-        assert iter(BlockchainAPI.get_unspent_tx_list(MAIN_ADDRESS_USED1))
+    def test_get_utxo_list_return_type(self):
+        assert iter(BlockchainAPI.get_utxo_list(MAIN_ADDRESS_USED1))
 
-    def test_get_unspent_tx_list_main_used(self):
-        assert len(BlockchainAPI.get_unspent_tx_list(MAIN_ADDRESS_USED2)) >= 1
+    def test_get_utxo_list_main_used(self):
+        assert len(BlockchainAPI.get_utxo_list(MAIN_ADDRESS_USED2)) >= 1
 
-    def test_get_unspent_tx_list_main_unused(self):
-        assert len(BlockchainAPI.get_unspent_tx_list(MAIN_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_main_unused(self):
+        assert len(BlockchainAPI.get_utxo_list(MAIN_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_lists_return_type(self):
-        assert iter(BlockchainAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED1]))
+    def test_get_utxo_lists_return_type(self):
+        assert iter(BlockchainAPI.get_utxo_lists([MAIN_ADDRESS_USED1]))
 
-    def test_get_unspent_tx_lists_main(self):
-        txl1, txl2 = BlockchainAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
+    def test_get_utxo_lists_main(self):
+        txl1, txl2 = BlockchainAPI.get_utxo_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
         assert len(txl1) >= 1
         assert len(txl2) == 0
 
@@ -566,30 +514,30 @@ class TestSmartbitAPI:
         assert len(txl1) >= 444
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_list_return_type(self):
-        assert iter(SmartbitAPI.get_unspent_tx_list(MAIN_ADDRESS_USED1))
+    def test_get_utxo_list_return_type(self):
+        assert iter(SmartbitAPI.get_utxo_list(MAIN_ADDRESS_USED1))
 
-    def test_get_unspent_tx_list_main_used(self):
-        assert len(SmartbitAPI.get_unspent_tx_list(MAIN_ADDRESS_USED2)) >= 1
+    def test_get_utxo_list_main_used(self):
+        assert len(SmartbitAPI.get_utxo_list(MAIN_ADDRESS_USED2)) >= 1
 
-    def test_get_unspent_tx_list_main_unused(self):
-        assert len(SmartbitAPI.get_unspent_tx_list(MAIN_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_main_unused(self):
+        assert len(SmartbitAPI.get_utxo_list(MAIN_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_list_test_used(self):
-        assert len(SmartbitAPI.get_test_unspent_tx_list(TEST_ADDRESS_USED2)) >= 194
+    def test_get_utxo_list_test_used(self):
+        assert len(SmartbitAPI.get_test_utxo_list(TEST_ADDRESS_USED2)) >= 194
 
-    def test_get_unspent_tx_list_test_unused(self):
-        assert len(SmartbitAPI.get_test_unspent_tx_list(TEST_ADDRESS_UNUSED)) == 0
+    def test_get_utxo_list_test_unused(self):
+        assert len(SmartbitAPI.get_test_utxo_list(TEST_ADDRESS_UNUSED)) == 0
 
-    def test_get_unspent_tx_lists_return_type(self):
-        assert iter(SmartbitAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED1]))
+    def test_get_utxo_lists_return_type(self):
+        assert iter(SmartbitAPI.get_utxo_lists([MAIN_ADDRESS_USED1]))
 
-    def test_get_unspent_tx_lists_main(self):
-        txl1, txl2 = SmartbitAPI.get_unspent_tx_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
+    def test_get_utxo_lists_main(self):
+        txl1, txl2 = SmartbitAPI.get_utxo_lists([MAIN_ADDRESS_USED2, MAIN_ADDRESS_UNUSED])
         assert len(txl1) >= 1
         assert len(txl2) == 0
 
-    def test_get_unspent_tx_lists_test_used(self):
-        txl1, txl2 = SmartbitAPI.get_test_unspent_tx_lists([TEST_ADDRESS_USED2, TEST_ADDRESS_UNUSED])
+    def test_get_utxo_lists_test_used(self):
+        txl1, txl2 = SmartbitAPI.get_test_utxo_lists([TEST_ADDRESS_USED2, TEST_ADDRESS_UNUSED])
         assert len(txl1) >= 194
         assert len(txl2) == 0

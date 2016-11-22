@@ -4,6 +4,7 @@ import requests
 from requests.exceptions import ConnectionError, Timeout
 
 from bit.format import BTC
+from bit.transaction import UTXO
 
 
 class InsightAPI:
@@ -18,7 +19,7 @@ class InsightAPI:
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_BALANCE_API.format(address))
 
-        return Decimal(str(r.json())) / BTC
+        return Decimal(str(r.json())).normalize() / BTC
 
     @classmethod
     def get_balances(cls, addresses):
@@ -29,7 +30,7 @@ class InsightAPI:
         for address in addresses:
             r = requests.get(endpoint.format(address))
 
-            balances.append(Decimal(str(r.json())) / BTC)
+            balances.append(Decimal(str(r.json())).normalize() / BTC)
 
         return balances
 
@@ -53,13 +54,20 @@ class InsightAPI:
         return transaction_lists
 
     @classmethod
-    def get_unspent_tx_list(cls, address):
+    def get_utxo_list(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API.format(address))
 
-        return [tx['txid'] for tx in r.json()]
+        return [
+            UTXO(Decimal(str(tx['amount'])).normalize(),
+                 tx['confirmations'],
+                 tx['scriptPubKey'],
+                 tx['txid'],
+                 tx['vout'])
+            for tx in r.json()
+        ]
 
     @classmethod
-    def get_unspent_tx_lists(cls, addresses):
+    def get_utxo_lists(cls, addresses):
         endpoint = cls.MAIN_UNSPENT_API
 
         transaction_lists = []
@@ -67,7 +75,14 @@ class InsightAPI:
         for address in addresses:
             r = requests.get(endpoint.format(address))
 
-            transaction_lists.append([tx['txid'] for tx in r.json()])
+            transaction_lists.append([
+                UTXO(Decimal(str(tx['amount'])).normalize(),
+                     tx['confirmations'],
+                     tx['scriptPubKey'],
+                     tx['txid'],
+                     tx['vout'])
+                for tx in r.json()
+            ])
 
         return transaction_lists
 
@@ -89,7 +104,7 @@ class BitpayAPI(InsightAPI):
     def get_test_balance(cls, address):
         r = requests.get(cls.TEST_BALANCE_API.format(address))
 
-        return Decimal(str(r.json())) / BTC
+        return Decimal(str(r.json())).normalize() / BTC
 
     @classmethod
     def get_test_balances(cls, addresses):
@@ -100,7 +115,7 @@ class BitpayAPI(InsightAPI):
         for address in addresses:
             r = requests.get(endpoint.format(address))
 
-            balances.append(Decimal(str(r.json())) / BTC)
+            balances.append(Decimal(str(r.json())).normalize() / BTC)
 
         return balances
 
@@ -124,13 +139,20 @@ class BitpayAPI(InsightAPI):
         return transaction_lists
 
     @classmethod
-    def get_test_unspent_tx_list(cls, address):
+    def get_test_utxo_list(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API.format(address))
 
-        return [tx['txid'] for tx in r.json()]
+        return [
+            UTXO(Decimal(str(tx['amount'])).normalize(),
+                 tx['confirmations'],
+                 tx['scriptPubKey'],
+                 tx['txid'],
+                 tx['vout'])
+            for tx in r.json()
+        ]
 
     @classmethod
-    def get_test_unspent_tx_lists(cls, addresses):
+    def get_test_utxo_lists(cls, addresses):
         endpoint = cls.TEST_UNSPENT_API
 
         transaction_lists = []
@@ -138,7 +160,14 @@ class BitpayAPI(InsightAPI):
         for address in addresses:
             r = requests.get(endpoint.format(address))
 
-            transaction_lists.append([tx['txid'] for tx in r.json()])
+            transaction_lists.append([
+                UTXO(Decimal(str(tx['amount'])).normalize(),
+                     tx['confirmations'],
+                     tx['scriptPubKey'],
+                     tx['txid'],
+                     tx['vout'])
+                for tx in r.json()
+            ])
 
         return transaction_lists
 
@@ -150,53 +179,6 @@ class BlockexplorerAPI(InsightAPI):
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
     TX_PUSH_PARAM = 'rawtx'
-
-
-class LocalbitcoinsAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://localbitcoinschain.com/api/'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
-    MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
-    TX_PUSH_PARAM = 'rawtx'
-
-    @classmethod
-    def get_tx_list(cls, address):
-        r = requests.get(cls.MAIN_ADDRESS_API + address)
-
-        return r.json()['transactions'][::-1]
-
-    @classmethod
-    def get_tx_lists(cls, addresses):
-        endpoint = cls.MAIN_ADDRESS_API
-
-        transaction_lists = []
-
-        for address in addresses:
-            r = requests.get(endpoint + address)
-
-            transaction_lists.append(r.json()['transactions'][::-1])
-
-        return transaction_lists
-
-    @classmethod
-    def get_unspent_tx_list(cls, address):
-        r = requests.get(cls.MAIN_UNSPENT_API.format(address))
-
-        return [tx['txid'] for tx in r.json()][::-1]
-
-    @classmethod
-    def get_unspent_tx_lists(cls, addresses):
-        endpoint = cls.MAIN_UNSPENT_API
-
-        transaction_lists = []
-
-        for address in addresses:
-            r = requests.get(endpoint.format(address))
-
-            transaction_lists.append([tx['txid'] for tx in r.json()][::-1])
-
-        return transaction_lists
 
 
 class BlockrAPI:
@@ -218,13 +200,13 @@ class BlockrAPI:
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_BALANCE_API + address)
 
-        return Decimal(str(r.json()['data']['balance']))
+        return Decimal(str(r.json()['data']['balance'])).normalize()
 
     @classmethod
     def get_test_balance(cls, address):
         r = requests.get(cls.TEST_BALANCE_API + address)
 
-        return Decimal(str(r.json()['data']['balance']))
+        return Decimal(str(r.json()['data']['balance'])).normalize()
 
     @classmethod
     def get_balances(cls, addresses):
@@ -237,7 +219,7 @@ class BlockrAPI:
         balances = []
 
         for data in r.json()['data']:
-            balances.append(Decimal(str(data['balance'])))
+            balances.append(Decimal(str(data['balance'])).normalize())
 
         return balances
 
@@ -252,7 +234,7 @@ class BlockrAPI:
         balances = []
 
         for data in r.json()['data']:
-            balances.append(Decimal(str(data['balance'])))
+            balances.append(Decimal(str(data['balance'])).normalize())
 
         return balances
 
@@ -301,44 +283,72 @@ class BlockrAPI:
         return transaction_lists
 
     @classmethod
-    def get_unspent_tx_list(cls, address):
+    def get_utxo_list(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API + address)
 
-        return [tx['tx'] for tx in r.json()['data']['unspent']]
+        return [
+            UTXO(Decimal(str(tx['amount'])).normalize(),
+                 tx['confirmations'],
+                 tx['script'],
+                 tx['tx'],
+                 tx['n'])
+            for tx in r.json()['data']['unspent']
+        ]
 
     @classmethod
-    def get_unspent_tx_lists(cls, addresses):
+    def get_utxo_lists(cls, addresses):
 
         # Blockr's API doesn't return a list for one address.
         if len(addresses) == 1:
-            return [cls.get_unspent_tx_list(addresses[0])]
+            return [cls.get_utxo_list(addresses[0])]
 
         r = requests.get(cls.MAIN_UNSPENT_API + ','.join(addresses))
         transaction_lists = []
 
         for data in r.json()['data']:
-            transaction_lists.append([tx['tx'] for tx in data['unspent']])
+            transaction_lists.append([
+                UTXO(Decimal(str(tx['amount'])).normalize(),
+                     tx['confirmations'],
+                     tx['script'],
+                     tx['tx'],
+                     tx['n'])
+                for tx in data['unspent']
+            ])
 
         return transaction_lists
 
     @classmethod
-    def get_test_unspent_tx_list(cls, address):
+    def get_test_utxo_list(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API + address)
 
-        return [tx['tx'] for tx in r.json()['data']['unspent']]
+        return [
+            UTXO(Decimal(str(tx['amount'])).normalize(),
+                 tx['confirmations'],
+                 tx['script'],
+                 tx['tx'],
+                 tx['n'])
+            for tx in r.json()['data']['unspent']
+        ]
 
     @classmethod
-    def get_test_unspent_tx_lists(cls, addresses):
+    def get_test_utxo_lists(cls, addresses):
 
         # Blockr's API doesn't return a list for one address.
         if len(addresses) == 1:
-            return [cls.get_unspent_tx_list(addresses[0])]
+            return [cls.get_utxo_list(addresses[0])]
 
         r = requests.get(cls.TEST_UNSPENT_API + ','.join(addresses))
         transaction_lists = []
 
         for data in r.json()['data']:
-            transaction_lists.append([tx['tx'] for tx in data['unspent']])
+            transaction_lists.append([
+                UTXO(Decimal(str(tx['amount'])).normalize(),
+                     tx['confirmations'],
+                     tx['script'],
+                     tx['tx'],
+                     tx['n'])
+                for tx in data['unspent']
+            ])
 
         return transaction_lists
 
@@ -356,7 +366,7 @@ class BlockchainAPI:
     def get_balance(cls, address):
         r = requests.get(cls.ADDRESS_API.format(address) + '&limit=0')
 
-        return Decimal(str(r.json()['final_balance'])) / BTC
+        return Decimal(str(r.json()['final_balance'])).normalize() / BTC
 
     @classmethod
     def get_balances(cls, addresses):
@@ -365,7 +375,7 @@ class BlockchainAPI:
         balances = []
 
         for address in r.json()['addresses']:
-            balances.append(Decimal(str(address['final_balance'])) / BTC)
+            balances.append(Decimal(str(address['final_balance'])).normalize() / BTC)
 
         return balances
 
@@ -421,18 +431,23 @@ class BlockchainAPI:
         return transaction_lists
 
     @classmethod
-    def get_unspent_tx_list(cls, address):
+    def get_utxo_list(cls, address):
         r = requests.get(cls.UNSPENT_API + address)
 
         if r.status_code == 500:
             return []
 
         return [
-            tx['tx_hash_big_endian'] for tx in r.json()['unspent_outputs']
+            UTXO(Decimal(str(tx['value'])).normalize() / BTC,
+                 tx['confirmations'],
+                 tx['script'],
+                 tx['tx_hash_big_endian'],
+                 tx['tx_output_n'])
+            for tx in r.json()['unspent_outputs']
         ][::-1]
 
     @classmethod
-    def get_unspent_tx_lists(cls, addresses):
+    def get_utxo_lists(cls, addresses):
 
         transaction_lists = []
 
@@ -444,7 +459,12 @@ class BlockchainAPI:
 
             else:
                 transaction_lists.append([
-                    tx['tx_hash_big_endian'] for tx in r.json()['unspent_outputs']
+                    UTXO(Decimal(str(tx['value'])).normalize() / BTC,
+                         tx['confirmations'],
+                         tx['script'],
+                         tx['tx_hash_big_endian'],
+                         tx['tx_output_n'])
+                    for tx in r.json()['unspent_outputs']
                 ][::-1])
 
         return transaction_lists
@@ -465,13 +485,13 @@ class SmartbitAPI:
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1')
 
-        return Decimal(str(r.json()['address']['total']['balance_int'])) / BTC
+        return Decimal(str(r.json()['address']['total']['balance_int'])).normalize() / BTC
 
     @classmethod
     def get_test_balance(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1')
 
-        return Decimal(str(r.json()['address']['total']['balance_int'])) / BTC
+        return Decimal(str(r.json()['address']['total']['balance_int'])).normalize() / BTC
 
     @classmethod
     def get_balances(cls, addresses):
@@ -486,7 +506,7 @@ class SmartbitAPI:
         for address in addresses:
             r = requests.get(endpoint + address + '?limit=1')
 
-            balances.append(Decimal(str(r.json()['address']['total']['balance_int'])) / BTC)
+            balances.append(Decimal(str(r.json()['address']['total']['balance_int'])).normalize() / BTC)
 
         return balances
 
@@ -503,7 +523,7 @@ class SmartbitAPI:
         for address in addresses:
             r = requests.get(endpoint + address + '?limit=1')
 
-            balances.append(Decimal(str(r.json()['address']['total']['balance_int'])) / BTC)
+            balances.append(Decimal(str(r.json()['address']['total']['balance_int'])).normalize() / BTC)
 
         return balances
 
@@ -570,13 +590,20 @@ class SmartbitAPI:
         return transaction_lists
 
     @classmethod
-    def get_unspent_tx_list(cls, address):
+    def get_utxo_list(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API.format(address) + '?limit=1000')
 
-        return [tx['txid'] for tx in r.json()['unspent']]
+        return [
+            UTXO(Decimal(str(tx['value'])).normalize(),
+                 tx['confirmations'],
+                 tx['script_pub_key']['hex'],
+                 tx['txid'],
+                 tx['n'])
+            for tx in r.json()['unspent']
+        ]
 
     @classmethod
-    def get_unspent_tx_lists(cls, addresses):
+    def get_utxo_lists(cls, addresses):
         endpoint = cls.MAIN_UNSPENT_API
 
         transaction_lists = []
@@ -584,18 +611,32 @@ class SmartbitAPI:
         for address in addresses:
             r = requests.get(endpoint.format(address) + '?limit=1000')
 
-            transaction_lists.append([tx['txid'] for tx in r.json()['unspent']])
+            transaction_lists.append([
+                UTXO(Decimal(str(tx['value'])).normalize(),
+                     tx['confirmations'],
+                     tx['script_pub_key']['hex'],
+                     tx['txid'],
+                     tx['n'])
+                for tx in r.json()['unspent']
+            ])
 
         return transaction_lists
 
     @classmethod
-    def get_test_unspent_tx_list(cls, address):
+    def get_test_utxo_list(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API.format(address) + '?limit=1000')
 
-        return [tx['txid'] for tx in r.json()['unspent']]
+        return [
+            UTXO(Decimal(str(tx['value'])).normalize(),
+                 tx['confirmations'],
+                 tx['script_pub_key']['hex'],
+                 tx['txid'],
+                 tx['n'])
+            for tx in r.json()['unspent']
+        ]
 
     @classmethod
-    def get_test_unspent_tx_lists(cls, addresses):
+    def get_test_utxo_lists(cls, addresses):
         endpoint = cls.TEST_UNSPENT_API
 
         transaction_lists = []
@@ -603,7 +644,14 @@ class SmartbitAPI:
         for address in addresses:
             r = requests.get(endpoint.format(address) + '?limit=1000')
 
-            transaction_lists.append([tx['txid'] for tx in r.json()['unspent']])
+            transaction_lists.append([
+                UTXO(Decimal(str(tx['value'])).normalize(),
+                     tx['confirmations'],
+                     tx['script_pub_key']['hex'],
+                     tx['txid'],
+                     tx['n'])
+                for tx in r.json()['unspent']
+            ])
 
         return transaction_lists
 
@@ -615,38 +663,32 @@ class MultiBackend:
                         BlockchainAPI.get_balance,
                         BlockrAPI.get_balance,
                         BlockexplorerAPI.get_balance,
-                        SmartbitAPI.get_balance,
-                        LocalbitcoinsAPI.get_balance]
+                        SmartbitAPI.get_balance]
     GET_BALANCES_MAIN = [BlockchainAPI.get_balances,
                          BlockrAPI.get_balances,
                          BitpayAPI.get_balances,
                          BlockexplorerAPI.get_balances,
-                         SmartbitAPI.get_balances,
-                         LocalbitcoinsAPI.get_balances]
-    GET_TX_LIST_MAIN = [BlockchainAPI.get_tx_list,  # No tx limit, requires multiple requests
+                         SmartbitAPI.get_balances]
+    GET_TX_LIST_MAIN = [BlockchainAPI.get_tx_list,  # No limit, requires multiple requests
                         BitpayAPI.get_tx_list,  # Limit 1000
                         SmartbitAPI.get_tx_list,  # Limit 1000
                         BlockexplorerAPI.get_tx_list,  # Limit 1000
-                        LocalbitcoinsAPI.get_tx_list,  # Limit > 1000
                         BlockrAPI.get_tx_list]  # Limit 200
     GET_TX_LISTS_MAIN = [BlockchainAPI.get_tx_lists,
                          BitpayAPI.get_tx_lists,
                          SmartbitAPI.get_tx_lists,
                          BlockexplorerAPI.get_tx_lists,
-                         LocalbitcoinsAPI.get_tx_lists,
                          BlockrAPI.get_tx_lists]
-    GET_UNSPENT_TX_LIST_MAIN = [BlockchainAPI.get_unspent_tx_list,
-                                BitpayAPI.get_unspent_tx_list,
-                                SmartbitAPI.get_unspent_tx_list,
-                                BlockexplorerAPI.get_unspent_tx_list,
-                                LocalbitcoinsAPI.get_unspent_tx_list,
-                                BlockrAPI.get_unspent_tx_list]
-    GET_UNSPENT_TX_LISTS_MAIN = [BlockchainAPI.get_unspent_tx_lists,
-                                 BitpayAPI.get_unspent_tx_lists,
-                                 SmartbitAPI.get_unspent_tx_lists,
-                                 BlockexplorerAPI.get_unspent_tx_lists,
-                                 LocalbitcoinsAPI.get_unspent_tx_lists,
-                                 BlockrAPI.get_unspent_tx_lists]
+    GET_UTXO_LIST_MAIN = [BitpayAPI.get_utxo_list,  # No limit
+                          BlockrAPI.get_utxo_list,  # No limit
+                          BlockexplorerAPI.get_utxo_list,  # No limit
+                          SmartbitAPI.get_utxo_list,  # Limit 1000
+                          BlockchainAPI.get_utxo_list]  # Limit 250
+    GET_UTXO_LISTS_MAIN = [BlockrAPI.get_utxo_lists,
+                           BitpayAPI.get_utxo_lists,
+                           BlockexplorerAPI.get_utxo_lists,
+                           SmartbitAPI.get_utxo_lists,
+                           BlockchainAPI.get_utxo_lists]
 
     GET_BALANCE_TEST = [BitpayAPI.get_test_balance,
                         BlockrAPI.get_test_balance,
@@ -660,12 +702,12 @@ class MultiBackend:
     GET_TX_LISTS_TEST = [BitpayAPI.get_test_tx_lists,
                          SmartbitAPI.get_test_tx_lists,
                          BlockrAPI.get_test_tx_lists]
-    GET_UNSPENT_TX_LIST_TEST = [BitpayAPI.get_test_unspent_tx_list,
-                                SmartbitAPI.get_test_unspent_tx_list,
-                                BlockrAPI.get_test_unspent_tx_list]
-    GET_UNSPENT_TX_LISTS_TEST = [BitpayAPI.get_test_unspent_tx_lists,
-                                 SmartbitAPI.get_test_unspent_tx_lists,
-                                 BlockrAPI.get_test_unspent_tx_lists]
+    GET_UTXO_LIST_TEST = [BitpayAPI.get_test_utxo_list,  # No limit
+                          BlockrAPI.get_test_utxo_list,  # No limit
+                          SmartbitAPI.get_test_utxo_list]  # Limit 1000
+    GET_UTXO_LISTS_TEST = [BlockrAPI.get_test_utxo_lists,
+                           BitpayAPI.get_test_utxo_lists,
+                           SmartbitAPI.get_test_utxo_lists]
 
     @classmethod
     def get_balance(cls, address):
@@ -756,9 +798,9 @@ class MultiBackend:
         return None
 
     @classmethod
-    def get_unspent_tx_list(cls, address):
+    def get_utxo_list(cls, address):
 
-        for api_call in cls.GET_UNSPENT_TX_LIST_MAIN:
+        for api_call in cls.GET_UTXO_LIST_MAIN:
             try:
                 return api_call(address)
             except cls.IGNORED_ERRORS:
@@ -767,9 +809,9 @@ class MultiBackend:
         return None
 
     @classmethod
-    def get_test_unspent_tx_list(cls, address):
+    def get_test_utxo_list(cls, address):
 
-        for api_call in cls.GET_UNSPENT_TX_LIST_TEST:
+        for api_call in cls.GET_UTXO_LIST_TEST:
             try:
                 return api_call(address)
             except cls.IGNORED_ERRORS:
@@ -778,9 +820,9 @@ class MultiBackend:
         return None
 
     @classmethod
-    def get_unspent_tx_lists(cls, addresses):
+    def get_utxo_lists(cls, addresses):
 
-        for api_call in cls.GET_UNSPENT_TX_LISTS_MAIN:
+        for api_call in cls.GET_UTXO_LISTS_MAIN:
             try:
                 return api_call(addresses)
             except cls.IGNORED_ERRORS:
@@ -789,9 +831,9 @@ class MultiBackend:
         return None
 
     @classmethod
-    def get_test_unspent_tx_lists(cls, addresses):
+    def get_test_utxo_lists(cls, addresses):
 
-        for api_call in cls.GET_UNSPENT_TX_LISTS_TEST:
+        for api_call in cls.GET_UTXO_LISTS_TEST:
             try:
                 return api_call(addresses)
             except cls.IGNORED_ERRORS:
