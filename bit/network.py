@@ -660,7 +660,7 @@ class SmartbitAPI:
 
 class MultiBackend:
     IGNORED_ERRORS = (ConnectionError,
-                      ValueError if sys.version < (3, 5)
+                      ValueError if sys.version_info < (3, 5)
                       else json.decoder.JSONDecodeError,
                       Timeout)
 
