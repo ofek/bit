@@ -23,5 +23,9 @@ def int_to_hex(num, upper=True):
     return hexed.upper() if upper else hexed
 
 
+def hex_to_int(hexed):
+    return int(hexed, 16)
+
+
 def flip_hex_byte_order(string):
     return bytes_to_hex(bytes.fromhex(string)[::-1])

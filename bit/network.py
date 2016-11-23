@@ -1,3 +1,4 @@
+from json.decoder import JSONDecodeError
 from decimal import Decimal
 
 import requests
@@ -657,7 +658,7 @@ class SmartbitAPI:
 
 
 class MultiBackend:
-    IGNORED_ERRORS = (ConnectionError, Timeout)
+    IGNORED_ERRORS = (ConnectionError, JSONDecodeError, Timeout)
 
     GET_BALANCE_MAIN = [BitpayAPI.get_balance,
                         BlockchainAPI.get_balance,

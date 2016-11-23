@@ -2,7 +2,8 @@ from multiprocessing import Event, Process, Queue, cpu_count
 
 from bit.base58 import BASE58_ALPHABET, b58encode
 from bit.crypto import (
-    DEFAULT_BACKEND, RIPEMD160, SECP256K1, SHA256, Hash, generate_private_key
+    DEFAULT_BACKEND, RIPEMD160, SECP256K1, SHA256, Hash,
+    gen_privkey, derive_privkey
 )
 from bit.format import (
     MAIN_PUBKEY_HASH, PUBLIC_KEY_UNCOMPRESSED,
@@ -11,9 +12,18 @@ from bit.format import (
 from bit.utils import int_to_hex
 
 
+def derive_private_key(num):
+    return derive_privkey(num, SECP256K1, DEFAULT_BACKEND)
+
+
+def generate_private_key():
+
+    return gen_privkey(SECP256K1, DEFAULT_BACKEND)
+
+
 def generate_key_address_pair():
 
-    private_key = generate_private_key(SECP256K1, DEFAULT_BACKEND)
+    private_key = gen_privkey(SECP256K1, DEFAULT_BACKEND)
 
     public_key = point_to_public_key(
         private_key.public_key().public_numbers(), compressed=False
@@ -73,7 +83,7 @@ def stream_key_address_pairs(queue, event):  # pragma: no cover
 
     while True:
 
-        private_key = generate_private_key(SECP256K1, DEFAULT_BACKEND)
+        private_key = gen_privkey(SECP256K1, DEFAULT_BACKEND)
         public_key_point = private_key.public_key().public_numbers()
 
         x = public_key_point.x.to_bytes(32, 'big')

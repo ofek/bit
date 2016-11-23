@@ -1,6 +1,7 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric.ec import (
-    SECP256K1, generate_private_key
+    SECP256K1, EllipticCurvePrivateKey, derive_private_key as derive_privkey,
+    generate_private_key as gen_privkey
 )
 from cryptography.hazmat.primitives.hashes import RIPEMD160, SHA256, Hash
 from cryptography.hazmat.primitives.serialization import (

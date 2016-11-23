@@ -1,4 +1,4 @@
-from bit.curve import x_to_y
+from bit.curve import Point, parity, x_to_y
 
 X_CORRECT = 98231826851265556411949131072518137307566044384771278023089249290926817658893
 Y_CORRECT = 18202689367598691302416718951920096486924260449729227135214517092930543058138
@@ -12,3 +12,15 @@ class TestXToY:
 
     def test_x_to_y_incorrect_first_solution(self):
         assert x_to_y(X_INCORRECT, Y_INCORRECT & 1) == Y_INCORRECT
+
+
+def test_parity():
+    assert parity(2) == 0
+    assert parity(5) == 1
+
+
+def test_point():
+    x, y = 5, 10
+    point = Point(x, y)
+    assert (x, y) == point
+    assert repr(point) == 'Point(x=5, y=10)'

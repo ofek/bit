@@ -1,3 +1,4 @@
+import warnings
 from decimal import Decimal
 
 import requests
@@ -14,6 +15,25 @@ MAIN_ADDRESS_UNUSED = '1DvnoW4vsXA1H9KDgNiMqY7iNkzC187ve1'
 TEST_ADDRESS_USED1 = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
 TEST_ADDRESS_USED2 = 'mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5'
 TEST_ADDRESS_UNUSED = 'mp1xDKvvZ4yd8h9mLC4P76syUirmxpXhuk'
+
+
+def decorate_methods(decorator):
+    def decorate(cls):
+        for attr in cls.__dict__:
+            if callable(getattr(cls, attr)):
+                setattr(cls, attr, decorator(getattr(cls, attr)))
+        return cls
+    return decorate
+
+
+def catch_errors_raise_warnings(f):  # pragma: no cover
+    def wrapper(*args, **kwargs):
+        try:
+            f(*args, **kwargs)
+        except MultiBackend.IGNORED_ERRORS:
+            warnings.warn('Unreachable API', Warning)
+            assert True
+    return wrapper
 
 
 def all_items_common(seq):
@@ -143,6 +163,7 @@ class TestMultiBackend:
         assert MockBackend.get_test_utxo_lists([TEST_ADDRESS_USED1, TEST_ADDRESS_UNUSED]) is None
 
 
+@decorate_methods(catch_errors_raise_warnings)
 class TestBitpayAPI:
     def test_get_balance_return_type(self):
         assert isinstance(BitpayAPI.get_balance(MAIN_ADDRESS_USED1), Decimal)
@@ -235,6 +256,7 @@ class TestBitpayAPI:
         assert len(txl2) == 0
 
 
+@decorate_methods(catch_errors_raise_warnings)
 class TestBlockexplorerAPI:
     def test_get_balance_return_type(self):
         assert isinstance(BlockexplorerAPI.get_balance(MAIN_ADDRESS_USED1), Decimal)
@@ -292,6 +314,7 @@ class TestBlockexplorerAPI:
         assert len(txl2) == 0
 
 
+@decorate_methods(catch_errors_raise_warnings)
 class TestBlockrAPI:
     def test_get_balance_return_type(self):
         assert isinstance(BlockrAPI.get_balance(MAIN_ADDRESS_USED1), Decimal)
@@ -391,6 +414,7 @@ class TestBlockrAPI:
         assert len(txl2) == 0
 
 
+@decorate_methods(catch_errors_raise_warnings)
 class TestBlockchainAPI:
     def test_get_balance_return_type(self):
         assert isinstance(BlockchainAPI.get_balance(MAIN_ADDRESS_USED1), Decimal)
@@ -448,6 +472,7 @@ class TestBlockchainAPI:
         assert len(txl2) == 0
 
 
+@decorate_methods(catch_errors_raise_warnings)
 class TestSmartbitAPI:
     def test_get_balance_return_type(self):
         assert isinstance(SmartbitAPI.get_balance(MAIN_ADDRESS_USED1), Decimal)
