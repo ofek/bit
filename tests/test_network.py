@@ -46,7 +46,7 @@ def all_items_common(seq):
 
 def all_items_equal(seq):
     initial_item = seq[0]
-    return all(item == initial_item for item in seq)
+    return all(item == initial_item for item in seq if item is not None)
 
 
 def throw_connection_error(address):

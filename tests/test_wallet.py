@@ -135,17 +135,5 @@ class TestPrivateKey:
         private_key.test_sync()
         assert len(private_key.test_transactions) > 0
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def test_repr(self):
+        assert repr(PrivateKey(WALLET_FORMAT_MAIN)) == '<PrivateKey: 1ELReFsTCUY2mfaDTy32qxYiT49z786eFg>'

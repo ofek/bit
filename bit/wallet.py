@@ -156,12 +156,7 @@ class PrivateKey:
     def test_transactions(self):
         return self._test_transactions.copy()
 
+    def __repr__(self):
+        return '<PrivateKey: {}>'.format(self.address)
+
 Key = PrivateKey
-
-
-
-
-
-
-
-
