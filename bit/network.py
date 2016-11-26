@@ -2,11 +2,15 @@ import sys
 from decimal import Decimal
 
 import requests
-from requests.compat import json
 from requests.exceptions import ConnectionError, Timeout
 
 from bit.format import BTC
 from bit.transaction import UTXO
+
+if sys.version_info < (3, 5):
+    JSONDecodeError = ValueError
+else:
+    from json.decoder import JSONDecodeError
 
 
 class InsightAPI:
@@ -659,10 +663,7 @@ class SmartbitAPI:
 
 
 class MultiBackend:
-    IGNORED_ERRORS = (ConnectionError,
-                      ValueError if sys.version_info < (3, 5)
-                      else json.decoder.JSONDecodeError,
-                      Timeout)
+    IGNORED_ERRORS = (ConnectionError, JSONDecodeError, Timeout)
 
     GET_BALANCE_MAIN = [BitpayAPI.get_balance,
                         BlockchainAPI.get_balance,

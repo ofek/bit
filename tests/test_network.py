@@ -3,13 +3,17 @@ import warnings
 from decimal import Decimal
 
 import requests
-from requests.compat import json
 from requests.exceptions import ConnectionError, Timeout
 
 from bit.network import (
     BitpayAPI, BlockchainAPI, BlockexplorerAPI, BlockrAPI,
     MultiBackend, SmartbitAPI
 )
+
+if sys.version_info < (3, 5):
+    JSONDecodeError = ValueError
+else:
+    from json.decoder import JSONDecodeError
 
 MAIN_ADDRESS_USED1 = '1L2JsXHPMYuAa9ugvHGLwkdstCPUDemNCf'
 MAIN_ADDRESS_USED2 = '17SkEw2md5avVNyYgj6RiXuQKNwkXaxFyQ'
@@ -54,10 +58,7 @@ def throw_connection_error(address):
 
 
 class MockBackend(MultiBackend):
-    IGNORED_ERRORS = (ConnectionError,
-                      ValueError if sys.version_info < (3, 5)
-                      else json.decoder.JSONDecodeError,
-                      Timeout)
+    IGNORED_ERRORS = (ConnectionError, JSONDecodeError, Timeout)
     GET_BALANCE_MAIN = [throw_connection_error]
     GET_BALANCES_MAIN = [throw_connection_error]
     GET_TX_LIST_MAIN = [throw_connection_error]
