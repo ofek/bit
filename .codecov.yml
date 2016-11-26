@@ -1,5 +1,6 @@
 comment: false
 coverage:
+    round: down
     status:
         patch:
             default:
