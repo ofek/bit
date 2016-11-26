@@ -1,7 +1,9 @@
+import sys
 import warnings
 from decimal import Decimal
 
 import requests
+from requests.compat import json
 from requests.exceptions import ConnectionError, Timeout
 
 from bit.network import (
@@ -52,7 +54,10 @@ def throw_connection_error(address):
 
 
 class MockBackend(MultiBackend):
-    IGNORED_ERRORS = (ConnectionError, Timeout)
+    IGNORED_ERRORS = (ConnectionError,
+                      ValueError if sys.version_info < (3, 5)
+                      else json.decoder.JSONDecodeError,
+                      Timeout)
     GET_BALANCE_MAIN = [throw_connection_error]
     GET_BALANCES_MAIN = [throw_connection_error]
     GET_TX_LIST_MAIN = [throw_connection_error]

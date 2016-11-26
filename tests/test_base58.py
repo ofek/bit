@@ -1,7 +1,7 @@
 import pytest
 
 from bit.base58 import b58decode, b58decode_check, b58encode, b58encode_check
-from .samples import BINARY_ADDRESS, BITCOIN_ADDRESS_CHECK, BITCOIN_ADDRESS
+from .samples import BINARY_ADDRESS, BITCOIN_ADDRESS, PUBKEY_HASH_MAIN
 
 
 def test_b58encode():
@@ -10,7 +10,7 @@ def test_b58encode():
 
 
 def test_b58encode_check():
-    assert b58encode_check(BINARY_ADDRESS) == BITCOIN_ADDRESS_CHECK
+    assert b58encode_check(PUBKEY_HASH_MAIN) == BITCOIN_ADDRESS
 
 
 class TestB58Decode:
@@ -25,8 +25,8 @@ class TestB58Decode:
 
 class TestB58DecodeCheck:
     def test_b58decode_check_success(self):
-        assert b58decode_check(BITCOIN_ADDRESS_CHECK) == BINARY_ADDRESS
+        assert b58decode_check(BITCOIN_ADDRESS) == PUBKEY_HASH_MAIN
 
     def test_b58decode_check_failure(self):
         with pytest.raises(ValueError):
-            b58decode_check(BITCOIN_ADDRESS_CHECK[:-1])
+            b58decode_check(BITCOIN_ADDRESS[:-1])

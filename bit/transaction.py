@@ -1,5 +1,10 @@
 from bit.utils import flip_hex_byte_order
 
+VERSION = 0x01.to_bytes(4, byteorder='little')
+SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
+LOCK_TIME = 0x00.to_bytes(4, byteorder='little')
+HASH_TYPE = 0x01.to_bytes(4, byteorder='little')
+
 
 class UTXO:
     __slots__ = ('amount', 'confirmations', 'script', 'txid', 'txindex')

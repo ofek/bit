@@ -6,11 +6,10 @@ from bit.format import (
     wif_to_private_key_hex
 )
 from .samples import (
-    BITCOIN_ADDRESS, BITCOIN_ADDRESS_CHECK, BITCOIN_ADDRESS_TEST,
-    PRIVATE_KEY_BYTES, PRIVATE_KEY_DER, PRIVATE_KEY_HEX, PRIVATE_KEY_PEM,
-    PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X,
-    PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
-    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES,
+    PRIVATE_KEY_HEX, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
+    PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
+    WALLET_FORMAT_COMPRESSED_TEST, WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
 
@@ -58,7 +57,7 @@ class TestWIFChecksumCheck:
         assert wif_checksum_check(WALLET_FORMAT_COMPRESSED_MAIN)
 
     def test_wif_checksum_check_decode_failure(self):
-        assert not wif_checksum_check(BITCOIN_ADDRESS_CHECK[:-1])
+        assert not wif_checksum_check(BITCOIN_ADDRESS[:-1])
 
     def test_wif_checksum_check_other_failure(self):
         assert not wif_checksum_check(BITCOIN_ADDRESS)

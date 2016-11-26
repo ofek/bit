@@ -1,8 +1,8 @@
-import json
 import sys
 from decimal import Decimal
 
 import requests
+from requests.compat import json
 from requests.exceptions import ConnectionError, Timeout
 
 from bit.format import BTC
