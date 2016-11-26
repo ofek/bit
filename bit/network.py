@@ -684,14 +684,14 @@ class MultiBackend:
                          SmartbitAPI.get_tx_lists,
                          BlockexplorerAPI.get_tx_lists,
                          BlockrAPI.get_tx_lists]
-    GET_UTXO_LIST_MAIN = [BitpayAPI.get_utxo_list,  # No limit
+    GET_UTXO_LIST_MAIN = [BlockexplorerAPI.get_utxo_list,  # No limit
+                          BitpayAPI.get_utxo_list,  # No limit
                           BlockrAPI.get_utxo_list,  # No limit
-                          BlockexplorerAPI.get_utxo_list,  # No limit
                           SmartbitAPI.get_utxo_list,  # Limit 1000
                           BlockchainAPI.get_utxo_list]  # Limit 250
     GET_UTXO_LISTS_MAIN = [BlockrAPI.get_utxo_lists,
-                           BitpayAPI.get_utxo_lists,
                            BlockexplorerAPI.get_utxo_lists,
+                           BitpayAPI.get_utxo_lists,
                            SmartbitAPI.get_utxo_lists,
                            BlockchainAPI.get_utxo_lists]
 

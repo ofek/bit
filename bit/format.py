@@ -4,7 +4,7 @@ from bit.crypto import (
     PrivateFormat, load_der_private_key, load_pem_private_key
 )
 from bit.curve import x_to_y
-from bit.utils import bytes_to_hex, int_to_unknown_bytes
+from bit.utils import bytes_to_hex
 
 SATOSHI = 1
 uBTC = SATOSHI * 100
@@ -77,13 +77,6 @@ def wif_checksum_check(wif):
     return False
 
 
-def private_key_to_hex(private_key):
-
-    # Some indirection to avoid overflows
-    private_num = private_key.private_numbers().private_value
-    return bytes_to_hex(int_to_unknown_bytes(private_num))
-
-
 def public_key_to_address(public_key, version='main'):
 
     if version == 'test':
@@ -137,37 +130,4 @@ def coords_to_public_key(x, y, compressed=True):
 
 
 def point_to_public_key(point, compressed=True):
-
     return coords_to_public_key(point.x, point.y, compressed)
-
-
-def private_key_to_pem(private_key):
-    return private_key.private_bytes(
-        encoding=Encoding.PEM,
-        format=PrivateFormat.PKCS8,
-        encryption_algorithm=NOENCRYPTION
-    )
-
-
-def private_key_to_der(private_key):
-    return private_key.private_bytes(
-        encoding=Encoding.DER,
-        format=PrivateFormat.PKCS8,
-        encryption_algorithm=NOENCRYPTION
-    )
-
-
-def pem_to_private_key(bytestr):
-    return load_pem_private_key(
-        bytestr,
-        password=None,
-        backend=DEFAULT_BACKEND
-    )
-
-
-def der_to_private_key(bytestr):
-    return load_der_private_key(
-        bytestr,
-        password=None,
-        backend=DEFAULT_BACKEND
-    )
