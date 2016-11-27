@@ -10,7 +10,7 @@ from bit.network import (
     MultiBackend, SmartbitAPI
 )
 
-if sys.version_info < (3, 5):
+if sys.version_info < (3, 5):  # pragma: no cover
     JSONDecodeError = ValueError
 else:
     from json.decoder import JSONDecodeError

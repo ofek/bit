@@ -7,7 +7,7 @@ from requests.exceptions import ConnectionError, Timeout
 from bit.format import BTC
 from bit.transaction import UTXO
 
-if sys.version_info < (3, 5):
+if sys.version_info < (3, 5):  # pragma: no cover
     JSONDecodeError = ValueError
 else:
     from json.decoder import JSONDecodeError
