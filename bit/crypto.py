@@ -1,6 +1,7 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric.ec import (
-    SECP256K1, EllipticCurvePrivateKey, derive_private_key as derive_privkey,
+    SECP256K1, ECDSA, EllipticCurvePrivateKey,
+    derive_private_key as derive_privkey,
     generate_private_key as gen_privkey
 )
 from cryptography.hazmat.primitives.hashes import RIPEMD160, SHA256, Hash
@@ -14,15 +15,20 @@ NOENCRYPTION = NoEncryption()
 RIPEMD160 = RIPEMD160()
 SECP256K1 = SECP256K1()
 SHA256 = SHA256()
+ECDSA_SHA256 = ECDSA(SHA256)
+
+
+def double_sha256(bytestr):
+    hash1 = Hash(SHA256, DEFAULT_BACKEND)
+    hash1.update(bytestr)
+    hash1 = hash1.finalize()
+
+    hash2 = Hash(SHA256, DEFAULT_BACKEND)
+    hash2.update(hash1)
+    hash2 = hash2.finalize()
+
+    return hash2
 
 
 def double_sha256_checksum(bytestr):
-    hashed = Hash(SHA256, DEFAULT_BACKEND)
-    hashed.update(bytestr)
-    hashed = hashed.finalize()
-
-    checksum = Hash(SHA256, DEFAULT_BACKEND)
-    checksum.update(hashed)
-    checksum = checksum.finalize()[:4]
-
-    return checksum
+    return double_sha256(bytestr)[:4]

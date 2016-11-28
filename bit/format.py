@@ -1,7 +1,7 @@
 from bit.base58 import b58decode_check, b58encode_check
 from bit.crypto import DEFAULT_BACKEND, RIPEMD160, SHA256, Hash
 from bit.curve import x_to_y
-from bit.utils import bytes_to_hex
+from bit.utils import bytes_to_hex, hex_to_bytes
 
 SATOSHI = 1
 uBTC = SATOSHI * 100
@@ -37,7 +37,7 @@ def private_key_hex_to_wif(private_key, version='main', compressed=False):
         suffix = b''
 
     if not isinstance(private_key, bytes):
-        private_key = bytes.fromhex(private_key)
+        private_key = hex_to_bytes(private_key)
 
     private_key = prefix + private_key + suffix
 
@@ -54,11 +54,11 @@ def wif_to_private_key_hex(wif):
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:
-        private_key = private_key[1:-1]
+        private_key, compressed = private_key[1:-1], True
     else:
-        private_key = private_key[1:]
+        private_key, compressed = private_key[1:], False
 
-    return bytes_to_hex(private_key)
+    return bytes_to_hex(private_key), compressed
 
 
 def wif_checksum_check(wif):
@@ -83,12 +83,7 @@ def public_key_to_address(public_key, version='main'):
 
     length = len(public_key)
 
-    if length == 33:
-        flag, x = int.from_bytes(public_key[:1], 'big'), public_key[1:]
-        y = x_to_y(int.from_bytes(x, 'big'), flag & 1)
-        y = y.to_bytes(32, 'big')
-        public_key = PUBLIC_KEY_UNCOMPRESSED + x + y
-    elif length != 65:
+    if length not in (33, 65):
         raise ValueError('{} is an invalid length for a public key.'.format(length))
 
     public_key_digest = Hash(SHA256, DEFAULT_BACKEND)

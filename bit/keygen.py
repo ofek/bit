@@ -5,10 +5,7 @@ from bit.crypto import (
     DEFAULT_BACKEND, RIPEMD160, SECP256K1, SHA256, Hash,
     gen_privkey, derive_privkey
 )
-from bit.format import (
-    MAIN_PUBKEY_HASH, PUBLIC_KEY_UNCOMPRESSED,
-    point_to_public_key, public_key_to_address
-)
+from bit.format import point_to_public_key, public_key_to_address
 from bit.utils import int_to_hex
 
 
@@ -17,7 +14,6 @@ def derive_private_key(num):
 
 
 def generate_private_key():
-
     return gen_privkey(SECP256K1, DEFAULT_BACKEND)
 
 
@@ -26,7 +22,7 @@ def generate_key_address_pair():
     private_key = gen_privkey(SECP256K1, DEFAULT_BACKEND)
 
     public_key = point_to_public_key(
-        private_key.public_key().public_numbers(), compressed=False
+        private_key.public_key().public_numbers(), compressed=True
     )
 
     bitcoin_address = public_key_to_address(public_key)
@@ -86,10 +82,8 @@ def stream_key_address_pairs(queue, event):  # pragma: no cover
         private_key = gen_privkey(SECP256K1, DEFAULT_BACKEND)
         public_key_point = private_key.public_key().public_numbers()
 
-        x = public_key_point.x.to_bytes(32, 'big')
-        y = public_key_point.y.to_bytes(32, 'big')
-
-        public_key = PUBLIC_KEY_UNCOMPRESSED + x + y
+        y = b'\x03' if public_key_point.y & 1 else b'\x02'
+        public_key = y + public_key_point.x.to_bytes(32, 'big')
 
         public_key_digest = Hash(SHA256, DEFAULT_BACKEND)
         public_key_digest.update(public_key)
@@ -97,7 +91,7 @@ def stream_key_address_pairs(queue, event):  # pragma: no cover
 
         ripemd160 = Hash(RIPEMD160, DEFAULT_BACKEND)
         ripemd160.update(public_key_digest)
-        ripemd160 = MAIN_PUBKEY_HASH + ripemd160.finalize()
+        ripemd160 = b'\x00' + ripemd160.finalize()
 
         ripemd160_digest = Hash(SHA256, DEFAULT_BACKEND)
         ripemd160_digest.update(ripemd160)

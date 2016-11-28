@@ -6,9 +6,9 @@ from bit.format import (
     wif_to_private_key_hex
 )
 from .samples import (
-    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES,
-    PRIVATE_KEY_HEX, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
-    PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
+    BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_ADDRESS_TEST_COMPRESSED,
+    BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_HEX, PUBLIC_KEY_COMPRESSED,
+    PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
     WALLET_FORMAT_COMPRESSED_TEST, WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
@@ -33,13 +33,13 @@ class TestPrivateKeyToWIF:
 
 class TestWIFToPrivateKeyHex:
     def test_wif_to_private_key_hex_main(self):
-        assert wif_to_private_key_hex(WALLET_FORMAT_MAIN) == PRIVATE_KEY_HEX
+        assert wif_to_private_key_hex(WALLET_FORMAT_MAIN) == (PRIVATE_KEY_HEX, False)
 
     def test_wif_to_private_key_hex_test(self):
-        assert wif_to_private_key_hex(WALLET_FORMAT_TEST) == PRIVATE_KEY_HEX
+        assert wif_to_private_key_hex(WALLET_FORMAT_TEST) == (PRIVATE_KEY_HEX, False)
 
     def test_wif_to_private_key_hex_compressed(self):
-        assert wif_to_private_key_hex(WALLET_FORMAT_COMPRESSED_MAIN) == PRIVATE_KEY_HEX
+        assert wif_to_private_key_hex(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_HEX, True)
 
     def test_wif_to_private_key_hex_invalid_network(self):
         with pytest.raises(ValueError):
@@ -77,7 +77,7 @@ class TestPublicKeyToCoords:
 
 class TestPublicKeyToAddress:
     def test_public_key_to_address_compressed(self):
-        assert public_key_to_address(PUBLIC_KEY_COMPRESSED) == BITCOIN_ADDRESS
+        assert public_key_to_address(PUBLIC_KEY_COMPRESSED) == BITCOIN_ADDRESS_COMPRESSED
 
     def test_public_key_to_address_uncompressed(self):
         assert public_key_to_address(PUBLIC_KEY_UNCOMPRESSED) == BITCOIN_ADDRESS
@@ -86,8 +86,11 @@ class TestPublicKeyToAddress:
         with pytest.raises(ValueError):
             public_key_to_address(PUBLIC_KEY_COMPRESSED[:-1])
 
-    def test_public_key_to_address_test(self):
-        assert public_key_to_address(PUBLIC_KEY_COMPRESSED, version='test') == BITCOIN_ADDRESS_TEST
+    def test_public_key_to_address_test_compressed(self):
+        assert public_key_to_address(PUBLIC_KEY_COMPRESSED, version='test') == BITCOIN_ADDRESS_TEST_COMPRESSED
+
+    def test_public_key_to_address_test_uncompressed(self):
+        assert public_key_to_address(PUBLIC_KEY_UNCOMPRESSED, version='test') == BITCOIN_ADDRESS_TEST
 
 
 class TestCoordsToPublicKey:

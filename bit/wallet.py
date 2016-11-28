@@ -12,76 +12,30 @@ from bit.network import MultiBackend
 from bit.utils import hex_to_int, int_to_hex
 
 
-class PrivateKey:
-    def __init__(self, wif=None, sync=False):
+class BaseKey:
+    def __init__(self, wif=None):
         if wif:
             if isinstance(wif, str):
-                num = hex_to_int(wif_to_private_key_hex(wif))
-                self._pk = derive_private_key(num)
+                private_key_hex, compressed = wif_to_private_key_hex(wif)
+                self._pk = derive_private_key(hex_to_int(private_key_hex))
             elif isinstance(wif, EllipticCurvePrivateKey):
                 self._pk = wif
+                compressed = True
             else:
                 raise ValueError('Wallet Import Format must be a string.')
         else:
             self._pk = generate_private_key()
+            compressed = True
 
         public_point = self._pk.public_key().public_numbers()
-        pubkey = point_to_public_key(public_point, compressed=False)
-
         self._public_point = Point(public_point.x, public_point.y)
-        self._address = public_key_to_address(pubkey)
-        self._test_address = public_key_to_address(pubkey, version='test')
+        self._public_key = point_to_public_key(public_point, compressed=compressed)
 
-        self._balance = None
-        self._utxo = []
-        self._transactions = []
+    def public_key(self):
+        return self._public_key
 
-        self._test_balance = None
-        self._test_utxo = []
-        self._test_transactions = []
-
-        if sync:
-            self.sync()
-
-    def public_key(self, compressed=True):
-        return point_to_public_key(self._public_point, compressed=compressed)
-
-    def get_balance(self):
-        self._balance = MultiBackend.get_balance(self._address)
-        return self._balance
-
-    def get_utxo(self):
-        self._utxo[:] = MultiBackend.get_utxo_list(self._address)
-        return self._utxo.copy()
-
-    def get_transactions(self):
-        self._transactions[:] = MultiBackend.get_tx_list(self._address)
-        return self._transactions.copy()
-
-    def sync(self):
-        self._balance = MultiBackend.get_balance(self._address)
-        self._utxo[:] = MultiBackend.get_utxo_list(self._address)
-        self._transactions[:] = MultiBackend.get_tx_list(self._address)
-
-    def get_test_balance(self):
-        self._test_balance = MultiBackend.get_test_balance(self._test_address)
-        return self._test_balance
-
-    def get_test_utxo(self):
-        self._test_utxo[:] = MultiBackend.get_test_utxo_list(self._test_address)
-        return self._test_utxo.copy()
-
-    def get_test_transactions(self):
-        self._test_transactions[:] = MultiBackend.get_test_tx_list(self._test_address)
-        return self._test_transactions.copy()
-
-    def test_sync(self):
-        self._test_balance = MultiBackend.get_test_balance(self._test_address)
-        self._test_utxo[:] = MultiBackend.get_test_utxo_list(self._test_address)
-        self._test_transactions[:] = MultiBackend.get_test_tx_list(self._test_address)
-
-    def to_wif(self, version='main', compressed=False):
-        return private_key_hex_to_wif(self.to_hex(), version, compressed)
+    def public_point(self):
+        return self._public_point
 
     def to_hex(self):
         return int_to_hex(self._pk.private_numbers().private_value)
@@ -120,43 +74,113 @@ class PrivateKey:
             backend=DEFAULT_BACKEND
         ))
 
-    @property
-    def public_point(self):
-        return self._public_point
+
+class PrivateKey(BaseKey):
+    def __init__(self, wif=None, sync=False):
+        super().__init__(wif=wif)
+
+        self._address = public_key_to_address(self._public_key, version='main')
+
+        self._balance = None
+        self._utxos = []
+        self._transactions = []
+
+        if sync:
+            self.sync()
 
     @property
     def address(self):
         return self._address
 
-    @property
+    def to_wif(self):
+        return private_key_hex_to_wif(
+            self.to_hex(),
+            version='main',
+            compressed=True if len(self._public_key) == 33 else False
+        )
+
+    def get_balance(self):
+        self._balance = MultiBackend.get_balance(self._address)
+        return self._balance
+
+    def get_utxos(self):
+        self._utxos[:] = MultiBackend.get_utxo_list(self._address)
+        return self._utxos.copy()
+
+    def get_transactions(self):
+        self._transactions[:] = MultiBackend.get_tx_list(self._address)
+        return self._transactions.copy()
+
+    def sync(self):
+        self._balance = MultiBackend.get_balance(self._address)
+        self._utxos[:] = MultiBackend.get_utxo_list(self._address)
+        self._transactions[:] = MultiBackend.get_tx_list(self._address)
+
     def balance(self):
         return self._balance
 
-    @property
-    def utxo(self):
-        return self._utxo.copy()
+    def utxos(self):
+        return self._utxos.copy()
 
-    @property
     def transactions(self):
         return self._transactions.copy()
 
-    @property
-    def test_address(self):
-        return self._test_address
-
-    @property
-    def test_balance(self):
-        return self._test_balance
-
-    @property
-    def test_utxo(self):
-        return self._test_utxo.copy()
-
-    @property
-    def test_transactions(self):
-        return self._test_transactions.copy()
-
     def __repr__(self):
         return '<PrivateKey: {}>'.format(self.address)
+
+
+class PrivateKeyTestnet(BaseKey):
+    def __init__(self, wif=None, sync=False):
+        super().__init__(wif=wif)
+
+        self._address = public_key_to_address(self._public_key, version='test')
+
+        self._balance = None
+        self._utxos = []
+        self._transactions = []
+
+        if sync:
+            self.sync()
+
+    @property
+    def address(self):
+        return self._address
+
+    def to_wif(self):
+        return private_key_hex_to_wif(
+            self.to_hex(),
+            version='test',
+            compressed=True if len(self._public_key) == 33 else False
+        )
+
+    def get_balance(self):
+        self._balance = MultiBackend.get_test_balance(self._address)
+        return self._balance
+
+    def get_utxos(self):
+        self._utxos[:] = MultiBackend.get_test_utxo_list(self._address)
+        return self._utxos.copy()
+
+    def get_transactions(self):
+        self._transactions[:] = MultiBackend.get_test_tx_list(self._address)
+        return self._transactions.copy()
+
+    def sync(self):
+        self._balance = MultiBackend.get_test_balance(self._address)
+        self._utxos[:] = MultiBackend.get_test_utxo_list(self._address)
+        self._transactions[:] = MultiBackend.get_test_tx_list(self._address)
+
+    def balance(self):
+        return self._balance
+
+    def utxos(self):
+        return self._utxos.copy()
+
+    def transactions(self):
+        return self._transactions.copy()
+
+    def __repr__(self):
+        return '<PrivateKeyTestnet: {}>'.format(self.address)
+
 
 Key = PrivateKey

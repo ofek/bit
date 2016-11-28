@@ -18,6 +18,14 @@ def bytes_to_hex(bytestr, upper=True):
     return hexed.upper() if upper else hexed
 
 
+def hex_to_bytes(hexed):
+
+    if len(hexed) & 1:
+        hexed = '0' + hexed
+
+    return bytes.fromhex(hexed)
+
+
 def int_to_hex(num, upper=True):
     hexed = hex(num)[2:]
     return hexed.upper() if upper else hexed
@@ -28,4 +36,4 @@ def hex_to_int(hexed):
 
 
 def flip_hex_byte_order(string):
-    return bytes_to_hex(bytes.fromhex(string)[::-1])
+    return bytes_to_hex(hex_to_bytes(string)[::-1])
