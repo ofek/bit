@@ -1,5 +1,7 @@
 import sys
+import time
 from decimal import Decimal
+from functools import wraps
 
 import requests
 from requests.exceptions import ConnectionError, Timeout
@@ -9,8 +11,34 @@ from bit.transaction import UTXO
 
 if sys.version_info < (3, 5):  # pragma: no cover
     JSONDecodeError = ValueError
-else:
+else:  # pragma: no cover
     from json.decoder import JSONDecodeError
+
+
+def get_fee_cache(f):
+    update_time = time.time()
+    expiry_time = 60 * 10
+    cached_fee = None
+
+    @wraps(f)
+    def wrapper():
+        now = time.time()
+        nonlocal update_time
+        nonlocal cached_fee
+
+        if not cached_fee or now - update_time > expiry_time:
+            cached_fee = requests.get('https://bitcoinfees.21.co/api/v1/fees/recommended').json()['hourFee']
+            update_time = now
+            return cached_fee
+
+        return cached_fee
+
+    return wrapper
+
+
+@get_fee_cache
+def get_21_fee():
+    pass  # pragma: no cover
 
 
 class InsightAPI:
@@ -91,6 +119,11 @@ class InsightAPI:
             ])
 
         return transaction_lists
+
+    @classmethod
+    def broadcast_tx(cls, tx_hex):
+        r = requests.post(cls.MAIN_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex})
+        return True if r.status_code == 200 else False
 
 
 class BitpayAPI(InsightAPI):
@@ -176,6 +209,11 @@ class BitpayAPI(InsightAPI):
             ])
 
         return transaction_lists
+
+    @classmethod
+    def broadcast_test_tx(cls, tx_hex):
+        r = requests.post(cls.TEST_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex})
+        return True if r.status_code == 200 else False
 
 
 class BlockexplorerAPI(InsightAPI):
@@ -358,6 +396,16 @@ class BlockrAPI:
 
         return transaction_lists
 
+    @classmethod
+    def broadcast_tx(cls, tx_hex):
+        r = requests.post(cls.MAIN_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex})
+        return True if r.status_code == 200 else False
+
+    @classmethod
+    def broadcast_test_tx(cls, tx_hex):
+        r = requests.post(cls.TEST_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex})
+        return True if r.status_code == 200 else False
+
 
 class BlockchainAPI:
     ENDPOINT = 'https://blockchain.info/'
@@ -474,6 +522,11 @@ class BlockchainAPI:
                 ][::-1])
 
         return transaction_lists
+
+    @classmethod
+    def broadcast_tx(cls, tx_hex):
+        r = requests.post(cls.TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex})
+        return True if r.status_code == 200 else False
 
 
 class SmartbitAPI:
@@ -661,9 +714,21 @@ class SmartbitAPI:
 
         return transaction_lists
 
+    @classmethod
+    def broadcast_tx(cls, tx_hex):
+        r = requests.post(cls.MAIN_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex})
+        return True if r.status_code == 200 else False
+
+    @classmethod
+    def broadcast_test_tx(cls, tx_hex):
+        r = requests.post(cls.TEST_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex})
+        return True if r.status_code == 200 else False
+
 
 class MultiBackend:
     IGNORED_ERRORS = (ConnectionError, JSONDecodeError, Timeout)
+
+    GET_TX_FEE = [get_21_fee]
 
     GET_BALANCE_MAIN = [BitpayAPI.get_balance,
                         BlockchainAPI.get_balance,
@@ -695,6 +760,11 @@ class MultiBackend:
                            BitpayAPI.get_utxo_lists,
                            SmartbitAPI.get_utxo_lists,
                            BlockchainAPI.get_utxo_lists]
+    BROADCAST_TX_MAIN = [BlockchainAPI.broadcast_tx,
+                         BitpayAPI.broadcast_tx,
+                         BlockrAPI.broadcast_tx,
+                         BlockexplorerAPI.broadcast_tx,
+                         SmartbitAPI.broadcast_tx]
 
     GET_BALANCE_TEST = [BitpayAPI.get_test_balance,
                         BlockrAPI.get_test_balance,
@@ -714,6 +784,9 @@ class MultiBackend:
     GET_UTXO_LISTS_TEST = [BlockrAPI.get_test_utxo_lists,
                            BitpayAPI.get_test_utxo_lists,
                            SmartbitAPI.get_test_utxo_lists]
+    BROADCAST_TX_TEST = [BitpayAPI.broadcast_test_tx,
+                         BlockrAPI.broadcast_test_tx,
+                         SmartbitAPI.broadcast_test_tx]
 
     @classmethod
     def get_balance(cls, address):
@@ -842,6 +915,37 @@ class MultiBackend:
         for api_call in cls.GET_UTXO_LISTS_TEST:
             try:
                 return api_call(addresses)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        return None
+
+    @classmethod
+    def broadcast_tx(cls, tx_hex):
+
+        for api_call in cls.BROADCAST_TX_MAIN:
+            try:
+                api_call(tx_hex)
+                break
+            except cls.IGNORED_ERRORS:
+                pass
+
+    @classmethod
+    def broadcast_test_tx(cls, tx_hex):
+
+        for api_call in cls.BROADCAST_TX_TEST:
+            try:
+                api_call(tx_hex)
+                break
+            except cls.IGNORED_ERRORS:
+                pass
+
+    @classmethod
+    def get_tx_fee(cls):
+
+        for api_call in cls.GET_TX_FEE:
+            try:
+                return api_call()
             except cls.IGNORED_ERRORS:
                 pass
 

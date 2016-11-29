@@ -1,14 +1,15 @@
 import pytest
 
-from bit.crypto import EllipticCurvePrivateKey
+from bit.crypto import ECDSA_SHA256, EllipticCurvePrivateKey
 from bit.curve import Point
 from bit.keygen import generate_private_key
 from bit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet
 from .samples import (
-    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_DER, PRIVATE_KEY_HEX,
-    PRIVATE_KEY_PEM, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
-    PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
-    WALLET_FORMAT_COMPRESSED_TEST, WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_DER,
+    PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
+    PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X,
+    PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
 
@@ -41,6 +42,22 @@ class TestBaseKey:
         base_key = BaseKey(WALLET_FORMAT_MAIN)
         assert base_key.public_point() == Point(PUBLIC_KEY_X, PUBLIC_KEY_Y)
 
+    def test_sign(self):
+        base_key = BaseKey()
+        signature = base_key.sign(PUBLIC_KEY_COMPRESSED)
+        public_key = base_key._pk.public_key()
+        assert public_key.verify(signature, PUBLIC_KEY_COMPRESSED, ECDSA_SHA256)
+
+    def test_verify_success(self):
+        base_key = BaseKey()
+        signature = base_key.sign(PUBLIC_KEY_COMPRESSED)
+        assert base_key.verify(signature, PUBLIC_KEY_COMPRESSED)
+
+    def test_verify_failure(self):
+        base_key = BaseKey()
+        signature = base_key.sign(PUBLIC_KEY_COMPRESSED)
+        assert not base_key.verify(signature, PUBLIC_KEY_UNCOMPRESSED)
+
     def test_to_hex(self):
         base_key = BaseKey(WALLET_FORMAT_MAIN)
         assert base_key.to_hex() == PRIVATE_KEY_HEX
@@ -53,6 +70,10 @@ class TestBaseKey:
         base_key = BaseKey(WALLET_FORMAT_MAIN)
         assert base_key.to_pem() == PRIVATE_KEY_PEM
 
+    def test_to_int(self):
+        base_key = BaseKey(WALLET_FORMAT_MAIN)
+        assert base_key.to_int() == PRIVATE_KEY_NUM
+
     def test_from_hex(self):
         assert BaseKey.from_hex(PRIVATE_KEY_HEX).to_hex() == PRIVATE_KEY_HEX
 
@@ -61,6 +82,9 @@ class TestBaseKey:
 
     def test_from_pem(self):
         assert BaseKey.from_pem(PRIVATE_KEY_PEM).to_pem() == PRIVATE_KEY_PEM
+
+    def test_from_int(self):
+        assert BaseKey.from_int(PRIVATE_KEY_NUM).to_int() == PRIVATE_KEY_NUM
 
 
 class TestPrivateKey:
