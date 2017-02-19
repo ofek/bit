@@ -1,12 +1,9 @@
 from bit.base58 import b58decode_check, b58encode_check
-from bit.crypto import DEFAULT_BACKEND, RIPEMD160, SHA256, Hash
-from bit.curve import x_to_y
-from bit.utils import bytes_to_hex, hex_to_bytes
-
-SATOSHI = 1
-uBTC = SATOSHI * 100
-mBTC = uBTC * 1000
-BTC = mBTC * 1000
+from bit.crypto import (
+    DEFAULT_BACKEND, RIPEMD160, SHA256, Hash, decode_dss_signature
+)
+from bit.curve import GROUP_ORDER, x_to_y
+from bit.utils import bytes_to_hex, hex_to_bytes, int_to_unknown_bytes
 
 MAIN_PUBKEY_HASH = b'\x00'
 MAIN_SCRIPT_HASH = b'\x05'
@@ -22,6 +19,33 @@ PUBLIC_KEY_UNCOMPRESSED = b'\x04'
 PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
 PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
 PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
+
+
+def make_compliant_sig(signature):
+    """Adhere to BIP-62:
+    https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki
+    """
+
+    r, s = decode_dss_signature(signature)
+    s = GROUP_ORDER - s if s > GROUP_ORDER // 2 else s
+
+    r = int_to_unknown_bytes(r)
+    s = int_to_unknown_bytes(s)
+
+    if r[0] & 0x80:
+        r = b'\x00' + r
+
+    if s[0] & 0x80:
+        s = b'\x00' + s
+
+    r = b'\x02' + int_to_unknown_bytes(len(r)) + r
+    s = b'\x02' + int_to_unknown_bytes(len(s)) + s
+
+    return b'\x30' + int_to_unknown_bytes(len(r) + len(s)) + r + s
+
+
+def address_to_public_key_hash(address):
+    return b58decode_check(address)[1:]
 
 
 def private_key_hex_to_wif(private_key, version='main', compressed=False):

@@ -1,16 +1,34 @@
 import pytest
 
 from bit.format import (
-    coords_to_public_key, point_to_public_key, private_key_hex_to_wif,
-    public_key_to_coords, public_key_to_address, wif_checksum_check,
-    wif_to_private_key_hex
+    address_to_public_key_hash, coords_to_public_key, make_compliant_sig,
+    point_to_public_key, private_key_hex_to_wif, public_key_to_coords,
+    public_key_to_address, wif_checksum_check, wif_to_private_key_hex
 )
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_ADDRESS_TEST_COMPRESSED,
-    BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_HEX, PUBLIC_KEY_COMPRESSED,
-    PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
+    BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_HEX, PUBKEY_HASH,
+    PUBKEY_HASH_COMPRESSED, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
+    PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
     WALLET_FORMAT_COMPRESSED_TEST, WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
+
+
+class TestMakeCompliantDer:
+    def test_normal(self):
+        # (r = 32, s = 32)
+        signature = b'0\x06\x02\x01 \x02\x01 '
+        assert signature == make_compliant_sig(signature)
+
+    def test_r_greater_than_or_equal_to_128(self):
+        # (r = 128, s = 32)
+        signature = b'0\x07\x02\x02\x00\x80\x02\x01 '
+        assert b'0\x07\x02\x02\x00\x80\x02\x01 ' == make_compliant_sig(signature)
+
+    def test_s_greater_than_or_equal_to_128(self):
+        # (r = 32, s = 128)
+        signature = b'0\x07\x02\x01 \x02\x02\x00\x80'
+        assert b'0\x07\x02\x01 \x02\x02\x00\x80' == make_compliant_sig(signature)
 
 
 class TestPrivateKeyToWIF:
@@ -106,3 +124,8 @@ def test_point_to_public_key():
         x = PUBLIC_KEY_X
         y = PUBLIC_KEY_Y
     assert point_to_public_key(Point) == coords_to_public_key(Point.x, Point.y)
+
+
+def test_address_to_public_key_hash():
+    assert address_to_public_key_hash(BITCOIN_ADDRESS) == PUBKEY_HASH
+    assert address_to_public_key_hash(BITCOIN_ADDRESS_COMPRESSED) == PUBKEY_HASH_COMPRESSED

@@ -15,7 +15,6 @@ def b58encode(bytestr):
         num, rem = divmod(num, 58)
         encoded.append(alphabet[rem])
 
-    # Reverse to order by significance of bytes
     encoded = ''.join(reversed(encoded))
 
     pad = 0

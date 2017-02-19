@@ -1,18 +1,16 @@
-from decimal import Decimal
-
 from bit.crypto import (
     DEFAULT_BACKEND, ECDSA_SHA256, NOENCRYPTION, EllipticCurvePrivateKey,
     Encoding, PrivateFormat, load_der_private_key, load_pem_private_key
 )
 from bit.curve import Point
-from bit.exceptions import InsufficientFunds, InvalidSignature
+from bit.exceptions import InvalidSignature
 from bit.format import (
-    BTC, point_to_public_key, private_key_hex_to_wif, public_key_to_address,
-    wif_to_private_key_hex
+    make_compliant_sig, point_to_public_key, private_key_hex_to_wif,
+    public_key_to_address, wif_to_private_key_hex
 )
 from bit.keygen import derive_private_key, generate_private_key
-from bit.network import MultiBackend
-from bit.transaction import create_signed_transaction, estimate_tx_fee
+from bit.network import NetworkApi, get_fee_cached
+from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 from bit.utils import hex_to_int, int_to_hex
 
 
@@ -31,18 +29,20 @@ class BaseKey:
             self._pk = generate_private_key()
             compressed = True
 
-        public_point = self._pk.public_key().public_numbers()
-        self._public_point = Point(public_point.x, public_point.y)
-        self._public_key = point_to_public_key(public_point, compressed=compressed)
+        self._public_point = self._pk.public_key().public_numbers()
+        self._public_key = point_to_public_key(
+            self._public_point, compressed=compressed
+        )
 
+    @property
     def public_key(self):
         return self._public_key
 
     def public_point(self):
-        return self._public_point
+        return Point(self._public_point.x, self._public_point.y)
 
     def sign(self, data):
-        return self._pk.sign(data, ECDSA_SHA256)
+        return make_compliant_sig(self._pk.sign(data, ECDSA_SHA256))
 
     def verify(self, signature, data):
         try:
@@ -94,15 +94,18 @@ class BaseKey:
     def from_int(cls, num):
         return PrivateKey(derive_private_key(num))
 
+    def is_compressed(self):
+        return True if len(self.public_key) == 33 else False
+
 
 class PrivateKey(BaseKey):
     def __init__(self, wif=None, sync=False):
         super().__init__(wif=wif)
 
-        self._address = public_key_to_address(self._public_key, version='main')
+        self._address = None
 
         self._balance = None
-        self._utxos = []
+        self._unspents = []
         self._transactions = []
 
         if sync:
@@ -110,6 +113,8 @@ class PrivateKey(BaseKey):
 
     @property
     def address(self):
+        if self._address is None:
+            self._address = public_key_to_address(self._public_key, version='main')
         return self._address
 
     def to_wif(self):
@@ -120,63 +125,50 @@ class PrivateKey(BaseKey):
         )
 
     def get_balance(self):
-        self._balance = MultiBackend.get_balance(self._address)
+        self._balance = NetworkApi.get_balance(self.address)
         return self._balance
 
-    def get_utxos(self):
-        self._utxos[:] = MultiBackend.get_utxo_list(self._address)
-        return self._utxos.copy()
+    def get_unspents(self):
+        self._unspents[:] = NetworkApi.get_unspent(self.address)
+        return self._unspents.copy()
 
     def get_transactions(self):
-        self._transactions[:] = MultiBackend.get_tx_list(self._address)
+        self._transactions[:] = NetworkApi.get_transactions(self.address)
         return self._transactions.copy()
 
     def sync(self):
-        self._balance = MultiBackend.get_balance(self._address)
-        self._utxos[:] = MultiBackend.get_utxo_list(self._address)
-        self._transactions[:] = MultiBackend.get_tx_list(self._address)
+        self._balance = NetworkApi.get_balance(self.address)
+        self._unspents[:] = NetworkApi.get_unspent(self.address)
+        self._transactions[:] = NetworkApi.get_transactions(self.address)
 
-    def create_tx(self, outputs, fee=None, combine=True, extra=None, utxos=None):
-        return_address = extra or self.address
-        utxos = utxos.copy() if utxos else self.get_utxos()
+    def create_transaction(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
 
-        fee = Decimal(estimate_tx_fee(
-            len(utxos), len(outputs), fee or MultiBackend.get_tx_fee()
-        )) / BTC
-        total_in = Decimal('0')
-        total_out = sum(Decimal(str(out[1])) for out in outputs) + fee
+        unspents, outputs = sanitize_tx_data(
+            unspents or self.unspents(),
+            outputs,
+            fee or get_fee_cached(),
+            leftover or self.address,
+            combine=combine,
+            message=message
+        )
 
-        if not combine:
-            utxos.sort(key=lambda x: x['amount'])
+        return create_p2pkh_transaction(self, unspents, outputs)
 
-            index = 0
+    def send(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
 
-            for index, utxo in enumerate(utxos):
-                total_in += utxo['amount']
+        tx_hex = self.create_transaction(
+            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+        )
 
-                if total_in >= total_out:
-                    break
+        NetworkApi.broadcast_tx(tx_hex)
 
-            utxos[:] = utxos[:index + 1]
-
-        else:
-            total_in = sum(utxo['amount'] for utxo in utxos)
-
-        leftover = total_in - total_out
-
-        if leftover:
-            outputs.append((return_address, leftover))
-        elif leftover < 0:
-            raise InsufficientFunds('Balance {} is less than {} (including fee).'
-                                    ''.format(total_in, total_out))
-
-        return create_signed_transaction(self, utxos, outputs)
+        return calc_txid(tx_hex)
 
     def balance(self):
         return self._balance
 
-    def utxos(self):
-        return self._utxos.copy()
+    def unspents(self):
+        return self._unspents.copy()
 
     def transactions(self):
         return self._transactions.copy()
@@ -189,10 +181,10 @@ class PrivateKeyTestnet(BaseKey):
     def __init__(self, wif=None, sync=False):
         super().__init__(wif=wif)
 
-        self._address = public_key_to_address(self._public_key, version='test')
+        self._address = None
 
         self._balance = None
-        self._utxos = []
+        self._unspents = []
         self._transactions = []
 
         if sync:
@@ -200,6 +192,8 @@ class PrivateKeyTestnet(BaseKey):
 
     @property
     def address(self):
+        if self._address is None:
+            self._address = public_key_to_address(self._public_key, version='test')
         return self._address
 
     def to_wif(self):
@@ -210,68 +204,51 @@ class PrivateKeyTestnet(BaseKey):
         )
 
     def get_balance(self):
-        self._balance = MultiBackend.get_test_balance(self._address)
+        self._balance = NetworkApi.get_test_balance(self.address)
         return self._balance
 
-    def get_utxos(self):
-        self._utxos[:] = MultiBackend.get_test_utxo_list(self._address)
-        return self._utxos.copy()
+    def get_unspents(self):
+        self._unspents[:] = NetworkApi.get_test_unspent(self.address)
+        return self._unspents.copy()
 
     def get_transactions(self):
-        self._transactions[:] = MultiBackend.get_test_tx_list(self._address)
+        self._transactions[:] = NetworkApi.get_test_transactions(self.address)
         return self._transactions.copy()
 
     def sync(self):
-        self._balance = MultiBackend.get_test_balance(self._address)
-        self._utxos[:] = MultiBackend.get_test_utxo_list(self._address)
-        self._transactions[:] = MultiBackend.get_test_tx_list(self._address)
+        self._balance = NetworkApi.get_test_balance(self.address)
+        self._unspents[:] = NetworkApi.get_test_unspent(self.address)
+        self._transactions[:] = NetworkApi.get_test_transactions(self.address)
 
-    def create_tx(self, outputs, fee=None, combine=True, extra=None, utxos=None):
-        return_address = extra or self.address
-        utxos = utxos.copy() if utxos else self.get_utxos()
+    def create_transaction(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
 
-        fee = estimate_tx_fee(
-            len(utxos), len(outputs), fee or MultiBackend.get_tx_fee()
+        unspents, outputs = sanitize_tx_data(
+            unspents or self.unspents(),
+            outputs,
+            fee or get_fee_cached(),
+            leftover or self.address,
+            combine=combine,
+            message=message,
+            compressed=self.is_compressed()
         )
-        total_in = Decimal('0')
-        total_out = sum(Decimal(str(out[1])) for out in outputs) + fee
 
-        if not combine:
-            utxos.sort(key=lambda x: x.amount)
+        return create_p2pkh_transaction(self, unspents, outputs)
 
-            index = 0
+    def send(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
 
-            for index, utxo in enumerate(utxos):
-                total_in += utxo.amount
+        tx_hex = self.create_transaction(
+            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+        )
 
-                if total_in >= total_out:
-                    break
+        NetworkApi.broadcast_test_tx(tx_hex)
 
-            utxos[:] = utxos[:index + 1]
-
-        else:
-            total_in = sum(utxo.amount for utxo in utxos)
-
-        leftover = total_in - total_out
-
-        if leftover:
-            outputs.append((return_address, leftover))
-        elif leftover < 0:
-            raise InsufficientFunds('Balance {} is less than {} (including fee).'
-                                    ''.format(total_in, total_out))
-
-        print(outputs, utxos)
-        return create_signed_transaction(self, utxos, outputs)
-
-    def send(self, outputs, fee=None, combine=True, extra=None, utxos=None):
-        tx_hex = self.create_tx(outputs, fee=fee, combine=combine, extra=extra, utxos=utxos)
-        MultiBackend.broadcast_test_tx(tx_hex)
+        return calc_txid(tx_hex)
 
     def balance(self):
         return self._balance
 
-    def utxos(self):
-        return self._utxos.copy()
+    def unspents(self):
+        return self._unspents.copy()
 
     def transactions(self):
         return self._transactions.copy()

@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 FIELD_SIZE = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+GROUP_ORDER = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
 TONELLI_SHANKS_CONSTANT = (FIELD_SIZE + 1) // 4
 
 

@@ -15,9 +15,9 @@ setup(
 
     keywords=(
         'bitcoin',
-        'bitcoin tools',
-        'bitcoin wallet',
-        'address generator',
+        'cryptocurrency',
+        'tools',
+        'wallet',
     ),
 
     classifiers=(
@@ -30,11 +30,13 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ),
 
     install_requires=['click', 'cryptography>=1.6', 'requests'],
+    tests_require=['pytest'],
 
     packages=find_packages(),
     entry_points={
