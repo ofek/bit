@@ -1,8 +1,9 @@
 import pytest
 
 from bit.exceptions import InsufficientFunds
+from bit.network.meta import Unspent
 from bit.transaction import (
-    TxIn, Unspent, calc_txid, create_p2pkh_transaction, construct_input_block,
+    TxIn, calc_txid, create_p2pkh_transaction, construct_input_block,
     construct_output_block, estimate_tx_fee, sanitize_tx_data
 )
 from bit.utils import hex_to_bytes
@@ -65,29 +66,6 @@ SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
                b'\x92x~\n\x1a\xac\xc0\xf0\xff\xf7\xda\xfe0\xb7!6t')
 
 
-class TestUnspent:
-    def test_init(self):
-        unspent = Unspent(10000, 7, 'script', 'txid', 0)
-        assert unspent.amount == 10000
-        assert unspent.confirmations == 7
-        assert unspent.script == 'script'
-        assert unspent.txid == 'txid'
-        assert unspent.txindex == 0
-
-    def test_equality(self):
-        unspent1 = Unspent(10000, 7, 'script', 'txid', 0)
-        unspent2 = Unspent(10000, 7, 'script', 'txid', 0)
-        unspent3 = Unspent(50000, 7, 'script', 'txid', 0)
-        assert unspent1 == unspent2
-        assert unspent1 != unspent3
-
-    def test_repr(self):
-        unspent = Unspent(10000, 7, 'script', 'txid', 0)
-
-        assert repr(unspent) == ("Unspent(amount=10000, confirmations=7, "
-                                 "script='script', txid='txid', txindex=0)")
-
-
 class TestTxIn:
     def test_init(self):
         txin = TxIn(b'script', b'\x06', b'txid', b'\x04')
@@ -118,7 +96,7 @@ class TestSanitizeTxData:
     def test_message(self):
         unspents_original = [Unspent(10000, 0, '', '', 0),
                              Unspent(10000, 0, '', '', 0)]
-        outputs_original = [('test', 1000)]
+        outputs_original = [('test', 1000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=5, leftover=RETURN_ADDRESS,
@@ -132,7 +110,7 @@ class TestSanitizeTxData:
     def test_fee_applied(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2000)]
+        outputs_original = [('test', 2000, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -143,7 +121,7 @@ class TestSanitizeTxData:
     def test_zero_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2000)]
+        outputs_original = [('test', 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
@@ -151,12 +129,12 @@ class TestSanitizeTxData:
         )
 
         assert unspents == unspents_original
-        assert outputs == outputs_original
+        assert outputs == [('test', 2000)]
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 500)]
+        outputs_original = [('test', 500, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
@@ -171,7 +149,7 @@ class TestSanitizeTxData:
     def test_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2500)]
+        outputs_original = [('test', 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -182,7 +160,7 @@ class TestSanitizeTxData:
     def test_no_combine_remaining(self):
         unspents_original = [Unspent(7000, 0, '', '', 0),
                              Unspent(3000, 0, '', '', 0)]
-        outputs_original = [('test', 2000)]
+        outputs_original = [('test', 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
@@ -197,7 +175,7 @@ class TestSanitizeTxData:
     def test_no_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2500)]
+        outputs_original = [('test', 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -214,11 +192,14 @@ class TestCreateSignedTransaction:
 
 
 class TestEstimateTxFee:
-    def test_accurate(self):
-        assert estimate_tx_fee(1, 2, 70) == 15820
+    def test_accurate_compressed(self):
+        assert estimate_tx_fee(1, 2, 70, True) == 15820
+
+    def test_accurate_uncompressed(self):
+        assert estimate_tx_fee(1, 2, 70, False) == 18060
 
     def test_none(self):
-        assert estimate_tx_fee(5, 5, 0) == 0
+        assert estimate_tx_fee(5, 5, 0, True) == 0
 
 
 class TestConstructOutputBlock:
@@ -230,7 +211,9 @@ class TestConstructOutputBlock:
 
     def test_long_message(self):
         amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
-        _, outputs = sanitize_tx_data(UNSPENTS, OUTPUTS, 0, RETURN_ADDRESS, message='hello'*9)
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS, message='hello'*9
+        )
         assert construct_output_block(outputs).count(amount) == 2
 
 

@@ -1,7 +1,7 @@
 import requests
 
 from bit.network import currency_to_satoshi
-from bit.transaction import Unspent
+from bit.network.meta import Unspent
 
 DEFAULT_TIMEOUT = 5
 
@@ -37,8 +37,8 @@ class InsightAPI:
         ]
 
     @classmethod
-    def broadcast_tx(cls, tx_hex):
-        r = requests.post(cls.MAIN_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -78,8 +78,8 @@ class BitpayAPI(InsightAPI):
         ]
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):
-        r = requests.post(cls.TEST_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -145,13 +145,13 @@ class BlockrAPI:
         ]
 
     @classmethod
-    def broadcast_tx(cls, tx_hex):
-        r = requests.post(cls.MAIN_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):
-        r = requests.post(cls.TEST_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -208,8 +208,8 @@ class BlockchainAPI:
         ][::-1]
 
     @classmethod
-    def broadcast_tx(cls, tx_hex):
-        r = requests.post(cls.TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -283,13 +283,13 @@ class SmartbitAPI:
         ]
 
     @classmethod
-    def broadcast_tx(cls, tx_hex):
-        r = requests.post(cls.MAIN_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):
-        r = requests.post(cls.TEST_TX_PUSH_API, params={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -311,8 +311,8 @@ class NetworkApi:
                         BlockchainAPI.get_unspent]  # Limit 250
     BROADCAST_TX_MAIN = [BlockchainAPI.broadcast_tx,
                          BitpayAPI.broadcast_tx,
-                         BlockrAPI.broadcast_tx,
-                         SmartbitAPI.broadcast_tx]
+                         SmartbitAPI.broadcast_tx,
+                         BlockrAPI.broadcast_tx]
 
     GET_BALANCE_TEST = [BitpayAPI.get_test_balance,
                         BlockrAPI.get_test_balance,
@@ -324,8 +324,8 @@ class NetworkApi:
                         BlockrAPI.get_test_unspent,  # No limit
                         SmartbitAPI.get_test_unspent]  # Limit 1000
     BROADCAST_TX_TEST = [BitpayAPI.broadcast_test_tx,
-                         BlockrAPI.broadcast_test_tx,
-                         SmartbitAPI.broadcast_test_tx]
+                         SmartbitAPI.broadcast_test_tx,
+                         BlockrAPI.broadcast_test_tx]
 
     @classmethod
     def get_balance(cls, address):
@@ -394,25 +394,39 @@ class NetworkApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def broadcast_tx(cls, tx_hex):
+    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        success = None
 
         for api_call in cls.BROADCAST_TX_MAIN:
             try:
-                api_call(tx_hex)
+                success = api_call(tx_hex)
+                if not success:
+                    continue
                 return
             except cls.IGNORED_ERRORS:
                 pass
+
+        if success is False:
+            raise ConnectionError('Transaction broadcast failed, or '
+                                  'Unspents were already used.')
 
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):
+    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+        success = None
 
         for api_call in cls.BROADCAST_TX_TEST:
             try:
-                api_call(tx_hex)
+                success = api_call(tx_hex)
+                if not success:
+                    continue
                 return
             except cls.IGNORED_ERRORS:
                 pass
+
+        if success is False:
+            raise ConnectionError('Transaction broadcast failed, or '
+                                  'Unspents were already used.')
 
         raise ConnectionError('All APIs are unreachable.')

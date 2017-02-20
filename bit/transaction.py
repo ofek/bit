@@ -4,7 +4,7 @@ from itertools import islice
 from bit.crypto import double_sha256, sha256
 from bit.exceptions import InsufficientFunds
 from bit.format import address_to_public_key_hash
-from bit.network import currency_to_satoshi
+from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
     bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes
 )
@@ -22,37 +22,7 @@ OP_HASH160 = b'\xa9'
 OP_PUSH_20 = b'\x14'
 OP_RETURN = b'\x6a'
 
-TX_TRUST_LOW = 1
-TX_TRUST_MEDIUM = 6
-TX_TRUST_HIGH = 30
 MESSAGE_LIMIT = 40
-
-
-class Unspent:
-    __slots__ = ('amount', 'confirmations', 'script', 'txid', 'txindex')
-
-    def __init__(self, amount, confirmations, script, txid, txindex):
-        self.amount = amount
-        self.confirmations = confirmations
-        self.script = script
-        self.txid = txid
-        self.txindex = txindex
-
-    def __eq__(self, other):
-        return (self.amount == other.amount and
-                self.confirmations == other.confirmations and
-                self.script == other.script and
-                self.txid == other.txid and
-                self.txindex == other.txindex)
-
-    def __repr__(self):
-        return 'Unspent(amount={}, confirmations={}, script={}, txid={}, txindex={})'.format(
-            repr(self.amount),
-            repr(self.confirmations),
-            repr(self.script),
-            repr(self.txid),
-            repr(self.txindex)
-        )
 
 
 class TxIn:
@@ -79,7 +49,7 @@ class TxIn:
         )
 
 
-Output = namedtuple('Output', ('address', 'amount'))
+Output = namedtuple('Output', ('address', 'amount', 'currency'))
 
 
 def calc_txid(tx_hex):
@@ -109,7 +79,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
     for i, output in enumerate(outputs):
         dest, amount, currency = output
-        outputs[i] = (dest, currency_to_satoshi(amount, currency))
+        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
 
     if not unspents:
         raise ValueError('Transactions must have at least one unspent.')

@@ -1,3 +1,5 @@
+# import time
+#
 # import pytest
 #
 # from bit.crypto import ECDSA_SHA256, EllipticCurvePrivateKey
@@ -85,6 +87,10 @@
 #     def test_from_int(self):
 #         assert BaseKey.from_int(PRIVATE_KEY_NUM).to_int() == PRIVATE_KEY_NUM
 #
+#     def test_is_compressed(self):
+#         assert BaseKey(WALLET_FORMAT_COMPRESSED_MAIN).is_compressed() is True
+#         assert BaseKey(WALLET_FORMAT_MAIN).is_compressed() is False
+#
 #
 # class TestPrivateKey:
 #     def test_alias(self):
@@ -94,16 +100,13 @@
 #         private_key = PrivateKey()
 #
 #         assert private_key._address is None
-#         assert private_key._balance is None
-#         assert private_key._unspents == []
-#         assert private_key._transactions == []
-#
-#     def test_init_sync(self):
-#         private_key = PrivateKey(WALLET_FORMAT_MAIN, sync=True)
-#         assert len(private_key.transactions()) > 0
+#         assert private_key.balance is None
+#         assert private_key.unspents == []
+#         assert private_key.transactions == []
 #
 #     def test_address(self):
 #         private_key = PrivateKey(WALLET_FORMAT_MAIN)
+#         assert private_key.address == BITCOIN_ADDRESS
 #         assert private_key.address == BITCOIN_ADDRESS
 #
 #     def test_to_wif(self):
@@ -116,22 +119,17 @@
 #     def test_get_balance(self):
 #         private_key = PrivateKey(WALLET_FORMAT_MAIN)
 #         balance = private_key.get_balance()
-#         assert balance == private_key.balance()
+#         assert balance == private_key.balance
 #
 #     def test_get_unspent(self):
 #         private_key = PrivateKey(WALLET_FORMAT_MAIN)
 #         unspent = private_key.get_unspents()
-#         assert unspent == private_key.unspents()
+#         assert unspent == private_key.unspents
 #
 #     def test_get_transactions(self):
 #         private_key = PrivateKey(WALLET_FORMAT_MAIN)
 #         transactions = private_key.get_transactions()
-#         assert transactions == private_key.transactions()
-#
-#     def test_sync(self):
-#         private_key = PrivateKey(WALLET_FORMAT_MAIN)
-#         private_key.sync()
-#         assert len(private_key.transactions()) > 0
+#         assert transactions == private_key.transactions
 #
 #     def test_repr(self):
 #         assert repr(PrivateKey(WALLET_FORMAT_MAIN)) == '<PrivateKey: 1ELReFsTCUY2mfaDTy32qxYiT49z786eFg>'
@@ -142,16 +140,13 @@
 #         private_key = PrivateKeyTestnet()
 #
 #         assert private_key._address is None
-#         assert private_key._balance is None
-#         assert private_key._unspents == []
-#         assert private_key._transactions == []
-#
-#     def test_init_sync(self):
-#         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST, sync=True)
-#         assert len(private_key.transactions()) > 0
+#         assert private_key.balance is None
+#         assert private_key.unspents == []
+#         assert private_key.transactions == []
 #
 #     def test_address(self):
 #         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
+#         assert private_key.address == BITCOIN_ADDRESS_TEST
 #         assert private_key.address == BITCOIN_ADDRESS_TEST
 #
 #     def test_to_wif(self):
@@ -164,22 +159,25 @@
 #     def test_get_balance(self):
 #         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
 #         balance = private_key.get_balance()
-#         assert balance == private_key.balance()
+#         assert balance == private_key.balance
 #
 #     def test_get_unspent(self):
 #         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
 #         unspent = private_key.get_unspents()
-#         assert unspent == private_key.unspents()
+#         assert unspent == private_key.unspents
 #
 #     def test_get_transactions(self):
 #         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
 #         transactions = private_key.get_transactions()
-#         assert transactions == private_key.transactions()
+#         assert transactions == private_key.transactions
 #
-#     def test_sync(self):
-#         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
-#         private_key.sync()
-#         assert len(private_key.transactions()) > 0
+#     def test_send(self):
+#         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+#         private_key.get_unspents()
+#         initial = len(private_key.get_transactions())
+#         private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+#         time.sleep(10)
+#         assert len(private_key.get_transactions()) > initial
 #
 #     def test_repr(self):
 #         assert repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN)) == '<PrivateKeyTestnet: mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS>'

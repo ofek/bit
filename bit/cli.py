@@ -1,7 +1,10 @@
 import click
 import pyperclip
-from bit.network import currency_to_satoshi, get_fee
-from bit.transaction import calc_txid
+import time
+from bit.transaction import (
+    TxIn, calc_txid, create_p2pkh_transaction, construct_input_block,
+    construct_output_block, estimate_tx_fee, sanitize_tx_data
+)
 from bit.keygen import generate_matching_address, generate_private_key
 from bit.wallet import Key, PrivateKeyTestnet
 MAIN_ADDRESS_USED1 = '1L2JsXHPMYuAa9ugvHGLwkdstCPUDemNCf'
@@ -17,9 +20,11 @@ def bit():
     k=PrivateKeyTestnet('cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ')
     print(k.get_balance())
     print(k.get_unspents())
-    tx=k.create_transaction([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+    print(len(k.get_transactions()))
+    tx=k.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
     pyperclip.copy(tx)
-    print(calc_txid(tx))
+    time.sleep(10)
+    print(len(k.get_transactions()))
 
 
 @bit.command()

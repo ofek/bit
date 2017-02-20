@@ -99,17 +99,14 @@ class BaseKey:
 
 
 class PrivateKey(BaseKey):
-    def __init__(self, wif=None, sync=False):
+    def __init__(self, wif=None):
         super().__init__(wif=wif)
 
         self._address = None
 
-        self._balance = None
-        self._unspents = []
-        self._transactions = []
-
-        if sync:
-            self.sync()
+        self.balance = None
+        self.unspents = []
+        self.transactions = []
 
     @property
     def address(self):
@@ -125,36 +122,37 @@ class PrivateKey(BaseKey):
         )
 
     def get_balance(self):
-        self._balance = NetworkApi.get_balance(self.address)
-        return self._balance
+        balance = 0
+        for unspent in self.get_unspents():
+            balance += unspent.amount
+        balance = self.balance
+        return balance
 
     def get_unspents(self):
-        self._unspents[:] = NetworkApi.get_unspent(self.address)
-        return self._unspents.copy()
+        self.unspents[:] = NetworkApi.get_unspent(self.address)
+        return self.unspents
 
     def get_transactions(self):
-        self._transactions[:] = NetworkApi.get_transactions(self.address)
-        return self._transactions.copy()
+        self.transactions[:] = NetworkApi.get_transactions(self.address)
+        return self.transactions
 
-    def sync(self):
-        self._balance = NetworkApi.get_balance(self.address)
-        self._unspents[:] = NetworkApi.get_unspent(self.address)
-        self._transactions[:] = NetworkApi.get_transactions(self.address)
-
-    def create_transaction(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
+    def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
+                           message=None, unspents=None):  # pragma: no cover
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents(),
+            unspents or self.unspents,
             outputs,
             fee or get_fee_cached(),
             leftover or self.address,
             combine=combine,
-            message=message
+            message=message,
+            compressed=self.is_compressed()
         )
 
         return create_p2pkh_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
+    def send(self, outputs, fee=None, leftover=None, combine=True,
+             message=None, unspents=None):  # pragma: no cover
 
         tx_hex = self.create_transaction(
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
@@ -164,31 +162,19 @@ class PrivateKey(BaseKey):
 
         return calc_txid(tx_hex)
 
-    def balance(self):
-        return self._balance
-
-    def unspents(self):
-        return self._unspents.copy()
-
-    def transactions(self):
-        return self._transactions.copy()
-
     def __repr__(self):
         return '<PrivateKey: {}>'.format(self.address)
 
 
 class PrivateKeyTestnet(BaseKey):
-    def __init__(self, wif=None, sync=False):
+    def __init__(self, wif=None):
         super().__init__(wif=wif)
 
         self._address = None
 
-        self._balance = None
-        self._unspents = []
-        self._transactions = []
-
-        if sync:
-            self.sync()
+        self.balance = None
+        self.unspents = []
+        self.transactions = []
 
     @property
     def address(self):
@@ -204,26 +190,24 @@ class PrivateKeyTestnet(BaseKey):
         )
 
     def get_balance(self):
-        self._balance = NetworkApi.get_test_balance(self.address)
-        return self._balance
+        balance = 0
+        for unspent in self.get_unspents():
+            balance += unspent.amount
+        balance = self.balance
+        return balance
 
     def get_unspents(self):
-        self._unspents[:] = NetworkApi.get_test_unspent(self.address)
-        return self._unspents.copy()
+        self.unspents[:] = NetworkApi.get_test_unspent(self.address)
+        return self.unspents
 
     def get_transactions(self):
-        self._transactions[:] = NetworkApi.get_test_transactions(self.address)
-        return self._transactions.copy()
-
-    def sync(self):
-        self._balance = NetworkApi.get_test_balance(self.address)
-        self._unspents[:] = NetworkApi.get_test_unspent(self.address)
-        self._transactions[:] = NetworkApi.get_test_transactions(self.address)
+        self.transactions[:] = NetworkApi.get_test_transactions(self.address)
+        return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents(),
+            unspents or self.unspents,
             outputs,
             fee or get_fee_cached(),
             leftover or self.address,
@@ -243,15 +227,6 @@ class PrivateKeyTestnet(BaseKey):
         NetworkApi.broadcast_test_tx(tx_hex)
 
         return calc_txid(tx_hex)
-
-    def balance(self):
-        return self._balance
-
-    def unspents(self):
-        return self._unspents.copy()
-
-    def transactions(self):
-        return self._transactions.copy()
 
     def __repr__(self):
         return '<PrivateKeyTestnet: {}>'.format(self.address)

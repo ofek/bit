@@ -9,32 +9,38 @@
 #
 # class TestFeeCache:
 #     def test_fast(self):
+#         sleep(0.2)
+#
 #         start_time = time()
-#         get_fee_cached(fast=True)
+#         get_fee_cached(fast=True, expires=0)
 #         initial_time = time() - start_time
 #
 #         start_time = time()
-#         get_fee_cached(fast=True)
+#         get_fee_cached(fast=True, expires=600)
 #         cached_time = time() - start_time
 #
 #         assert initial_time > cached_time
 #
 #     def test_hour(self):
+#         sleep(0.2)
+#
 #         start_time = time()
-#         get_fee_cached(fast=False)
+#         get_fee_cached(fast=False, expires=0)
 #         initial_time = time() - start_time
 #
 #         start_time = time()
-#         get_fee_cached(fast=False)
+#         get_fee_cached(fast=False, expires=600)
 #         cached_time = time() - start_time
 #
 #         assert initial_time > cached_time
 #
 #     def test_expires(self):
-#         get_fee_cached()
+#         sleep(0.2)
+#
+#         get_fee_cached(fast=False, expires=0)
 #
 #         start_time = time()
-#         get_fee_cached()
+#         get_fee_cached(fast=False, expires=600)
 #         cached_time = time() - start_time
 #
 #         sleep(0.2)

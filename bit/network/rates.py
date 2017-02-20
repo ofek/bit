@@ -1,8 +1,12 @@
 from collections import OrderedDict
+from functools import wraps
+from time import time
 
 import requests
 
 from bit.utils import Decimal
+
+DEFAULT_CACHE_TIME = 60
 
 # Constant for use in deriving exchange
 # rates when given in terms of 1 BTC.
@@ -68,87 +72,87 @@ class BitpayRates:
         return int(ONE / Decimal(rate) * BTC)
 
     @classmethod
-    def usd_to_satoshi(cls):
+    def usd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('usd')
 
     @classmethod
-    def eur_to_satoshi(cls):
+    def eur_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('eur')
 
     @classmethod
-    def gbp_to_satoshi(cls):
+    def gbp_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('gbp')
 
     @classmethod
-    def jpy_to_satoshi(cls):
+    def jpy_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('jpy')
 
     @classmethod
-    def cny_to_satoshi(cls):
+    def cny_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('cny')
 
     @classmethod
-    def hkd_to_satoshi(cls):
+    def hkd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('hkd')
 
     @classmethod
-    def cad_to_satoshi(cls):
+    def cad_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('cad')
 
     @classmethod
-    def aud_to_satoshi(cls):
+    def aud_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('aud')
 
     @classmethod
-    def nzd_to_satoshi(cls):
+    def nzd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('nzd')
 
     @classmethod
-    def rub_to_satoshi(cls):
+    def rub_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('rub')
 
     @classmethod
-    def brl_to_satoshi(cls):
+    def brl_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('brl')
 
     @classmethod
-    def chf_to_satoshi(cls):
+    def chf_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('chf')
 
     @classmethod
-    def sek_to_satoshi(cls):
+    def sek_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('sek')
 
     @classmethod
-    def dkk_to_satoshi(cls):
+    def dkk_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('dkk')
 
     @classmethod
-    def isk_to_satoshi(cls):
+    def isk_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('isk')
 
     @classmethod
-    def pln_to_satoshi(cls):
+    def pln_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('pln')
 
     @classmethod
-    def krw_to_satoshi(cls):
+    def krw_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('krw')
 
     @classmethod
-    def clp_to_satoshi(cls):
+    def clp_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('clp')
 
     @classmethod
-    def sgd_to_satoshi(cls):
+    def sgd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('sgd')
 
     @classmethod
-    def thb_to_satoshi(cls):
+    def thb_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('thb')
 
     @classmethod
-    def twd_to_satoshi(cls):
+    def twd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('twd')
 
 
@@ -161,87 +165,87 @@ class BlockchainRates:
         return int(Decimal(rate) * BTC)
 
     @classmethod
-    def usd_to_satoshi(cls):
+    def usd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('USD')
 
     @classmethod
-    def eur_to_satoshi(cls):
+    def eur_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('EUR')
 
     @classmethod
-    def gbp_to_satoshi(cls):
+    def gbp_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('GBP')
 
     @classmethod
-    def jpy_to_satoshi(cls):
+    def jpy_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('JPY')
 
     @classmethod
-    def cny_to_satoshi(cls):
+    def cny_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('CNY')
 
     @classmethod
-    def hkd_to_satoshi(cls):
+    def hkd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('HKD')
 
     @classmethod
-    def cad_to_satoshi(cls):
+    def cad_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('CAD')
 
     @classmethod
-    def aud_to_satoshi(cls):
+    def aud_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('AUD')
 
     @classmethod
-    def nzd_to_satoshi(cls):
+    def nzd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('NZD')
 
     @classmethod
-    def rub_to_satoshi(cls):
+    def rub_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('RUB')
 
     @classmethod
-    def brl_to_satoshi(cls):
+    def brl_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('BRL')
 
     @classmethod
-    def chf_to_satoshi(cls):
+    def chf_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('CHF')
 
     @classmethod
-    def sek_to_satoshi(cls):
+    def sek_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('SEK')
 
     @classmethod
-    def dkk_to_satoshi(cls):
+    def dkk_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('DKK')
 
     @classmethod
-    def isk_to_satoshi(cls):
+    def isk_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('ISK')
 
     @classmethod
-    def pln_to_satoshi(cls):
+    def pln_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('PLN')
 
     @classmethod
-    def krw_to_satoshi(cls):
+    def krw_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('KRW')
 
     @classmethod
-    def clp_to_satoshi(cls):
+    def clp_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('CLP')
 
     @classmethod
-    def sgd_to_satoshi(cls):
+    def sgd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('SGD')
 
     @classmethod
-    def thb_to_satoshi(cls):
+    def thb_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('THB')
 
     @classmethod
-    def twd_to_satoshi(cls):
+    def twd_to_satoshi(cls):  # pragma: no cover
         return cls.currency_to_satoshi('TWD')
 
 
@@ -272,7 +276,7 @@ class RatesApi:
     TWD_RATES = [BitpayRates.twd_to_satoshi, BlockchainRates.twd_to_satoshi]
 
     @classmethod
-    def usd_to_satoshi(cls):
+    def usd_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.USD_RATES:
             try:
@@ -283,7 +287,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def eur_to_satoshi(cls):
+    def eur_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.EUR_RATES:
             try:
@@ -294,7 +298,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def gbp_to_satoshi(cls):
+    def gbp_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.GBP_RATES:
             try:
@@ -305,7 +309,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def jpy_to_satoshi(cls):
+    def jpy_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.JPY_RATES:
             try:
@@ -316,7 +320,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def cny_to_satoshi(cls):
+    def cny_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.CNY_RATES:
             try:
@@ -327,7 +331,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def hkd_to_satoshi(cls):
+    def hkd_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.HKD_RATES:
             try:
@@ -338,7 +342,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def cad_to_satoshi(cls):
+    def cad_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.CAD_RATES:
             try:
@@ -349,7 +353,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def aud_to_satoshi(cls):
+    def aud_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.AUD_RATES:
             try:
@@ -360,7 +364,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def nzd_to_satoshi(cls):
+    def nzd_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.NZD_RATES:
             try:
@@ -371,7 +375,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def rub_to_satoshi(cls):
+    def rub_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.RUB_RATES:
             try:
@@ -382,7 +386,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def brl_to_satoshi(cls):
+    def brl_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.BRL_RATES:
             try:
@@ -393,7 +397,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def chf_to_satoshi(cls):
+    def chf_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.CHF_RATES:
             try:
@@ -404,7 +408,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def sek_to_satoshi(cls):
+    def sek_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.SEK_RATES:
             try:
@@ -415,7 +419,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def dkk_to_satoshi(cls):
+    def dkk_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.DKK_RATES:
             try:
@@ -426,7 +430,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def isk_to_satoshi(cls):
+    def isk_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.ISK_RATES:
             try:
@@ -437,7 +441,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def pln_to_satoshi(cls):
+    def pln_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.PLN_RATES:
             try:
@@ -448,7 +452,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def krw_to_satoshi(cls):
+    def krw_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.KRW_RATES:
             try:
@@ -459,7 +463,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def clp_to_satoshi(cls):
+    def clp_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.CLP_RATES:
             try:
@@ -470,7 +474,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def sgd_to_satoshi(cls):
+    def sgd_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.SGD_RATES:
             try:
@@ -481,7 +485,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def thb_to_satoshi(cls):
+    def thb_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.THB_RATES:
             try:
@@ -492,7 +496,7 @@ class RatesApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def twd_to_satoshi(cls):
+    def twd_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.TWD_RATES:
             try:
@@ -535,3 +539,43 @@ EXCHANGE_RATES = {
 def currency_to_satoshi(amount, currency):
     satoshis = EXCHANGE_RATES[currency]()
     return int(satoshis * Decimal(amount))
+
+
+class CachedRate:
+    __slots__ = ('satoshis', 'last_update')
+
+    def __init__(self, satoshis, last_update):
+        self.satoshis = satoshis
+        self.last_update = last_update
+
+
+def currency_to_satoshi_cache(f):
+    expiry_time = DEFAULT_CACHE_TIME
+    now = time()
+
+    cached_rates = dict([
+        (currency, CachedRate(None, now)) for currency in EXCHANGE_RATES.keys()
+    ])
+
+    @wraps(f)
+    def wrapper(amount, currency, expires=None):
+        now = time()
+
+        if expires is not None:
+            nonlocal expiry_time
+            expiry_time = expires
+
+        cached_rate = cached_rates[currency]
+
+        if not cached_rate.satoshis or now - cached_rate.last_update > expiry_time:
+            cached_rate.satoshis = EXCHANGE_RATES[currency]()
+            cached_rate.last_update = now
+
+        return int(cached_rate.satoshis * Decimal(amount))
+
+    return wrapper
+
+
+@currency_to_satoshi_cache
+def currency_to_satoshi_cached():  # pragma: no cover
+    pass  # pragma: no cover
