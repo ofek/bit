@@ -38,7 +38,7 @@ setup(
 
     install_requires=('cryptography>=1.6', 'requests'),
     extras_require={
-        'cli': ('click', 'privy', 'tinydb'),
+        'cli': ('appdirs', 'click', 'privy', 'tinydb'),
         'cache': ('lmdb', ),
     },
     tests_require=['pytest'],
