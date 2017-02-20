@@ -16,6 +16,7 @@ setup(
     keywords=(
         'bitcoin',
         'cryptocurrency',
+        'payments',
         'tools',
         'wallet',
     ),
@@ -35,13 +36,17 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy'
     ),
 
-    install_requires=['click', 'cryptography>=1.6', 'requests'],
+    install_requires=('cryptography>=1.6', 'requests'),
+    extras_require={
+        'cli': ('click', 'privy', 'tinydb'),
+        'cache': ('lmdb', ),
+    },
     tests_require=['pytest'],
 
     packages=find_packages(),
     entry_points={
-        'console_scripts': [
+        'console_scripts': (
             'bit = bit.cli:bit',
-        ],
+        ),
     },
 )
