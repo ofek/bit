@@ -1,9 +1,0 @@
-*.log
-*.pyc
-/.cache
-/.idea
-/.coverage
-/bit.egg-info
-/build
-/dist
-/wheelhouse
