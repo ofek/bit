@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Ideas from https://github.com/steveklabnik/automatically_update_github_pages_with_travis_example
+
 set -o errexit -o nounset
 
 if [ "$TRAVIS_REPO_SLUG" != "ofek/bit" ] || [ "$TRAVIS_PULL_REQUEST" != "false" ] || [ "$TRAVIS_BRANCH" != "master" ]
@@ -30,3 +32,5 @@ touch .
 git add -A .
 git commit -m "rebuild pages at ${rev}"
 git push -q upstream HEAD:gh-pages
+
+echo "Published to gh-pages branch."
