@@ -1,1 +1,1 @@
-Search.setIndex({docnames:["index"],envversion:51,filenames:["index.rst"],objects:{},objnames:{},objtypes:{},terms:{index:0,modul:0,page:0,search:0},titles:["Welcome to Bit&#8217;s documentation!"],titleterms:{bit:0,document:0,indic:0,tabl:0,welcom:0}})
+Search.setIndex({docnames:["index"],envversion:51,filenames:["index.rst"],objects:{},objnames:{},objtypes:{},terms:{api:0,compliant:0,extrem:0,fast:0,index:0,librari:0,modul:0,page:0,search:0,use:0},titles:["Bit: Bitcoin made easy."],titleterms:{bit:0,bitcoin:0,easi:0,indic:0,made:0,tabl:0}})
