@@ -2,8 +2,10 @@
 #
 # from bit.network.rates import (
 #     RatesApi, btc_to_satoshi, currency_to_satoshi, currency_to_satoshi_cached,
-#     mbtc_to_satoshi, satoshi_to_satoshi, ubtc_to_satoshi
+#     mbtc_to_satoshi, satoshi_to_currency, satoshi_to_currency_cached,
+#     satoshi_to_satoshi, ubtc_to_satoshi
 # )
+# from bit.utils import Decimal
 #
 #
 # def test_satoshi_to_satoshi():
@@ -32,6 +34,18 @@
 #
 # def test_currency_to_satoshi():
 #     assert currency_to_satoshi(1, 'usd') > currency_to_satoshi(1, 'jpy')
+#
+#
+# class TestSatoshiToCurrency:
+#     def test_no_exponent(self):
+#         assert satoshi_to_currency(1, 'btc') == '0.00000001'
+#
+#     def test_zero_places(self):
+#         assert Decimal(satoshi_to_currency(100000, 'jpy')).as_tuple().exponent == 0
+#
+#
+# def test_satoshi_to_currency_cached():
+#     assert satoshi_to_currency_cached(1, 'ubtc') == '0.01'
 #
 #
 # def test_rates_close():

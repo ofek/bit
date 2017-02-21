@@ -9,7 +9,7 @@ from bit.format import (
     public_key_to_address, wif_to_private_key_hex
 )
 from bit.keygen import derive_private_key, generate_private_key
-from bit.network import NetworkApi, get_fee_cached
+from bit.network import NetworkApi, get_fee_cached, satoshi_to_currency_cached
 from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 from bit.utils import hex_to_int, int_to_hex
 
@@ -121,12 +121,12 @@ class PrivateKey(BaseKey):
             compressed=True if len(self._public_key) == 33 else False
         )
 
-    def get_balance(self):
+    def get_balance(self, currency='satoshi'):
         balance = 0
         for unspent in self.get_unspents():
             balance += unspent.amount
-        balance = self.balance
-        return balance
+        self.balance = balance
+        return satoshi_to_currency_cached(balance, currency)
 
     def get_unspents(self):
         self.unspents[:] = NetworkApi.get_unspent(self.address)
@@ -189,12 +189,12 @@ class PrivateKeyTestnet(BaseKey):
             compressed=True if len(self._public_key) == 33 else False
         )
 
-    def get_balance(self):
+    def get_balance(self, currency='satoshi'):
         balance = 0
         for unspent in self.get_unspents():
             balance += unspent.amount
-        balance = self.balance
-        return balance
+        self.balance = balance
+        return satoshi_to_currency_cached(balance, currency)
 
     def get_unspents(self):
         self.unspents[:] = NetworkApi.get_test_unspent(self.address)

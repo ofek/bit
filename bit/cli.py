@@ -1,11 +1,12 @@
 import click
 
 from bit.keygen import generate_matching_address
+from bit.network import satoshi_to_currency, satoshi_to_currency_cached
 
 
 @click.group(invoke_without_command=True)
 def bit():
-    pass
+    print(satoshi_to_currency(100000, 'jpy'))
 
 
 @bit.command()

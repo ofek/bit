@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from decimal import ROUND_DOWN
 from functools import wraps
 from time import time
 
@@ -45,6 +46,35 @@ SUPPORTED_CURRENCIES = OrderedDict([
     ('twd', 'New Taiwan Dollar'),
     ('clp', 'Chilean Peso')
 ])
+
+# http://apps.cybersource.com/library/documentation/sbc/quickref/currencies.pdf
+CURRENCY_PRECISION = {
+    'satoshi': 0,
+    'ubtc': 2,
+    'mbtc': 5,
+    'btc': 8,
+    'usd': 2,
+    'eur': 2,
+    'gbp': 2,
+    'jpy': 0,
+    'cny': 2,
+    'cad': 2,
+    'aud': 2,
+    'nzd': 2,
+    'rub': 2,
+    'brl': 2,
+    'chf': 2,
+    'sek': 2,
+    'dkk': 2,
+    'isk': 2,
+    'pln': 2,
+    'hkd': 2,
+    'krw': 0,
+    'sgd': 2,
+    'thb': 2,
+    'twd': 2,
+    'clp': 0
+}
 
 
 def satoshi_to_satoshi():
@@ -551,10 +581,10 @@ class CachedRate:
 
 def currency_to_satoshi_cache(f):
     expiry_time = DEFAULT_CACHE_TIME
-    now = time()
+    start_time = time()
 
     cached_rates = dict([
-        (currency, CachedRate(None, now)) for currency in EXCHANGE_RATES.keys()
+        (currency, CachedRate(None, start_time)) for currency in EXCHANGE_RATES.keys()
     ])
 
     @wraps(f)
@@ -577,5 +607,27 @@ def currency_to_satoshi_cache(f):
 
 
 @currency_to_satoshi_cache
-def currency_to_satoshi_cached():  # pragma: no cover
+def currency_to_satoshi_cached():
     pass  # pragma: no cover
+
+
+def satoshi_to_currency(amount, currency):
+    return '{:f}'.format(
+        Decimal(
+            amount / Decimal(EXCHANGE_RATES[currency]())
+        ).quantize(
+            Decimal('0.' + '0' * CURRENCY_PRECISION[currency]),
+            rounding=ROUND_DOWN
+        ).normalize()
+    )
+
+
+def satoshi_to_currency_cached(amount, currency):
+    return '{:f}'.format(
+        Decimal(
+            amount / Decimal(currency_to_satoshi_cached(1, currency))
+        ).quantize(
+            Decimal('0.' + '0' * CURRENCY_PRECISION[currency]),
+            rounding=ROUND_DOWN
+        ).normalize()
+    )
