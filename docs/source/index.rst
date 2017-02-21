@@ -20,6 +20,8 @@ Bit: Bitcoin made easy.
 
 Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.
 
+So easy in fact, you can do this:
+
 
 .. toctree::
    :maxdepth: 2
