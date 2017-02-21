@@ -51,6 +51,28 @@
 <hr class="docutils" />
 <p>Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.</p>
 <p>So easy in fact, you can do this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="s1">&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;usd&#39;</span><span class="p">)</span>
+<span class="go">11.97</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wikileaks</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v&#39;</span><span class="p">,</span> <span class="o">.</span><span class="mo">004</span><span class="p">,</span> <span class="s1">&#39;btc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">internet_archive</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;1Archive1n2C579dMsAu3iC6tWzuQJz8dN&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">the_pirate_bay</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;129TQVAroeehD9fZpzK51NdZGQT4TqifbG&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;eur&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xkcd</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr&#39;</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;cad&#39;</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">wikileaks</span><span class="p">,</span>
+<span class="go">        internet_archive,</span>
+<span class="go">        the_pirate_bay,</span>
+<span class="go">        xkcd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_key</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+<span class="go">TODO</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </div>
