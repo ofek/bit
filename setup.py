@@ -1,8 +1,14 @@
 from setuptools import find_packages, setup
 
+with open('bit/__init__.py', 'r') as f:
+    for line in f:
+        if line.startswith('__version__'):
+            version = line.strip().split('= ')[1].strip("'")
+            break
+
 setup(
     name='bit',
-    version='0.1.0',
+    version=version,
     description='Bitcoin made easy.',
     long_description=open('README.rst', 'r').read(),
     author='Ofek Lev',
