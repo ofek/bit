@@ -20,7 +20,7 @@ echo "Building docs..."
 
 rev=$(git rev-parse --short HEAD)
 
-pip install -e .
+pip install .
 
 cd docs
 make clean
