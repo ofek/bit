@@ -8,6 +8,8 @@ then
   exit 0
 fi
 
+echo "Building docs..."
+
 rev=$(git rev-parse --short HEAD)
 
 cd docs
