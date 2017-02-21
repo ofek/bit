@@ -30,4 +30,5 @@ script: "tox -- -rs"
 
 after_success:
   - codecov
+  - chmod a+x ./.travis/deploy_docs.sh
   - ./.travis/deploy_docs.sh
