@@ -15,7 +15,7 @@ rev=$(git rev-parse --short HEAD)
 cd docs
 make clean
 make html
-cd build\html
+cd build/html
 
 git init
 git config user.name "Ofek Lev"
