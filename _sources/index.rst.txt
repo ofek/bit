@@ -1,7 +1,7 @@
 Bit: Bitcoin made easy.
 =======================
 
-Release v\ |version|.
+Version |version|.
 
 .. image:: https://img.shields.io/pypi/v/bit.svg?style=flat-square
     :target: https://pypi.org/project/bit
