@@ -22,7 +22,7 @@ Version |version|.
 
 Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.
 
-So easy in fact, you can do this:
+**So easy in fact, you can do this:**
 
 .. code-block:: python
 
@@ -30,32 +30,35 @@ So easy in fact, you can do this:
     >>>
     >>> my_key = Key(...)
     >>> my_key.get_balance('usd')
-    11.97
+    '11.97'
     >>>
-    >>> wikileaks = ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', .004, 'btc')
-    >>> internet_archive = ('1Archive1n2C579dMsAu3iC6tWzuQJz8dN', 190, 'jpy')
-    >>> the_pirate_bay = ('129TQVAroeehD9fZpzK51NdZGQT4TqifbG', 3, 'eur')
-    >>> xkcd = ('14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr', 2.5, 'cad')
-    >>>
+    >>> # Let's donate!
     >>> outputs = [
-    >>>     wikileaks,
-            internet_archive,
-            the_pirate_bay,
-            xkcd
+    >>>     # Wikileaks
+    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', .004, 'btc'),
+    >>>     # Internet Archive
+    >>>     ('1Archive1n2C579dMsAu3iC6tWzuQJz8dN', 190, 'jpy'),
+    >>>     # The Pirate Bay
+    >>>     ('129TQVAroeehD9fZpzK51NdZGQT4TqifbG', 3, 'eur'),
+    >>>     # xkcd
+    >>>     ('14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr', 2.5, 'cad')
     >>> ]
     >>>
     >>> my_key.send(outputs)
     TODO
 
+Features
+--------
+
+- Multiple representations of private keys; WIF, PEM, DER, etc.
+- Compressed public keys by default
+- Fully supports 25 different currencies
+- Standard P2PKH transactions
+- First class support for storing data in the blockchain
+- Access to the blockchain through multiple APIs for redundancy
+- Exchange rate API, with optional caching
+- Optimal transaction fee API, with optional caching
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
