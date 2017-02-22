@@ -59,6 +59,9 @@ Features
 - Exchange rate API, with optional caching
 - Optimal transaction fee API, with optional caching
 
+Guide
+-----
+
 .. toctree::
    :maxdepth: 2
 
