@@ -61,4 +61,6 @@ Features
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+
+   guide/intro
+   guide/install
