@@ -62,6 +62,10 @@ Features
 Guide
 -----
 
+This section will tell you a little about the project, show how to install it,
+and will then walk you through how to use Bit with many examples and explanations
+of best practices.
+
 .. toctree::
    :maxdepth: 2
 
