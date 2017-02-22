@@ -20,6 +20,7 @@ echo "Building docs..."
 
 rev=$(git rev-parse --short HEAD)
 
+pip install sphinxcontrib-fulltoc
 pip install .
 
 cd docs
