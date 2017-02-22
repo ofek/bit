@@ -28,7 +28,7 @@ So easy in fact, you can do this:
 
     >>> from bit import Key
     >>>
-    >>> my_key = Key('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv')
+    >>> my_key = Key(...)
     >>> my_key.get_balance('usd')
     11.97
     >>>
