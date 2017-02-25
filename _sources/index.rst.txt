@@ -23,7 +23,7 @@ Version |version|.
 Bit is Python's fastest Bitcoin library and was designed from the beginning to
 feel intuitive, be effortless to use, and have readable source code.
 
-**Bit is so easy to use in fact, you can do this:**
+**Bit is so easy to use, in fact, you can do this:**
 
 .. code-block:: python
 
