@@ -8,7 +8,7 @@ Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.
 Why Bit?
 --------
 
-- Robust API with sane defaults, making developing a breeze
+- Robust API with sane defaults, making development a breeze
 - Python's fastest available implementation (thanks to OpenSSL :)
 - Compliant to all presently implemented Bitcoin Improvement Protocols
 - All commits require 100% test coverage
