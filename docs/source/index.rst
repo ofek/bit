@@ -50,11 +50,11 @@ Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.
 Features
 --------
 
-- Multiple representations of private keys; WIF, PEM, DER, etc.
-- Compressed public keys by default
 - Fully supports 25 different currencies
-- Standard P2PKH transactions
 - First class support for storing data in the blockchain
+- Compressed public keys by default
+- Multiple representations of private keys; WIF, PEM, DER, etc.
+- Standard P2PKH transactions
 - Access to the blockchain through multiple APIs for redundancy
 - Exchange rate API, with optional caching
 - Optimal transaction fee API, with optional caching
