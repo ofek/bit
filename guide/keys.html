@@ -86,7 +86,7 @@ will also be different.</p>
 <div class="section" id="public-point">
 <h2>Public Point<a class="headerlink" href="#public-point" title="Permalink to this headline">¶</a></h2>
 <p>Each unique value applied to the curve will yield a unique point. As this
-in a one-way function, there is no known way to derive the private value
+is a one-way function, there is no known way to derive the private value
 from the point.</p>
 <p>You can see it like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_point</span><span class="p">()</span>
@@ -124,7 +124,8 @@ derive your address and is needed in the construction of every transaction.</p>
 <p>The <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format">wallet import format</a> is the primary way of representing private keys. This
 format stores the secret value as well as some metadata such as whether or not it
 should compress the public key.</p>
-<p>It can be used to import a private key directly in the initializer:</p>
+<p>To import a private key you can pass a key in wallet import format directly to
+the initializer:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="s1">&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1ExJJsNLQDNVVM1s1sdyt1o5P3GC5r32UG&#39;</span>

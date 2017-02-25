@@ -54,7 +54,7 @@ Public Point
 ------------
 
 Each unique value applied to the curve will yield a unique point. As this
-in a one-way function, there is no known way to derive the private value
+is a one-way function, there is no known way to derive the private value
 from the point.
 
 You can see it like this:
@@ -105,7 +105,8 @@ The `wallet import format`_ is the primary way of representing private keys. Thi
 format stores the secret value as well as some metadata such as whether or not it
 should compress the public key.
 
-It can be used to import a private key directly in the initializer:
+To import a private key you can pass a key in wallet import format directly to
+the initializer:
 
 .. code-block:: python
 
