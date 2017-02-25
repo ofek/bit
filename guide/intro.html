@@ -48,6 +48,12 @@
 <p>Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.</p>
 <div class="section" id="why-bit">
 <h2>Why Bit?<a class="headerlink" href="#why-bit" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Python&#8217;s fastest available implementation (hard to beat OpenSSL :)</li>
+<li>Compliant to all presently implemented Bitcoin Improvement Protocols</li>
+<li>All commits require 100% test coverage</li>
+<li>Extensive documentation</li>
+</ul>
 <p>Python&#8217;s Bitcoin story was pretty bleak. All libraries in use prior to Bit were
 marred by unfriendly APIs, lack of testing, lack of documentation, lack of
 cross-platform support, and/or slow implementations.</p>
@@ -86,7 +92,19 @@ $ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import Pri
 <span class="m">100</span> loops, best of <span class="m">3</span>: <span class="m">10</span>.7 msec per loop
 </pre></div>
 </div>
-<p>As you can see Bit is very fast. If you are intrigued, continue reading!</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>Bit is licensed under terms of the <a class="reference external" href="https://en.wikipedia.org/wiki/MIT_License">MIT License</a>.</p>
+</div>
+<div class="section" id="credits">
+<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Logo courtesy of <a class="reference external" href="https://textcraft.net">https://textcraft.net</a></li>
+<li><a class="reference external" href="https://github.com/gmaxwell">Gregory Maxwell</a> (Bitcoin core dev) for teaching me a bit of <a class="reference external" href="https://en.wikipedia.org/wiki/Elliptic_curve_cryptography">ECC</a> math</li>
+<li><a class="reference external" href="https://github.com/fivepiece">arubi</a> in #bitcoin for helping me understand transaction gotchas</li>
+<li><a class="reference external" href="https://github.com/fuzeman">fuzeman</a> for bestowing me the name <cite>bit</cite> on the <a class="reference external" href="https://pypi.org">Python Package Index</a></li>
+</ul>
 </div>
 </div>
 
@@ -153,6 +171,8 @@ $ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import Pri
   <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#why-bit">Why Bit?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
