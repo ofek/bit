@@ -3,9 +3,7 @@
 Introduction
 ============
 
-Bit is Python's fastest Bitcoin library and was designed from the beginning to
-feel intuitive, be easy to use, and have readable source code. I'd like to
-think all of these goals were achieved!
+Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.
 
 Why Bit?
 --------
