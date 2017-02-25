@@ -8,6 +8,11 @@ Bit is a fast and compliant Bitcoin library with an extremely easy-to-use API.
 Why Bit?
 --------
 
+- Python's fastest available implementation (hard to beat OpenSSL :)
+- Compliant to all presently implemented Bitcoin Improvement Protocols
+- All commits require 100% test coverage
+- Extensive documentation
+
 Python's Bitcoin story was pretty bleak. All libraries in use prior to Bit were
 marred by unfriendly APIs, lack of testing, lack of documentation, lack of
 cross-platform support, and/or slow implementations.
@@ -55,7 +60,18 @@ Signing, which is the most used operation:
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()" "k.raw_sign(b'data')"
     100 loops, best of 3: 10.7 msec per loop
 
-As you can see Bit is very fast. If you are intrigued, continue reading!
+License
+-------
+
+Bit is licensed under terms of the `MIT License`_.
+
+Credits
+-------
+
+- Logo courtesy of `<https://textcraft.net>`_
+- `Gregory Maxwell`_ (Bitcoin core dev) for teaching me a bit of `ECC`_ math
+- `arubi`_ in #bitcoin for helping me understand transaction gotchas
+- `fuzeman`_ for bestowing me the name `bit` on the `Python Package Index`_
 
 .. _pybitcointools: https://github.com/vbuterin/pybitcointools
 .. _scary: https://github.com/JoinMarket-Org/joinmarket/issues/61
@@ -65,3 +81,9 @@ As you can see Bit is very fast. If you are intrigued, continue reading!
 .. _21: https://angel.co/21
 .. _pybitcoin: https://github.com/blockstack/pybitcoin
 .. _Blockstack: https://angel.co/blockstack
+.. _MIT License: https://en.wikipedia.org/wiki/MIT_License
+.. _Gregory Maxwell: https://github.com/gmaxwell
+.. _ECC: https://en.wikipedia.org/wiki/Elliptic_curve_cryptography
+.. _arubi: https://github.com/fivepiece
+.. _fuzeman: https://github.com/fuzeman
+.. _Python Package Index: https://pypi.org

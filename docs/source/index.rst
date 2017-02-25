@@ -60,6 +60,8 @@ Features
 - Exchange rate API, with optional caching
 - Optimal transaction fee API, with optional caching
 
+If you are intrigued, continue reading!
+
 Guide
 -----
 
