@@ -312,7 +312,7 @@ class NetworkApi:
     BROADCAST_TX_MAIN = [BlockchainAPI.broadcast_tx,
                          BitpayAPI.broadcast_tx,
                          SmartbitAPI.broadcast_tx,
-                         BlockrAPI.broadcast_tx]
+                         BlockrAPI.broadcast_tx]  # Limit 5/minute
 
     GET_BALANCE_TEST = [BitpayAPI.get_test_balance,
                         BlockrAPI.get_test_balance,
@@ -325,7 +325,7 @@ class NetworkApi:
                         SmartbitAPI.get_test_unspent]  # Limit 1000
     BROADCAST_TX_TEST = [BitpayAPI.broadcast_test_tx,
                          SmartbitAPI.broadcast_test_tx,
-                         BlockrAPI.broadcast_test_tx]
+                         BlockrAPI.broadcast_test_tx]  # Limit 5/minute
 
     @classmethod
     def get_balance(cls, address):

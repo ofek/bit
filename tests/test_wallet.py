@@ -91,6 +91,9 @@
 #         assert BaseKey(WALLET_FORMAT_COMPRESSED_MAIN).is_compressed() is True
 #         assert BaseKey(WALLET_FORMAT_MAIN).is_compressed() is False
 #
+#     def test_equal(self):
+#         assert BaseKey.from_int(10) == BaseKey.from_int(10)
+#
 #
 # class TestPrivateKey:
 #     def test_alias(self):

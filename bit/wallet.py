@@ -97,6 +97,9 @@ class BaseKey:
     def is_compressed(self):
         return True if len(self.public_key) == 33 else False
 
+    def __eq__(self, other):
+        return self.to_int() == other.to_int()
+
 
 class PrivateKey(BaseKey):
     def __init__(self, wif=None):
