@@ -26,6 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Network" href="network.html" />
     <link rel="prev" title="Installation" href="install.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -43,7 +44,7 @@
     <div class="body" role="main">
     
   <div class="section" id="keys">
-<span id="id1"></span><h1>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h1>
+<h1>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h1>
 <p>Bit assumes the easiest way to reason about Bitcoin is in the basic unit of a
 <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key">private key</a> and, therefore, all functionality (viewing balance, making
 transactions, etc.) is wrapped up in this class for convenience. You shouldn&#8217;t
@@ -98,8 +99,8 @@ from the point.</p>
 <div class="section" id="public-key">
 <h2>Public Key<a class="headerlink" href="#public-key" title="Permalink to this headline">¶</a></h2>
 <p>A public key is a public point serialized to bytes. By default all keys will
-use the compressed version unless explicitly needed by you. This reduces the
-size of each transaction and thus fees.</p>
+use the compressed version unless <a class="reference internal" href="advanced.html#hex-to-wif"><span class="std std-ref">you explicitly need otherwise</span></a>.
+This reduces the size of each transaction and thus fees.</p>
 <p>Access it like so:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
 <span class="go">b&#39;\x03\xd6\xc4\x88\xab[S\x1d_\xb1H\x12\xbe\x19C\x08\x16\x90~@\x9fv-\x95\xf0w\x87\xfdB\x81\xa3\xd2B&#39;</span>
@@ -207,6 +208,9 @@ the initializer:</p>
       <li>
         Previous topic: <a href="install.html">Installation</a>
       </li>
+      <li>
+        Next topic: <a href="network.html">Network</a>
+      </li>
     </ul>
     </div>
   </div>
@@ -278,12 +282,15 @@ the initializer:</p>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="network.html" title="next chapter">Network</a></li>
   </ul></li>
 </ul>
 </div>

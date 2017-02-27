@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Network &#8212; Bit 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced" href="advanced.html" />
+    <link rel="prev" title="Keys" href="keys.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+<div class="documentwrapper">
+  <div class="bodywrapper">
+    <div class="body" role="main">
+    
+  <div class="section" id="network">
+<h1>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="balance">
+<h2>Balance<a class="headerlink" href="#balance" title="Permalink to this headline">¶</a></h2>
+<p>Every private key has a <cite>balance</cite> property which is initially set to <cite>0</cite>. This
+internal balance will always be in <a class="reference external" href="https://en.bitcoin.it/wiki/Satoshi_(unit)">satoshi</a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">PrivateKeyTestnet</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>You can query the <a class="reference external" href="https://en.bitcoin.it/wiki/Block_chain">blockchain</a> for the current balance by calling <cite>get_balance</cite>.
+It takes an optional argument <cite>currency</cite> (see <a href="#id1"><span class="problematic" id="id2">`supported currencies`_</span></a>) and
+returns a formatted string rounded down to the proper number of decimal places.
+By default it will return the balance in satoshi.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;btc&#39;</span><span class="p">)</span>
+<span class="go">&#39;0.82721202&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance</span>
+<span class="go">82721202</span>
+</pre></div>
+</div>
+<p>After you communicate with the network, you can view the internal balance in
+terms of other currencies using <cite>balance_as</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;mbtc&#39;</span><span class="p">)</span>
+<span class="go">&#39;827.21202&#39;</span>
+<span class="go">&gt;&gt;&gt;key.balance_as(&#39;usd&#39;)</span>
+<span class="go">&#39;944.06&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;gbp&#39;</span><span class="p">)</span>
+<span class="go">&#39;757.58&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;cny&#39;</span><span class="p">)</span>
+<span class="go">&#39;6485.39&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unspent">
+<h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
+<p>You can see what <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction outputs</a> (commonly referred to as UTXO)
+you have available to spend by calling <cite>get_unspents</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_unspents</span><span class="p">()</span>
+<span class="go">[Unspent(amount=82721202, confirmations=688, script=&#39;76a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac&#39;, txid=&#39;2ae6f3cc21cf11cfc7ad5d79436ecf08521df6a106691dcd1672b076138ea6ff&#39;, txindex=1)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span>
+<span class="go">[Unspent(amount=82721202, confirmations=688, script=&#39;76a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac&#39;, txid=&#39;2ae6f3cc21cf11cfc7ad5d79436ecf08521df6a106691dcd1672b076138ea6ff&#39;, txindex=1)]</span>
+</pre></div>
+</div>
+<p>As you can see, this address has 1 available UTXO to spend worth 82721202
+satoshi. <cite>get_balance</cite> uses this method by totalling the amount of all UTXO.
+You will never have to use this directly.</p>
+</div>
+<div class="section" id="transaction-history">
+<h2>Transaction History<a class="headerlink" href="#transaction-history" title="Permalink to this headline">¶</a></h2>
+<p>Get a list of all transactions from newest to oldest by calling <cite>get_transactions</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">transactions</span>
+<span class="go">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_transactions</span><span class="p">()</span>
+<span class="go">[&#39;2ae6f3cc21cf11cfc7ad5d79436ecf08521df6a106691dcd1672b076138ea6ff&#39;,</span>
+<span class="go"> &#39;56e2df8402c86c3e9467a296d112127a27c11ba8d187e0e1cac1b35f4780d11d&#39;,</span>
+<span class="go"> &#39;c055bd6c8090e839ac8caea116aa5519897aaa6ee12fb2566de996dd46c9ca97&#39;,</span>
+<span class="go"> &#39;ab8e45386651c6bc1230841b6c728bff222754d6c9c0b4e40bb5bbc39796dc44&#39;,</span>
+<span class="go"> &#39;9c3d31f8a72f3358a73d39abdf1088d119bac2baba31bb04f0721aeb4e19fd61&#39;,</span>
+<span class="go"> &#39;94fe41e489626642541df5deccaed64354f0840934fb0177dc0374beecaaeaa7&#39;,</span>
+<span class="go"> &#39;143c0fc2fae94a0ad5572e8f1735db5fe26835778127f29e097b1e736f8842b7&#39;,</span>
+<span class="go"> &#39;21064f95e82f6061704652a0fe9b92a2c7a75a75be4aa8a83bdf9b45678818a2&#39;,</span>
+<span class="go"> &#39;0ec29933320919b4b92c3df2ad646e01ffa62f139530e7d98934db884b264943&#39;,</span>
+<span class="go"> &#39;bdf635087dc14111eda16a094b41acc6fe6563fe315cc10562f3736b364173c6&#39;,</span>
+<span class="go"> &#39;4c82f8f10adeae19003586fe1a705395fc91683b8e7364823227f0003639b233&#39;,</span>
+<span class="go"> &#39;a3533f0cf84f57f20c9697c5e8379f7b5c5f3461ba6f80acd906104788a92ddd&#39;,</span>
+<span class="go"> &#39;1eceb6c9576d0a9ab23a9e25c07b8c7407d9363a8a30ad9309941783d831305f&#39;,</span>
+<span class="go"> &#39;e02e968a68788bb53dba546a775b79ede8a704e5761d37644f02f76fc1d2b52a&#39;,</span>
+<span class="go"> &#39;52a573c2aa3428f035b8b90b1663dec70c8a1fae4f99f183eb88be4393c395ea&#39;,</span>
+<span class="go"> &#39;5c9ae53024e1606f74d7c7219a629cf582432e402f5d5de599377a4932423731&#39;,</span>
+<span class="go"> &#39;b99dd023ddd511e185c25cbb829f0f96c5515d4fc35ec86e23db30e43c37baa2&#39;,</span>
+<span class="go"> &#39;66aa55b471b39534935d011f445ea1bc83b5d785a533d7c1f29116d9360f1dd0&#39;,</span>
+<span class="go"> &#39;0338b19483b32d9f3b1d11e7fc79ac14b1ed14fcfa66fce4b9a691082985665b&#39;,</span>
+<span class="go"> &#39;51e09d0752fc6cc22cf2de73b9cab1bd0394f9b0fa9aa05638136f539f4e8091&#39;,</span>
+<span class="go"> &#39;4e1e8302572dd910bb7478b8b0a7839ac34999bec847c2940be29100ae4af472&#39;,</span>
+<span class="go"> &#39;dc885a7cfcb12d8553cc91f06c0cebf72228ba1abaed67c0b40c2d6a620b2df4&#39;,</span>
+<span class="go"> &#39;1bf4248262aba1518e8fbe09fdc2feb8b8165205d9cae150077f1b0dc5df5d16&#39;]</span>
+</pre></div>
+</div>
+<p>Presently this just returns each transaction&#8217;s hash for further lookup. In
+a future release they will become proper objects.</p>
+</div>
+<div class="section" id="services">
+<h2>Services<a class="headerlink" href="#services" title="Permalink to this headline">¶</a></h2>
+<p>Bit communicates with the blockchain using trusted third-party APIs.
+Specifically, it can access:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://insight.bitpay.com">https://insight.bitpay.com</a> via <cite>bit.network.services.BitpayAPI</cite></li>
+<li><a class="reference external" href="https://blockchain.info">https://blockchain.info</a> via <cite>bit.network.services.BlockchainAPI</cite></li>
+<li><a class="reference external" href="https://smartbit.com.au">https://smartbit.com.au</a> via <cite>bit.network.services.SmartbitAPI</cite></li>
+<li><a class="reference external" href="http://blockr.io">http://blockr.io</a> via <cite>bit.network.services.BlockrAPI</cite></li>
+</ul>
+<div class="section" id="networkapi">
+<h3>NetworkApi<a class="headerlink" href="#networkapi" title="Permalink to this headline">¶</a></h3>
+<p>Private key network operations use <cite>bit.network.NetworkApi</cite>. For each method,
+it polls a service and if an error occurs it tries another.</p>
+</div>
+</div>
+</div>
+
+
+    <br>
+    <ul>
+      <li>
+        Previous topic: <a href="keys.html">Keys</a>
+      </li>
+      <li>
+        Next topic: <a href="advanced.html">Advanced</a>
+      </li>
+    </ul>
+    </div>
+  </div>
+</div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/sidebarlogo.html -->
+
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/bit.png"/>
+  </a>
+</p>
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=ofek&repo=bit&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+<p>
+  Bit is a modern Bitcoin library designed to be a pleasure to use for developers and end users alike.
+</p>
+
+<h3>Stay Informed</h3>
+<p>Receive updates on new releases and upcoming projects.</p>
+
+<p><iframe src="https://ghbtns.com/github-btn.html?user=ofek&type=follow&count=false"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200" height="20"></iframe></p>
+
+<p><a href="https://twitter.com/Ofekmeister" class="twitter-follow-button" data-show-count="false">Follow @Ofekmeister</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+
+
+<h3>Other Projects</h3>
+
+<p>More <a href="https://github.com/ofek">Ofek Lev</a> projects:</p>
+<ul>
+    <li><a href="https://github.com/ofek/privy">Privy</a></li>
+</ul>
+
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="https://github.com/ofek/bit">Bit @ GitHub</a></li>
+  <li><a href="https://pypi.org/project/bit">Bit @ PyPI</a></li>
+  <li><a href="https://github.com/ofek/bit/issues">Issue Tracker</a></li>
+  <!--<li><a href="http://docs.python-requests.org/en/latest/community/updates/#software-updates">Release History</a></li>-->
+</ul>
+
+<h3>Dependencies</h3>
+<ul>
+  <li><a href="https://github.com/pyca/cryptography">Cryptography</a></li>
+  <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
+</ul>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="keys.html">Keys</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#balance">Balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unspent">Unspent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transaction-history">Transaction History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#services">Services</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#networkapi">NetworkApi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="keys.html" title="previous chapter">Keys</a></li>
+      <li>Next: <a href="advanced.html" title="next chapter">Advanced</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/guide/network.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+
+<!-- Alabaster (krTheme++) Hacks -->
+
+<!-- CSS Adjustments (I'm very picky.) -->
+<style type="text/css">
+
+  /* Rezzy requires precise alignment. */
+  img.logo {margin-left: -20px!important;}
+
+  /* "Quick Search" should be capitalized. */
+  div#searchbox h3 {text-transform: capitalize;}
+
+  /* Make the document a little wider, less code is cut-off. */
+  div.document {width: 1008px;}
+
+  /* Much-improved spacing around code blocks. */
+  div.highlight pre {padding: 11px 14px;}
+
+  /* Remain Responsive! */
+  @media screen and (max-width: 1008px) {
+    div.sphinxsidebar {display: none;}
+    div.document {width: 100%!important;}
+
+    /* Have code blocks escape the document right-margin. */
+    div.highlight pre {margin-right: -30px;}
+  }
+
+</style>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ofek Lev.
+      
+      |
+      <a href="../_sources/guide/network.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/ofek/bit" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

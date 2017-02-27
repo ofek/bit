@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &#8212; Bit 0.1.0 documentation</title>
+    <title>Advanced &#8212; Bit 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Keys" href="keys.html" />
-    <link rel="prev" title="Introduction" href="intro.html" />
+    <link rel="prev" title="Network" href="network.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,21 +42,38 @@
   <div class="bodywrapper">
     <div class="body" role="main">
     
-  <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="pypi">
-<h2>PyPI<a class="headerlink" href="#pypi" title="Permalink to this headline">¶</a></h2>
-<p>Bit is distributed on <a class="reference external" href="https://pypi.org/project/bit">PyPI</a> as a universal wheel and is available on Linux/macOS
-and Windows and supports Python 3.3+ and PyPy3.3-5.5+.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ pip install bit
+  <div class="section" id="advanced">
+<h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="services-timeout">
+<h2>Services Timeout<a class="headerlink" href="#services-timeout" title="Permalink to this headline">¶</a></h2>
+<p>If you want to change the default timeout of 5 seconds for service API calls:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">bit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bit</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">DEFAULT_TIMEOUT</span> <span class="o">=</span> <span class="mi">3</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="source-code">
-<h2>Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
-<p>Bit is hosted by Github <a class="reference external" href="https://github.com/ofek/bit">here</a>, where it is actively developed.</p>
-<p>You can clone it like this:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ git clone git://github.com/ofek/bit.git
+<div class="section" id="hex-to-wif">
+<h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
+<p>If you store your keys as hex instead of WIF you lose the ability to
+retain metadata. To convert your keys to WIF to use certain properties,
+use <cite>bit.format.private_key_hex_to_wif</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">private_key_hex_to_wif</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compressed by default</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wif</span> <span class="o">=</span> <span class="n">private_key_hex_to_wif</span><span class="p">(</span><span class="n">key1</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(),</span> <span class="n">compressed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key2</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">wif</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Same point on curve</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span> <span class="o">==</span> <span class="n">key2</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Different public keys for derivation of address</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span><span class="o">.</span><span class="n">address</span>
+<span class="go">&#39;15BYk3fNHwPB5GMjsxTX26QoWZZtwJnzCf&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key2</span><span class="o">.</span><span class="n">address</span>
+<span class="go">&#39;1BQCscSMaJhezQvX6hzCdcRVdsxJuMAdwt&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -67,10 +83,7 @@ and Windows and supports Python 3.3+ and PyPy3.3-5.5+.</p>
     <br>
     <ul>
       <li>
-        Previous topic: <a href="intro.html">Introduction</a>
-      </li>
-      <li>
-        Next topic: <a href="keys.html">Keys</a>
+        Previous topic: <a href="network.html">Network</a>
       </li>
     </ul>
     </div>
@@ -125,28 +138,27 @@ and Windows and supports Python 3.3+ and PyPy3.3-5.5+.</p>
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#pypi">PyPI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#source-code">Source Code</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#services-timeout">Services Timeout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hex-to-wif">Hex to WIF</a></li>
+</ul>
+</li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
-      <li>Next: <a href="keys.html" title="next chapter">Keys</a></li>
+      <li>Previous: <a href="network.html" title="previous chapter">Network</a></li>
   </ul></li>
 </ul>
 </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/guide/install.rst.txt"
+      <li><a href="../_sources/guide/advanced.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -196,7 +208,7 @@ and Windows and supports Python 3.3+ and PyPy3.3-5.5+.</p>
       &copy;2017, Ofek Lev.
       
       |
-      <a href="../_sources/guide/install.rst.txt"
+      <a href="../_sources/guide/advanced.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
