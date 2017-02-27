@@ -107,7 +107,7 @@ class PrivateKey(BaseKey):
 
         self._address = None
 
-        self.balance = None
+        self.balance = 0
         self.unspents = []
         self.transactions = []
 
@@ -124,12 +124,15 @@ class PrivateKey(BaseKey):
             compressed=True if len(self._public_key) == 33 else False
         )
 
+    def balance_as(self, currency):
+        return satoshi_to_currency_cached(self.balance, currency)
+
     def get_balance(self, currency='satoshi'):
         balance = 0
         for unspent in self.get_unspents():
             balance += unspent.amount
         self.balance = balance
-        return satoshi_to_currency_cached(balance, currency)
+        return self.balance_as(currency)
 
     def get_unspents(self):
         self.unspents[:] = NetworkApi.get_unspent(self.address)
@@ -175,7 +178,7 @@ class PrivateKeyTestnet(BaseKey):
 
         self._address = None
 
-        self.balance = None
+        self.balance = 0
         self.unspents = []
         self.transactions = []
 
@@ -192,12 +195,15 @@ class PrivateKeyTestnet(BaseKey):
             compressed=True if len(self._public_key) == 33 else False
         )
 
+    def balance_as(self, currency):
+        return satoshi_to_currency_cached(self.balance, currency)
+
     def get_balance(self, currency='satoshi'):
         balance = 0
         for unspent in self.get_unspents():
             balance += unspent.amount
         self.balance = balance
-        return satoshi_to_currency_cached(balance, currency)
+        return self.balance_as(currency)
 
     def get_unspents(self):
         self.unspents[:] = NetworkApi.get_test_unspent(self.address)

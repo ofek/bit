@@ -103,7 +103,7 @@
 #         private_key = PrivateKey()
 #
 #         assert private_key._address is None
-#         assert private_key.balance is None
+#         assert private_key.balance == 0
 #         assert private_key.unspents == []
 #         assert private_key.transactions == []
 #
@@ -143,7 +143,7 @@
 #         private_key = PrivateKeyTestnet()
 #
 #         assert private_key._address is None
-#         assert private_key.balance is None
+#         assert private_key.balance == 0
 #         assert private_key.unspents == []
 #         assert private_key.transactions == []
 #

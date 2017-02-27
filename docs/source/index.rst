@@ -75,3 +75,5 @@ of best practices.
    guide/intro
    guide/install
    guide/keys
+   guide/network
+   guide/advanced

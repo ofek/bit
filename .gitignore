@@ -6,4 +6,5 @@
 /bit.egg-info
 /build
 /dist
+/docs/build
 /wheelhouse
