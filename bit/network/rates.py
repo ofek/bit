@@ -77,6 +77,11 @@ CURRENCY_PRECISION = {
 }
 
 
+def set_rate_cache_time(seconds):
+    global DEFAULT_CACHE_TIME
+    DEFAULT_CACHE_TIME = seconds
+
+
 def satoshi_to_satoshi():
     return SATOSHI
 

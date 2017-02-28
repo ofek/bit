@@ -1,7 +1,9 @@
 # import pytest
 #
+# import bit
 # from bit.network.services import (
-#     BitpayAPI, BlockchainAPI, BlockrAPI, NetworkApi, SmartbitAPI
+#     BitpayAPI, BlockchainAPI, BlockrAPI, NetworkApi, SmartbitAPI,
+#     set_service_timeout
 # )
 # from tests.utils import (
 #     catch_errors_raise_warnings, decorate_methods, raise_connection_error
@@ -24,6 +26,17 @@
 # def all_items_equal(seq):
 #     initial_item = seq[0]
 #     return all(item == initial_item for item in seq if item is not None)
+#
+#
+# def test_set_service_timeout():
+#     original = bit.network.services.DEFAULT_TIMEOUT
+#     set_service_timeout(3)
+#     updated = bit.network.services.DEFAULT_TIMEOUT
+#
+#     assert original != updated
+#     assert updated == 3
+#
+#     set_service_timeout(original)
 #
 #
 # class MockBackend(NetworkApi):

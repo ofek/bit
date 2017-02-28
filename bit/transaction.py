@@ -129,7 +129,6 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
 
 def construct_output_block(outputs):
-    print(outputs)
 
     output_block = b''
 

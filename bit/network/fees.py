@@ -10,6 +10,11 @@ DEFAULT_CACHE_TIME = 60 * 10
 URL = 'https://bitcoinfees.21.co/api/v1/fees/recommended'
 
 
+def set_fee_cache_time(seconds):
+    global DEFAULT_CACHE_TIME
+    DEFAULT_CACHE_TIME = seconds
+
+
 def get_fee(fast=False):
     return requests.get(URL).json()['fastestFee' if fast else 'hourFee']
 

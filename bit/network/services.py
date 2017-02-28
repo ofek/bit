@@ -6,6 +6,11 @@ from bit.network.meta import Unspent
 DEFAULT_TIMEOUT = 5
 
 
+def set_service_timeout(seconds):
+    global DEFAULT_CACHE_TIME
+    DEFAULT_CACHE_TIME = seconds
+
+
 class InsightAPI:
     MAIN_ENDPOINT = ''
     MAIN_ADDRESS_API = ''
