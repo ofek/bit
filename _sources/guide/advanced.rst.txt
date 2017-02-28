@@ -1,6 +1,9 @@
 Advanced
 ========
 
+Server Integration
+------------------
+
 Services Timeout
 ----------------
 
@@ -8,8 +11,20 @@ If you want to change the default timeout of 5 seconds for service API calls:
 
 .. code-block:: python
 
-    >>> import bit
-    >>> bit.network.services.DEFAULT_TIMEOUT = 3
+    >>> from bit import set_service_timeout
+    >>> set_service_timeout(3)
+
+Cache Times
+-----------
+
+If you want to change the default cache time of exchange rates (60 seconds)
+or recommended fees (10 minutes):
+
+.. code-block:: python
+
+    >>> from bit import set_fee_cache_time, set_rate_cache_time
+    >>> set_rate_cache_time(30)
+    >>> set_fee_cache_time(60 * 5)
 
 Hex to WIF
 ----------
