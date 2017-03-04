@@ -26,6 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced" href="advanced.html" />
+    <link rel="prev" title="Network" href="network.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -42,15 +44,12 @@
     <div class="body" role="main">
     
   <div class="section" id="transactions">
-<h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="create-transaction">
-<h2>Create Transaction<a class="headerlink" href="#create-transaction" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this headline">¶</a></h1>
 <p>Keys in Bit allow 2 ways of handling transactions: a <cite>create_transaction</cite>
 method that creates a signed transaction and returns the aforementioned
 transaction in hex, and a <cite>send</cite> method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
-for future lookup. Both methods take the exact arguments.</p>
-</div>
+for future lookup. Both methods take the exact same arguments.</p>
 <div class="section" id="outputs">
 <h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
 <p>The only required argument is a list of outputs.</p>
@@ -61,14 +60,104 @@ for future lookup. Both methods take the exact arguments.</p>
 <div class="section" id="output-format">
 <h2>Output Format<a class="headerlink" href="#output-format" title="Permalink to this headline">¶</a></h2>
 <p>Each output should be a tuple of arity 3 in the form <cite>(destination, amount, currency)</cite>.
-Amount can be an int, float, or string as long as it is a valid input to <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal">decimal.Decimal</a>.
-The currency must be <a href="#id1"><span class="problematic" id="id2">`supported`_</span></a>.</p>
+The amount can be either an int, float, or string as long as it is a valid input to
+<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal">decimal.Decimal</a>. The currency must be <a href="#id2"><span class="problematic" id="id3">`supported`_</span></a>.</p>
+</div>
+<div class="section" id="change-address">
+<h2>Change Address<a class="headerlink" href="#change-address" title="Permalink to this headline">¶</a></h2>
+<p>Whenever you spend an <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction output</a>, it must be used in its
+entirety.</p>
+<p>Say for example you had this UTXO:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">55000</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you wanted to use 35000 satoshi to buy ice cream, you need to use all 55000
+satoshi in the transaction. How this works is whatever is left over you send
+back to yourself as change.</p>
+<p>By default Bit will send any change to the same address you sent from. You
+can specify where leftover funds go like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Whatever funds remain at this point (<cite>remaining = unspent - (sending + leftover)</cite>)
+will be collected by miners as a fee.</p>
+</div>
+<div class="section" id="fee">
+<h2>Fee<a class="headerlink" href="#fee" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>&#8220;Miner fees are a small amount of digital currency that is included in
+transactions as a reward/incentive to the people who operate the network.
+They help the network continue to grow and provide an incentive for your
+transactions to be verified quickly.&#8221;</p>
+<p class="attribution">&mdash;Coinbase</p>
+</div></blockquote>
+<p>By default, Bit will poll <a class="reference external" href="https://bitcoinfees.21.co">https://bitcoinfees.21.co</a> and use a fee that
+will allow your transaction to be confirmed as soon as possible.</p>
+<p>You can change the satoshi per byte fee like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information about transaction fees <a class="reference external" href="https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care">read this</a>.</p>
+</div>
+<div class="section" id="unspent-consolidation">
+<h2>Unspent Consolidation<a class="headerlink" href="#unspent-consolidation" title="Permalink to this headline">¶</a></h2>
+<p>By default Bit will use all of your available UTXOs to make future transactions
+smaller and therefore reduce fees.</p>
+<p>If you don&#8217;t desire this behavior and only wish to use what is needed, do this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, if your had the following UTXOs available:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Forgetting about fees for the moment, assume you want to spend 150 satoshi. If
+you combine all funds, you&#8217;d be left with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you don&#8217;t, you&#8217;d be left with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="transfer-funds">
+<h2>Transfer Funds<a class="headerlink" href="#transfer-funds" title="Permalink to this headline">¶</a></h2>
+<p>If you want to send all available funds to another address or wish to simply
+move your coins, you can specify a leftover address and zero outputs like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([],</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unspent">
+<h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
+<p>If you already have a means of communicating with the blockchain, you can
+supply your own list of unspent transaction outputs by doing either:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">unspents</span><span class="o">=</span><span class="n">unspents</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Each item must be an instance of <a class="reference internal" href="#unspent">Unspent</a>.</p>
 </div>
 </div>
 
 
     <br>
     <ul>
+      <li>
+        Previous topic: <a href="network.html">Network</a>
+      </li>
+      <li>
+        Next topic: <a href="advanced.html">Advanced</a>
+      </li>
     </ul>
     </div>
   </div>
@@ -120,17 +209,29 @@ The currency must be <a href="#id1"><span class="problematic" id="id2">`supporte
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
 </ul>
   <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Transactions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-format">Output Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-address">Change Address</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fee">Fee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unspent-consolidation">Unspent Consolidation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transfer-funds">Transfer Funds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unspent">Unspent</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="network.html" title="previous chapter">Network</a></li>
+      <li>Next: <a href="advanced.html" title="next chapter">Advanced</a></li>
   </ul></li>
 </ul>
 </div>

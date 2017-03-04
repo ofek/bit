@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Advanced" href="advanced.html" />
+    <link rel="next" title="Transactions" href="transactions.html" />
     <link rel="prev" title="Keys" href="keys.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -44,7 +44,7 @@
     <div class="body" role="main">
     
   <div class="section" id="network">
-<h1>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="balance">
 <h2>Balance<a class="headerlink" href="#balance" title="Permalink to this headline">¶</a></h2>
 <p>Every private key has a <cite>balance</cite> property which is initially set to <cite>0</cite>. This
@@ -57,7 +57,7 @@ internal balance will always be in <a class="reference external" href="https://e
 </pre></div>
 </div>
 <p>You can query the <a class="reference external" href="https://en.bitcoin.it/wiki/Block_chain">blockchain</a> for the current balance by calling <cite>get_balance</cite>.
-It takes an optional argument <cite>currency</cite> (see <a href="#id1"><span class="problematic" id="id2">`supported currencies`_</span></a>) and
+It takes an optional argument <cite>currency</cite> (see <a href="#id2"><span class="problematic" id="id3">`supported currencies`_</span></a>) and
 returns a formatted string rounded down to the proper number of decimal places.
 By default it will return the balance in satoshi.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;btc&#39;</span><span class="p">)</span>
@@ -70,7 +70,7 @@ By default it will return the balance in satoshi.</p>
 terms of other currencies using <cite>balance_as</cite>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;mbtc&#39;</span><span class="p">)</span>
 <span class="go">&#39;827.21202&#39;</span>
-<span class="go">&gt;&gt;&gt;key.balance_as(&#39;usd&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;usd&#39;</span><span class="p">)</span>
 <span class="go">&#39;944.06&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;gbp&#39;</span><span class="p">)</span>
 <span class="go">&#39;757.58&#39;</span>
@@ -156,7 +156,7 @@ it polls a service and if an error occurs it tries another.</p>
         Previous topic: <a href="keys.html">Keys</a>
       </li>
       <li>
-        Next topic: <a href="advanced.html">Advanced</a>
+        Next topic: <a href="transactions.html">Transactions</a>
       </li>
     </ul>
     </div>
@@ -223,6 +223,7 @@ it polls a service and if an error occurs it tries another.</p>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="transactions.html">Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 </ul>
 <div class="relations">
@@ -230,7 +231,7 @@ it polls a service and if an error occurs it tries another.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="keys.html" title="previous chapter">Keys</a></li>
-      <li>Next: <a href="advanced.html" title="next chapter">Advanced</a></li>
+      <li>Next: <a href="transactions.html" title="next chapter">Transactions</a></li>
   </ul></li>
 </ul>
 </div>

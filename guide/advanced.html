@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Network" href="network.html" />
+    <link rel="prev" title="Transactions" href="transactions.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,9 +43,15 @@
     <div class="body" role="main">
     
   <div class="section" id="advanced">
-<h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="server-integration">
 <h2>Server Integration<a class="headerlink" href="#server-integration" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="blockchain-storage">
+<h2>Blockchain Storage<a class="headerlink" href="#blockchain-storage" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="unsupported-currencies">
+<span id="id2"></span><h2>Unsupported Currencies<a class="headerlink" href="#unsupported-currencies" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="services-timeout">
 <h2>Services Timeout<a class="headerlink" href="#services-timeout" title="Permalink to this headline">¶</a></h2>
@@ -66,10 +72,10 @@ or recommended fees (10 minutes):</p>
 </div>
 </div>
 <div class="section" id="hex-to-wif">
-<h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
-<p>If you store your keys as hex instead of WIF you lose the ability to
-retain metadata. To convert your keys to WIF to use certain properties,
-use <cite>bit.format.private_key_hex_to_wif</cite>.</p>
+<span id="hextowif"></span><h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
+<p>If you store your keys as hex instead of WIF you lose the ability to retain
+metadata. To convert your hex keys to WIF to use certain properties, use
+<cite>bit.format.private_key_hex_to_wif</cite>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">private_key_hex_to_wif</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -96,7 +102,7 @@ use <cite>bit.format.private_key_hex_to_wif</cite>.</p>
     <br>
     <ul>
       <li>
-        Previous topic: <a href="network.html">Network</a>
+        Previous topic: <a href="transactions.html">Transactions</a>
       </li>
     </ul>
     </div>
@@ -154,8 +160,11 @@ use <cite>bit.format.private_key_hex_to_wif</cite>.</p>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transactions.html">Transactions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#server-integration">Server Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#blockchain-storage">Blockchain Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unsupported-currencies">Unsupported Currencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#services-timeout">Services Timeout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cache-times">Cache Times</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#hex-to-wif">Hex to WIF</a></li>
@@ -166,7 +175,7 @@ use <cite>bit.format.private_key_hex_to_wif</cite>.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="network.html" title="previous chapter">Network</a></li>
+      <li>Previous: <a href="transactions.html" title="previous chapter">Transactions</a></li>
   </ul></li>
 </ul>
 </div>
