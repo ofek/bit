@@ -1,3 +1,5 @@
+.. _network:
+
 Network
 =======
 
@@ -34,7 +36,7 @@ terms of other currencies using `balance_as`.
 
     >>> key.balance_as('mbtc')
     '827.21202'
-    >>>key.balance_as('usd')
+    >>> key.balance_as('usd')
     '944.06'
     >>> key.balance_as('gbp')
     '757.58'

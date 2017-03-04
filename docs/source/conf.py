@@ -35,7 +35,6 @@ from bit import __version__
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosectionlabel',
     'sphinx.ext.githubpages',
     'sphinxcontrib.fulltoc'
 ]

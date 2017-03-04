@@ -1,8 +1,18 @@
+.. _advanced:
+
 Advanced
 ========
 
 Server Integration
 ------------------
+
+Blockchain Storage
+------------------
+
+.. _unsupported currencies:
+
+Unsupported Currencies
+----------------------
 
 Services Timeout
 ----------------
@@ -26,12 +36,14 @@ or recommended fees (10 minutes):
     >>> set_rate_cache_time(30)
     >>> set_fee_cache_time(60 * 5)
 
+.. _hextowif:
+
 Hex to WIF
 ----------
 
-If you store your keys as hex instead of WIF you lose the ability to
-retain metadata. To convert your keys to WIF to use certain properties,
-use `bit.format.private_key_hex_to_wif`.
+If you store your keys as hex instead of WIF you lose the ability to retain
+metadata. To convert your hex keys to WIF to use certain properties, use
+`bit.format.private_key_hex_to_wif`.
 
 .. code-block:: python
 

@@ -15,7 +15,7 @@ def set_fee_cache_time(seconds):
     DEFAULT_CACHE_TIME = seconds
 
 
-def get_fee(fast=False):
+def get_fee(fast=True):
     return requests.get(URL).json()['fastestFee' if fast else 'hourFee']
 
 
@@ -28,7 +28,7 @@ def get_fee_cache(f):
     hour_last_update = time()
 
     @wraps(f)
-    def wrapper(fast=False, expires=None):
+    def wrapper(fast=True, expires=None):
         now = time()
 
         if expires is not None:
