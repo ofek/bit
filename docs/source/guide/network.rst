@@ -18,7 +18,7 @@ internal balance will always be in `satoshi`_.
     0
 
 You can query the `blockchain`_ for the current balance by calling `get_balance`.
-It takes an optional argument `currency` (see `supported currencies`_) and
+It takes an optional argument `currency` (see :ref:`<supported currencies>`) and
 returns a formatted string rounded down to the proper number of decimal places.
 By default it will return the balance in satoshi.
 
