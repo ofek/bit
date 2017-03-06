@@ -24,7 +24,7 @@ SUPPORTED_CURRENCIES = OrderedDict([
     ('ubtc', 'Microbitcoin'),
     ('mbtc', 'Millibitcoin'),
     ('btc', 'Bitcoin'),
-    ('usd', 'US Dollar'),
+    ('usd', 'United States Dollar'),
     ('eur', 'Eurozone Euro'),
     ('gbp', 'Pound Sterling'),
     ('jpy', 'Japanese Yen'),

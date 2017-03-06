@@ -61,7 +61,7 @@ Features
 - Exchange rate API, with optional caching
 - Optimal transaction fee API, with optional caching
 
-If you are intrigued, continue reading!
+If you are intrigued, continue reading! If not, continue all the same!
 
 User Guide
 ----------
@@ -71,13 +71,13 @@ and will then walk you through how to use Bit with many examples and explanation
 of best practices.
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   guide/intro
-   guide/install
-   guide/keys
-   guide/network
-   guide/transactions
-   guide/advanced
-   guide/rates
-   guide/fees
+    guide/intro
+    guide/install
+    guide/keys
+    guide/network
+    guide/transactions
+    guide/rates
+    guide/fees
+    guide/advanced
