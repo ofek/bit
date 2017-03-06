@@ -51,6 +51,7 @@ feel intuitive, be effortless to use, and have readable source code.
 Features
 --------
 
+- Seamless integration with existing server setups
 - Fully supports 25 different currencies
 - First class support for storing data in the blockchain
 - Compressed public keys by default
@@ -62,8 +63,8 @@ Features
 
 If you are intrigued, continue reading!
 
-Guide
------
+User Guide
+----------
 
 This section will tell you a little about the project, show how to install it,
 and will then walk you through how to use Bit with many examples and explanations
@@ -78,3 +79,5 @@ of best practices.
    guide/network
    guide/transactions
    guide/advanced
+   guide/rates
+   guide/fees

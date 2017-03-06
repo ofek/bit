@@ -23,7 +23,7 @@ Output Format
 
 Each output should be a tuple of arity 3 in the form `(destination, amount, currency)`.
 The amount can be either an int, float, or string as long as it is a valid input to
-`decimal.Decimal`_. The currency must be `supported`_.
+`decimal.Decimal`_. The currency must be :ref:`supported <supported currencies>`.
 
 Change Address
 --------------
