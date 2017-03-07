@@ -44,7 +44,7 @@ def get_fee_local_cache(f):
                     cached_fee_fast = requests.get(URL).json()['fastestFee']
                     fast_last_update = now
                 except (ConnectionError, Timeout):  # pragma: no cover
-                    return DEFAULT_FEE_FAST
+                    return cached_fee_fast or DEFAULT_FEE_FAST
 
             return cached_fee_fast
 
@@ -57,7 +57,7 @@ def get_fee_local_cache(f):
                     cached_fee_hour = requests.get(URL).json()['hourFee']
                     hour_last_update = now
                 except (ConnectionError, Timeout):  # pragma: no cover
-                    return DEFAULT_FEE_HOUR
+                    return cached_fee_hour or DEFAULT_FEE_HOUR
 
             return cached_fee_hour
 
