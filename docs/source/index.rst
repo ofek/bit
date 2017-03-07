@@ -31,7 +31,7 @@ feel intuitive, be effortless to use, and have readable source code.
     >>>
     >>> my_key = Key(...)
     >>> my_key.get_balance('usd')
-    '11.97'
+    '12.51'
     >>>
     >>> # Let's donate!
     >>> outputs = [
