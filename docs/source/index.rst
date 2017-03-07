@@ -56,14 +56,14 @@ Features
 - Seamless integration with existing server setups
 - Fully supports 25 different currencies
 - First class support for storing data in the blockchain
-- Compressed public keys by default
-- Multiple representations of private keys; WIF, PEM, DER, etc.
-- Standard P2PKH transactions
 - Access to the blockchain through multiple APIs for redundancy
 - Exchange rate API, with optional caching
 - Optimal transaction fee API, with optional caching
+- Compressed public keys by default
+- Multiple representations of private keys; WIF, PEM, DER, etc.
+- Standard P2PKH transactions
 
-If you are intrigued, continue reading! If not, continue all the same!
+If you are intrigued, continue reading. If not, continue all the same!
 
 User Guide
 ----------
