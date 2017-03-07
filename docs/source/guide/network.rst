@@ -43,6 +43,8 @@ terms of other currencies using `balance_as`.
     >>> key.balance_as('cny')
     '6485.39'
 
+See also :ref:`unsupported currencies`.
+
 Unspent
 -------
 
