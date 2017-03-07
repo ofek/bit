@@ -36,7 +36,7 @@ feel intuitive, be effortless to use, and have readable source code.
     >>> # Let's donate!
     >>> outputs = [
     >>>     # Wikileaks
-    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', .004, 'btc'),
+    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', .0035, 'btc'),
     >>>     # Internet Archive
     >>>     ('1Archive1n2C579dMsAu3iC6tWzuQJz8dN', 190, 'jpy'),
     >>>     # The Pirate Bay
@@ -46,7 +46,9 @@ feel intuitive, be effortless to use, and have readable source code.
     >>> ]
     >>>
     >>> my_key.send(outputs)
-    TODO
+    '9f59f5c6757ec46fdc7440acbeb3920e614c8d1d247ac174eb6781b832710c1c'
+
+Here is the transaction `<https://blockchain.info/tx/9f59f5c6757ec46fdc7440acbeb3920e614c8d1d247ac174eb6781b832710c1c>`_.
 
 Features
 --------
