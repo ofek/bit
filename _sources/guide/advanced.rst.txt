@@ -9,11 +9,6 @@ Server Integration
 Blockchain Storage
 ------------------
 
-.. _unsupported currencies:
-
-Unsupported Currencies
-----------------------
-
 Services Timeout
 ----------------
 
@@ -23,6 +18,8 @@ If you want to change the default timeout of 5 seconds for service API calls:
 
     >>> from bit import set_service_timeout
     >>> set_service_timeout(3)
+
+.. _cache times:
 
 Cache Times
 -----------

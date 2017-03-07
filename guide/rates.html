@@ -45,8 +45,56 @@
     
   <div class="section" id="exchange-rates">
 <span id="id1"></span><h1>Exchange Rates<a class="headerlink" href="#exchange-rates" title="Permalink to this headline">¶</a></h1>
+<p>Bit gets exchange rate data from trusted third-party APIs. Specifically,
+it can access:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://bitpay.com/bitcoin-exchange-rates">https://bitpay.com/bitcoin-exchange-rates</a> via <cite>bit.network.rates.BitpayRates</cite></li>
+<li><a class="reference external" href="https://blockchain.info/api/exchange_rates_api">https://blockchain.info/api/exchange_rates_api</a> via <cite>bit.network.rates.BlockchainRates</cite></li>
+</ul>
+<div class="section" id="ratesapi">
+<h2>RatesApi<a class="headerlink" href="#ratesapi" title="Permalink to this headline">¶</a></h2>
+<p>Core operations use <cite>bit.network.rates.RatesApi</cite>. For each method,
+it polls a service and if an error occurs it tries another.</p>
+<p>You will likely never use this directly.</p>
+</div>
+<div class="section" id="currency-to-satoshi">
+<h2>Currency to Satoshi<a class="headerlink" href="#currency-to-satoshi" title="Permalink to this headline">¶</a></h2>
+<p>Bit exposes 2 ways to convert a given amount of currency to the equivalent
+number of satoshi: <cite>currency_to_satoshi</cite> and <cite>currency_to_satoshi_cached</cite>. The
+latter function will cache results for 1 minute <a class="reference internal" href="advanced.html#cache-times"><span class="std std-ref">by default</span></a>.</p>
+<p>Bit uses <cite>currency_to_satoshi_cached</cite> in transactions to convert the amount in
+each output to spendable satoshi.</p>
+<p>To illustrate, here is how your outputs in <cite>(destination, amount, currency)</cite>
+format are converted to <cite>(destination, satoshi)</cite> format for spending during
+transactions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">currency_to_satoshi_cached</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">outputs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">dest</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">currency</span> <span class="o">=</span> <span class="n">output</span>
+<span class="gp">... </span>    <span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">currency_to_satoshi_cached</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">currency</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="satoshi-to-currency">
+<h2>Satoshi to Currency<a class="headerlink" href="#satoshi-to-currency" title="Permalink to this headline">¶</a></h2>
+<p>Converting satoshi to another currency as a formatted string can be done using
+<cite>satoshi_to_currency</cite> or <cite>satoshi_to_currency_cached</cite>. The result will be
+rounded down to the proper number of decimal places for each currency.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">satoshi_to_currency_cached</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satoshi_to_currency_cached</span><span class="p">(</span><span class="mi">56789</span><span class="p">,</span> <span class="s1">&#39;usd&#39;</span><span class="p">)</span>
+<span class="go">&#39;0.59&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">satoshi_to_currency_cached</span><span class="p">(</span><span class="s1">&#39;56789&#39;</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)</span>
+<span class="go">&#39;82&#39;</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="supported-currencies">
 <span id="id2"></span><h2>Supported Currencies<a class="headerlink" href="#supported-currencies" title="Permalink to this headline">¶</a></h2>
+<p>These are all the currencies currently supported by Bit. Note that converting
+satoshi to itself, ubtc, mbtc, or btc never requires exchange rate data and
+therefore no network calls are needed.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="29%" />
@@ -136,6 +184,12 @@
 </tbody>
 </table>
 </div>
+<div class="section" id="unsupported-currencies">
+<span id="id3"></span><h2>Unsupported Currencies<a class="headerlink" href="#unsupported-currencies" title="Permalink to this headline">¶</a></h2>
+<p>If you need to use currencies in your <a class="reference internal" href="transactions.html#transactions"><span class="std std-ref">Transactions</span></a> that Bit does not
+support, convert it yourself to satoshi, ubtc, mbtc, or btc as these are
+supported natively.</p>
+</div>
 </div>
 
 
@@ -205,7 +259,11 @@
 <li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transactions.html">Transactions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Exchange Rates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ratesapi">RatesApi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#currency-to-satoshi">Currency to Satoshi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#satoshi-to-currency">Satoshi to Currency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#supported-currencies">Supported Currencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unsupported-currencies">Unsupported Currencies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="fees.html">Fees</a></li>
