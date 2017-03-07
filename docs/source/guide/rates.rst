@@ -8,8 +8,6 @@ Exchange Rates
 Supported Currencies
 --------------------
 
-Bit supports the following currencies:
-
 +---------+----------------------+
 | Code    | Currency             |
 +=========+======================+

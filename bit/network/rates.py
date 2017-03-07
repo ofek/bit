@@ -584,7 +584,7 @@ class CachedRate:
         self.last_update = last_update
 
 
-def currency_to_satoshi_cache(f):
+def currency_to_satoshi_local_cache(f):
     expiry_time = DEFAULT_CACHE_TIME
     start_time = time()
 
@@ -611,9 +611,13 @@ def currency_to_satoshi_cache(f):
     return wrapper
 
 
-@currency_to_satoshi_cache
-def currency_to_satoshi_cached():
+@currency_to_satoshi_local_cache
+def currency_to_satoshi_local_cached():
     pass  # pragma: no cover
+
+
+def currency_to_satoshi_cached(*args, **kwargs):
+    return currency_to_satoshi_local_cached(*args, **kwargs)
 
 
 def satoshi_to_currency(amount, currency):

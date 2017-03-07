@@ -19,7 +19,7 @@ def get_fee(fast=True):
     return requests.get(URL).json()['fastestFee' if fast else 'hourFee']
 
 
-def get_fee_cache(f):
+def get_fee_local_cache(f):
     expiry_time = DEFAULT_CACHE_TIME
 
     cached_fee_fast = None
@@ -64,6 +64,10 @@ def get_fee_cache(f):
     return wrapper
 
 
-@get_fee_cache
-def get_fee_cached():
+@get_fee_local_cache
+def get_fee_local_cached():
     pass  # pragma: no cover
+
+
+def get_fee_cached(*args, **kwargs):
+    return get_fee_local_cached(*args, **kwargs)
