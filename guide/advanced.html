@@ -46,9 +46,26 @@
 <span id="id1"></span><h1>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="server-integration">
 <h2>Server Integration<a class="headerlink" href="#server-integration" title="Permalink to this headline">¶</a></h2>
+<p>If you only want to use Bit for its raw speed to lessen the load on your
+servers, you don&#8217;t have to use any of our network capabilities.</p>
+<ul class="simple">
+<li>Use <cite>create_transaction</cite> instead of <cite>send</cite></li>
+<li>Supply <a class="reference internal" href="transactions.html#unspentparam"><span class="std std-ref">your own UTXOs</span></a></li>
+<li>Set <a class="reference internal" href="transactions.html#feeparam"><span class="std std-ref">your own fee</span></a></li>
+<li>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Outputs</span></a> only use these currencies: satoshi, ubtc,
+mbtc, or btc.</li>
+</ul>
 </div>
 <div class="section" id="blockchain-storage">
 <h2>Blockchain Storage<a class="headerlink" href="#blockchain-storage" title="Permalink to this headline">¶</a></h2>
+<p>Bit allows you to easily <a class="reference external" href="https://en.bitcoin.it/wiki/OP_RETURN">store messages or data</a> in the blockchain itself
+using the <cite>message</cite> parameter of <cite>create_transaction</cite> or <cite>send</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Simplicity level is over 9000!!!&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Messages will be encoded as UTF-8 when stored. Also, do note that the length
+of each datum must not exceed 40 bytes. Therefore, your resulting byte string
+will be stored in chunks to adhere to this property if it is too long.</p>
 </div>
 <div class="section" id="services-timeout">
 <h2>Services Timeout<a class="headerlink" href="#services-timeout" title="Permalink to this headline">¶</a></h2>

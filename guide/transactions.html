@@ -51,7 +51,7 @@ transaction in hex, and a <cite>send</cite> method that does the same thing but 
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.</p>
 <div class="section" id="outputs">
-<h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
+<span id="outputsparam"></span><h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
 <p>The only required argument is a list of outputs.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([(</span><span class="s1">&#39;1Archive1n2C579dMsAu3iC6tWzuQJz8dN&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
 </pre></div>
@@ -83,7 +83,7 @@ can specify where leftover funds go like this:</p>
 will be collected by miners as a fee.</p>
 </div>
 <div class="section" id="fee">
-<h2>Fee<a class="headerlink" href="#fee" title="Permalink to this headline">¶</a></h2>
+<span id="feeparam"></span><h2>Fee<a class="headerlink" href="#fee" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>&#8220;Miner fees are a small amount of digital currency that is included in
 transactions as a reward/incentive to the people who operate the network.
@@ -133,7 +133,7 @@ move your coins, you can specify a leftover address and zero outputs like so:</p
 </div>
 </div>
 <div class="section" id="unspent">
-<h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
+<span id="unspentparam"></span><h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
 <p>If you already have a means of communicating with the blockchain, you can
 supply your own list of unspent transaction outputs by doing either:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>

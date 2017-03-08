@@ -9,6 +9,8 @@ transaction in hex, and a `send` method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.
 
+.. _outputsparam:
+
 Outputs
 -------
 
@@ -48,6 +50,8 @@ can specify where leftover funds go like this:
 
 Whatever funds remain at this point (`remaining = unspent - (sending + leftover)`)
 will be collected by miners as a fee.
+
+.. _feeparam:
 
 Fee
 ---
@@ -107,6 +111,8 @@ move your coins, you can specify a leftover address and zero outputs like so:
 .. code-block:: python
 
     >>> key.create_transaction([], leftover='some_address')
+
+.. _unspentparam:
 
 Unspent
 -------
