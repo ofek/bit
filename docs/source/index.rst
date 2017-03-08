@@ -94,5 +94,8 @@ and the community surrounding it.
     :maxdepth: 1
 
     community/support
+    community/development
+    community/contributing
+    community/vulnerabilities
     community/updates
     community/authors
