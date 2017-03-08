@@ -83,3 +83,16 @@ of best practices.
     guide/rates
     guide/fees
     guide/advanced
+
+Community
+---------
+
+Here you will find everything you need to know about the development of Bit
+and the community surrounding it.
+
+.. toctree::
+    :maxdepth: 1
+
+    community/support
+    community/updates
+    community/authors
