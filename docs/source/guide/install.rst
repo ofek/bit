@@ -16,7 +16,7 @@ and Windows and supports Python 3.3+ and PyPy3.3-5.5+.
 Source Code
 -----------
 
-Bit is hosted by Github `here`_, where it is actively developed.
+Bit is hosted by GitHub `here`_, where it is actively developed.
 
 You can clone it like this:
 
