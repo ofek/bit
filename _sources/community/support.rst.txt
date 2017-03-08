@@ -19,3 +19,10 @@ IRC
 
 You find me in Freenode channels `#python <irc://irc.freenode.net/python>`_
 and `#bitcoin <irc://irc.freenode.net/bitcoin>`_ as ``ofek``.
+
+Email
+-----
+
+You can also email me at `ofekmeister@gmail.com <mailto:ofekmeister@gmail.com>`_.
+Though, if you intend to ask a question that others may benefit from knowing
+the answer, please use a more public option.

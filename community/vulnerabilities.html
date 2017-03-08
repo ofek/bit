@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Fees &#8212; Bit 0.1.0 documentation</title>
+    <title>Vulnerability Disclosure &#8212; Bit 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Advanced" href="advanced.html" />
-    <link rel="prev" title="Exchange Rates" href="rates.html" />
+    <link rel="next" title="Stay Informed" href="updates.html" />
+    <link rel="prev" title="Contributing" href="contributing.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,45 +43,32 @@
   <div class="bodywrapper">
     <div class="body" role="main">
     
-  <div class="section" id="fees">
-<span id="id1"></span><h1>Fees<a class="headerlink" href="#fees" title="Permalink to this headline">¶</a></h1>
-<p>Bit provides a convenient way to get recommended satoshi/byte fees in the
-form of <cite>get_fee</cite> and <cite>get_fee_cached</cite>, the latter of which will cache results
-for 10 minutes <a class="reference internal" href="advanced.html#cache-times"><span class="std std-ref">by default</span></a>. Currently, the only service in
-use is <a class="reference external" href="https://bitcoinfees.21.co/">https://bitcoinfees.21.co/</a>.</p>
-<p>Each function takes an optional argument <cite>fast</cite> that is <cite>True</cite> by default. If
-<cite>True</cite>, the fee returned will be &#8220;The lowest fee (in satoshis per byte) that
-will currently result in the fastest transaction confirmations (usually 0 to
-1 block delay)&#8221;. Otherwise, the number returned will be &#8220;The lowest fee (in
-satoshis per byte) that will confirm transactions within an hour (with 90%
-probability)&#8221;.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">get_fee</span><span class="p">,</span> <span class="n">get_fee_cached</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fee</span><span class="p">(</span><span class="n">fast</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="go">180</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fee_cached</span><span class="p">()</span>
-<span class="go">240</span>
-</pre></div>
-</div>
-<p>If recommended fee services are unreachable, hard-coded defaults will be used.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">fees</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fees</span><span class="o">.</span><span class="n">DEFAULT_FEE_FAST</span>
-<span class="go">220</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fees</span><span class="o">.</span><span class="n">DEFAULT_FEE_HOUR</span>
-<span class="go">160</span>
-</pre></div>
-</div>
+  <div class="section" id="vulnerability-disclosure">
+<h1>Vulnerability Disclosure<a class="headerlink" href="#vulnerability-disclosure" title="Permalink to this headline">¶</a></h1>
+<p>If you think you have discovered a potential security or privacy vulnerability
+in Bit, <strong>please do not file a public issue</strong>.</p>
+<p>Instead, send an encrypted message via email to:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Ofek Lev</dt>
+<dd><ul class="first last">
+<li>Email: <a class="reference external" href="mailto:ofekmeister&#37;&#52;&#48;gmail&#46;com">ofekmeister<span>&#64;</span>gmail<span>&#46;</span>com</a></li>
+<li>PGP key fingerprint: <a class="reference external" href="https://keybase.io/ofek/pgp_keys.asc?fingerprint=ffb6b92b30b17848546e9912972fe913dad5a46e">FFB6 B92B 30B1 7848 546E 9912 972F E913 DAD5 A46E</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 </div>
 
 
     <br>
     <ul>
       <li>
-        Previous topic: <a href="rates.html">Exchange Rates</a>
+        Previous topic: <a href="contributing.html">Contributing</a>
       </li>
       <li>
-        Next topic: <a href="advanced.html">Advanced</a>
+        Next topic: <a href="updates.html">Stay Informed</a>
       </li>
     </ul>
     </div>
@@ -134,38 +121,38 @@ probability)&#8221;.</p>
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
 </ul>
   <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="keys.html">Keys</a></li>
-<li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transactions.html">Transactions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rates.html">Exchange Rates</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Fees</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/keys.html">Keys</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/network.html">Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/transactions.html">Transactions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/rates.html">Exchange Rates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/fees.html">Fees</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/advanced.html">Advanced</a></li>
 </ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../community/support.html">Support</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/development.html">Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/vulnerabilities.html">Vulnerability Disclosure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/updates.html">Stay Informed</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/updates.html#release-history">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../community/authors.html">Authors</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Vulnerability Disclosure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updates.html">Stay Informed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="updates.html#release-history">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="rates.html" title="previous chapter">Exchange Rates</a></li>
-      <li>Next: <a href="advanced.html" title="next chapter">Advanced</a></li>
+      <li>Previous: <a href="contributing.html" title="previous chapter">Contributing</a></li>
+      <li>Next: <a href="updates.html" title="next chapter">Stay Informed</a></li>
   </ul></li>
 </ul>
 </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/guide/fees.rst.txt"
+      <li><a href="../_sources/community/vulnerabilities.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -215,7 +202,7 @@ probability)&#8221;.</p>
       &copy;2017, Ofek Lev.
       
       |
-      <a href="../_sources/guide/fees.rst.txt"
+      <a href="../_sources/community/vulnerabilities.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
