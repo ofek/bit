@@ -45,6 +45,60 @@
     
   <div class="section" id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="filing-an-issue">
+<h2>Filing an Issue<a class="headerlink" href="#filing-an-issue" title="Permalink to this headline">¶</a></h2>
+<p>This is the way to report <a class="reference internal" href="vulnerabilities.html#vulnerabilities"><span class="std std-ref">non-security related</span></a> issues
+and also to request features.</p>
+<ol class="arabic simple">
+<li>Go to <a class="reference external" href="https://github.com/ofek/bit/issues">Bit&#8217;s GitHub Issues</a>.</li>
+<li>Look through open and closed issues to see if there has already been a
+similar bug report or feature request.
+<a class="reference external" href="https://github.com/ofek/bit/search">GitHub&#8217;s search</a> feature may aid
+you as well.</li>
+<li>If your issue doesn&#8217;t appear to be a duplicate,
+<a class="reference external" href="https://github.com/ofek/bit/issues/new">file an issue</a>.</li>
+<li>Please be as descriptive as possible!</li>
+</ol>
+</div>
+<div class="section" id="pull-request">
+<h2>Pull Request<a class="headerlink" href="#pull-request" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Fork the repository <a class="reference external" href="https://github.com/ofek/bit">on GitHub</a>.</li>
+<li>Create a new branch for your work.</li>
+<li>Make your changes (see below).</li>
+<li>If this is your first contribution, add yourself to
+<a class="reference external" href="https://github.com/ofek/bit/blob/master/AUTHORS.rst">AUTHORS.rst</a>.</li>
+<li>Send a GitHub Pull Request to the <code class="docutils literal"><span class="pre">master</span></code> branch of <code class="docutils literal"><span class="pre">ofek/bit</span></code>.</li>
+</ol>
+<p>Step 3 is different depending on if you are contributing to the code base or
+documentation.</p>
+<div class="section" id="code">
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>Install <code class="docutils literal"><span class="pre">pytest</span></code> and <code class="docutils literal"><span class="pre">coverage</span></code> if you don&#8217;t have them already.</li>
+<li>Run <a class="reference external" href="https://github.com/ofek/bit/blob/master/run_tests.py">run_tests.py</a>
+which is located in the project directory. If any tests fail, and you
+are unable to diagnose the reason, please refer to <a class="reference internal" href="#filing-an-issue">Filing an Issue</a>.</li>
+<li>Complete your patch and write tests to verify your fix or feature is working.
+Please try to reduce the size and scope of your patch to make the review
+process go smoothly.</li>
+<li>Run the tests again and make any necessary changes to ensure all tests pass.</li>
+<li>Add any changes to the <strong>Unreleased</strong> section of
+<a class="reference external" href="https://github.com/ofek/bit/blob/master/HISTORY.rst">HISTORY.rst</a>.</li>
+</ol>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>Enter the <a class="reference external" href="https://github.com/ofek/bit/tree/master/docs">docs</a> directory.</li>
+<li>Make your changes to any files in <code class="docutils literal"><span class="pre">source/</span></code>.</li>
+<li>Run <code class="docutils literal"><span class="pre">make</span> <span class="pre">clean</span> <span class="pre">&amp;&amp;</span> <span class="pre">make</span> <span class="pre">html</span></code>. This will generate html files in a new
+<code class="docutils literal"><span class="pre">build/html/</span></code> directory.</li>
+<li>Open the generated pages and make any necessary changes to the <code class="docutils literal"><span class="pre">.rst</span></code>
+files until the the documentation looks properly formatted.</li>
+</ol>
+</div>
+</div>
 </div>
 
 
@@ -120,7 +174,15 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#filing-an-issue">Filing an Issue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pull-request">Pull Request</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="vulnerabilities.html">Vulnerability Disclosure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="updates.html">Stay Informed</a></li>
 <li class="toctree-l1"><a class="reference internal" href="updates.html#release-history">Release History</a></li>

@@ -10,8 +10,9 @@ has the final say regarding any new features or API changes.
 Philosophy
 ----------
 
-- Complex workflows can always be enabled by simple APIs
-- With planning, simple APIs can always be constructed by clear and concise code
+- Complex workflows can always be enabled through simple APIs
+- With planning, simple APIs can always be constructed using clear and concise
+  code
 - Satisfy the general use cases, then specialize
 
 Continuous Integration
