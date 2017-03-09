@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Development &#8212; Bit 0.1.0 documentation</title>
+    <title>Frequently Asked Questions &#8212; Bit 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Contributing" href="contributing.html" />
-    <link rel="prev" title="Support" href="support.html" />
+    <link rel="next" title="Support" href="support.html" />
+    <link rel="prev" title="Advanced" href="../guide/advanced.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,36 +43,28 @@
   <div class="bodywrapper">
     <div class="body" role="main">
     
-  <div class="section" id="development">
-<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="oversight">
-<h2>Oversight<a class="headerlink" href="#oversight" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://github.com/ofek">Ofek Lev</a>, who is also the only current maintainer,
-has the final say regarding any new features or API changes.</p>
+  <div class="section" id="frequently-asked-questions">
+<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="why-python-3-only">
+<h2>Why Python 3 only?<a class="headerlink" href="#why-python-3-only" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Python 3 has faster <code class="docutils literal"><span class="pre">int</span></code> &lt;-&gt; <code class="docutils literal"><span class="pre">bytes</span></code> conversion.</li>
+<li>The official (really this time) EOL for Python 2 is the year 2020.</li>
+<li>Polyglot is messy.</li>
+</ol>
 </div>
-<div class="section" id="philosophy">
-<h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Complex workflows can always be enabled through simple APIs</li>
-<li>With planning, simple APIs can always be constructed using clear and concise
-code</li>
-<li>Satisfy the general use cases, then specialize</li>
-</ul>
+<div class="section" id="how-so-fast">
+<h2>How so fast?<a class="headerlink" href="#how-so-fast" title="Permalink to this headline">¶</a></h2>
+<p>Bit uses <a class="reference external" href="https://github.com/pyca/cryptography">pyca/cryptography</a> for most
+cryptographic operations, which itself is a wrapper around
+<a class="reference external" href="https://github.com/openssl/openssl">OpenSSL</a>.</p>
 </div>
-<div class="section" id="continuous-integration">
-<h2>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://travis-ci.org">Travis CI</a> is used for testing and <a class="reference external" href="https://codecov.io">Codecov</a> is used for detailing code
-coverage. No pull request will be merged without passing the test suite and
-achieving 100% code coverage.</p>
-</div>
-<div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<p>Docs are hosted by <a class="reference external" href="https://pages.github.com">GitHub Pages</a> and are automatically built and published
-by Travis after every successful commit to Bit&#8217;s <code class="docutils literal"><span class="pre">master</span></code> branch.</p>
-</div>
-<div class="section" id="version-scheme">
-<h2>Version Scheme<a class="headerlink" href="#version-scheme" title="Permalink to this headline">¶</a></h2>
-<p>Bit tries to adhere to <a class="reference external" href="https://goo.gl/iQwd4o">semantic versioning</a> as much as possible.</p>
+<div class="section" id="why-github-pages-instead-of-readthedocs">
+<h2>Why GitHub Pages instead of ReadtheDocs?<a class="headerlink" href="#why-github-pages-instead-of-readthedocs" title="Permalink to this headline">¶</a></h2>
+<p>GitHub Pages has better page load times and is a bit more reliable. Also,
+not only does <a class="reference external" href="https://github.com/blog/1939-how-github-uses-github-to-document-github">GitHub itself</a> use it, but other large projects like <a class="reference external" href="https://github.com/facebook/react">React</a>,
+<a class="reference external" href="https://github.com/twbs/bootstrap">Bootstrap</a>, etc. do too.</p>
+<p>I consider GitHub more future-proof.</p>
 </div>
 </div>
 
@@ -80,10 +72,10 @@ by Travis after every successful commit to Bit&#8217;s <code class="docutils lit
     <br>
     <ul>
       <li>
-        Previous topic: <a href="support.html">Support</a>
+        Previous topic: <a href="../guide/advanced.html">Advanced</a>
       </li>
       <li>
-        Next topic: <a href="contributing.html">Contributing</a>
+        Next topic: <a href="support.html">Support</a>
       </li>
     </ul>
     </div>
@@ -147,16 +139,14 @@ by Travis after every successful commit to Bit&#8217;s <code class="docutils lit
 <li class="toctree-l1"><a class="reference internal" href="../guide/advanced.html">Advanced</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#oversight">Oversight</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#philosophy">Philosophy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#continuous-integration">Continuous Integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-scheme">Version Scheme</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-python-3-only">Why Python 3 only?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-so-fast">How so fast?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-github-pages-instead-of-readthedocs">Why GitHub Pages instead of ReadtheDocs?</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vulnerabilities.html">Vulnerability Disclosure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="updates.html">Stay Informed</a></li>
@@ -170,15 +160,15 @@ by Travis after every successful commit to Bit&#8217;s <code class="docutils lit
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="support.html" title="previous chapter">Support</a></li>
-      <li>Next: <a href="contributing.html" title="next chapter">Contributing</a></li>
+      <li>Previous: <a href="../guide/advanced.html" title="previous chapter">Advanced</a></li>
+      <li>Next: <a href="support.html" title="next chapter">Support</a></li>
   </ul></li>
 </ul>
 </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/community/development.rst.txt"
+      <li><a href="../_sources/community/faq.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -228,7 +218,7 @@ by Travis after every successful commit to Bit&#8217;s <code class="docutils lit
       &copy;2017, Ofek Lev.
       
       |
-      <a href="../_sources/community/development.rst.txt"
+      <a href="../_sources/community/faq.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
