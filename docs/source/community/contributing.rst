@@ -51,4 +51,9 @@ Documentation
 3. Run ``make clean && make html``. This will generate html files in a new
    ``build/html/`` directory.
 4. Open the generated pages and make any necessary changes to the ``.rst``
-   files until the the documentation looks properly formatted.
+   files until the documentation looks properly formatted.
+
+TODO
+----
+
+.. include:: ../../../TODO.rst

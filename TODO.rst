@@ -1,29 +1,9 @@
-TODO
-====
-
-cli
----
-
-lmdb
-----
-
-rbf
----
-
-support payments occurring in future
-------------------------------------
-
-hd wallet
----------
-
-support getting unspents with confirmation limit
-------------------------------------------------
-
-direct network connection
--------------------------
-
-segwit
-------
-
-add gui with Kivy
------------------
+- Add optional caching with LMDB
+- Implement `replace-by-fee <https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki>`_
+- Implement `future payments <https://github.com/bitcoin/bips/blob/master/bip-0065.mediawiki>`_
+- Implement `HD wallets <https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki>`_
+- Support getting unspents with confirmation limit
+- Add CLI using `Click <https://github.com/pallets/click>`_
+- direct network connection (ughh sockets)
+- segwit
+- Add GUI using `Kivy <https://github.com/kivy/kivy>`_
