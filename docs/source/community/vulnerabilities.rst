@@ -1,3 +1,5 @@
+.. _vulnerabilities:
+
 Vulnerability Disclosure
 ========================
 
