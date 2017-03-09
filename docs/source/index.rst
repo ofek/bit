@@ -93,9 +93,21 @@ and the community surrounding it.
 .. toctree::
     :maxdepth: 1
 
+    community/faq
     community/support
     community/development
     community/contributing
     community/vulnerabilities
     community/updates
     community/authors
+
+Dev Guide
+---------
+
+Up ahead is Bit's API and a few notes about design decisions. Beware the
+pedantry, or lack thereof.
+
+.. toctree::
+    :maxdepth: 1
+
+    dev/api
