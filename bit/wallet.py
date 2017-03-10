@@ -15,6 +15,17 @@ from bit.utils import hex_to_int, int_to_hex
 
 
 class BaseKey:
+    """This class represents a point on the elliptic curve secp256k1 and
+    provides all necessary cryptographic functionality.
+
+    :param wif: A private key serialized to the Wallet Import Format. If the
+                argument is not supplied, a new private key will be created.
+                The WIF compression flag will be adhered to, but the version
+                byte is disregarded. Compression will be used by all new keys.
+    :type wif: str
+    :raises TypeError: If ``wif`` is not a ``str``.
+    """
+
     def __init__(self, wif=None):
         if wif:
             if isinstance(wif, str):
@@ -24,7 +35,7 @@ class BaseKey:
                 self._pk = wif
                 compressed = True
             else:
-                raise ValueError('Wallet Import Format must be a string.')
+                raise TypeError('Wallet Import Format must be a string.')
         else:
             self._pk = generate_private_key()
             compressed = True
@@ -128,10 +139,7 @@ class PrivateKey(BaseKey):
         return satoshi_to_currency_cached(self.balance, currency)
 
     def get_balance(self, currency='satoshi'):
-        balance = 0
-        for unspent in self.get_unspents():
-            balance += unspent.amount
-        self.balance = balance
+        self.balance = sum(unspent.amount for unspent in self.get_unspents())
         return self.balance_as(currency)
 
     def get_unspents(self):
@@ -199,10 +207,7 @@ class PrivateKeyTestnet(BaseKey):
         return satoshi_to_currency_cached(self.balance, currency)
 
     def get_balance(self, currency='satoshi'):
-        balance = 0
-        for unspent in self.get_unspents():
-            balance += unspent.amount
-        self.balance = balance
+        self.balance = sum(unspent.amount for unspent in self.get_unspents())
         return self.balance_as(currency)
 
     def get_unspents(self):

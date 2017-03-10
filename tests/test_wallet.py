@@ -28,7 +28,7 @@
 #         assert base_key._pk == pk
 #
 #     def test_init_wif_error(self):
-#         with pytest.raises(ValueError):
+#         with pytest.raises(TypeError):
 #             BaseKey(b'\x00')
 #
 #     def test_public_key_compressed(self):
@@ -121,7 +121,7 @@
 #
 #     def test_get_balance(self):
 #         private_key = PrivateKey(WALLET_FORMAT_MAIN)
-#         balance = private_key.get_balance()
+#         balance = int(private_key.get_balance())
 #         assert balance == private_key.balance
 #
 #     def test_get_unspent(self):
@@ -161,7 +161,7 @@
 #
 #     def test_get_balance(self):
 #         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
-#         balance = private_key.get_balance()
+#         balance = int(private_key.get_balance())
 #         assert balance == private_key.balance
 #
 #     def test_get_unspent(self):
@@ -179,8 +179,18 @@
 #         private_key.get_unspents()
 #         initial = len(private_key.get_transactions())
 #         private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
-#         time.sleep(10)
-#         assert len(private_key.get_transactions()) > initial
+#
+#         current = initial
+#         tries = 0
+#
+#         while tries < 10:  # pragma: no cover
+#             current = len(private_key.get_transactions())
+#             if current > initial:
+#                 break
+#             time.sleep(5)
+#             tries += 1
+#
+#         assert current > initial
 #
 #     def test_repr(self):
 #         assert repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN)) == '<PrivateKeyTestnet: mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS>'
