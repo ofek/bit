@@ -40,17 +40,21 @@ class BaseKey:
             self._pk = generate_private_key()
             compressed = True
 
-        self._public_point = self._pk.public_key().public_numbers()
+        self._public_point = None
         self._public_key = point_to_public_key(
-            self._public_point, compressed=compressed
+            self._pk.public_key().public_numbers(), compressed=compressed
         )
 
     @property
     def public_key(self):
         return self._public_key
 
+    @property
     def public_point(self):
-        return Point(self._public_point.x, self._public_point.y)
+        if self._public_point is None:
+            point = self._pk.public_key().public_numbers()
+            self._public_point = Point(point.x, point.y)
+        return self._public_point
 
     def sign(self, data):
         return make_compliant_sig(self._pk.sign(data, ECDSA_SHA256))

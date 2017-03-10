@@ -108,6 +108,6 @@ Up ahead is Bit's API and a few notes about design decisions. Beware the
 pedantry, or lack thereof.
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     dev/api

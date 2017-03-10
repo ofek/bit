@@ -41,7 +41,8 @@
 #
 #     def test_public_point(self):
 #         base_key = BaseKey(WALLET_FORMAT_MAIN)
-#         assert base_key.public_point() == Point(PUBLIC_KEY_X, PUBLIC_KEY_Y)
+#         assert base_key.public_point == Point(PUBLIC_KEY_X, PUBLIC_KEY_Y)
+#         assert base_key.public_point == Point(PUBLIC_KEY_X, PUBLIC_KEY_Y)
 #
 #     def test_sign(self):
 #         base_key = BaseKey()
