@@ -60,17 +60,17 @@ Hex to WIF
 
 If you store your keys as hex instead of WIF you lose the ability to retain
 metadata. To convert your hex keys to WIF to use certain properties, use
-`bit.format.private_key_hex_to_wif`.
+`bit.format.hex_to_wif`.
 
 .. code-block:: python
 
     >>> from bit import Key
-    >>> from bit.format import private_key_hex_to_wif
+    >>> from bit.format import hex_to_wif
     >>>
     >>> # Compressed by default
     >>> key1 = Key()
     >>>
-    >>> wif = private_key_hex_to_wif(key1.to_hex(), compressed=False)
+    >>> wif = hex_to_wif(key1.to_hex(), compressed=False)
     >>> key2 = Key(wif)
     >>>
     >>> # Same point on curve

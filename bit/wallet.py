@@ -5,8 +5,8 @@ from bit.crypto import (
 from bit.curve import Point
 from bit.exceptions import InvalidSignature
 from bit.format import (
-    make_compliant_sig, point_to_public_key, private_key_hex_to_wif,
-    public_key_to_address, wif_to_private_key_hex
+    make_compliant_sig, point_to_public_key, hex_to_wif,
+    public_key_to_address, wif_to_hex
 )
 from bit.keygen import derive_private_key, generate_private_key
 from bit.network import NetworkApi, get_fee_cached, satoshi_to_currency_cached
@@ -29,7 +29,7 @@ class BaseKey:
     def __init__(self, wif=None):
         if wif:
             if isinstance(wif, str):
-                private_key_hex, compressed = wif_to_private_key_hex(wif)
+                private_key_hex, compressed = wif_to_hex(wif)
                 self._pk = derive_private_key(hex_to_int(private_key_hex))
             elif isinstance(wif, EllipticCurvePrivateKey):
                 self._pk = wif
@@ -47,10 +47,12 @@ class BaseKey:
 
     @property
     def public_key(self):
+        """The public point serialized to bytes."""
         return self._public_key
 
     @property
     def public_point(self):
+        """"""
         if self._public_point is None:
             point = self._pk.public_key().public_numbers()
             self._public_point = Point(point.x, point.y)
@@ -133,7 +135,7 @@ class PrivateKey(BaseKey):
         return self._address
 
     def to_wif(self):
-        return private_key_hex_to_wif(
+        return hex_to_wif(
             self.to_hex(),
             version='main',
             compressed=True if len(self._public_key) == 33 else False
@@ -201,7 +203,7 @@ class PrivateKeyTestnet(BaseKey):
         return self._address
 
     def to_wif(self):
-        return private_key_hex_to_wif(
+        return hex_to_wif(
             self.to_hex(),
             version='test',
             compressed=True if len(self._public_key) == 33 else False

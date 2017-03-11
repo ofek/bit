@@ -12,3 +12,4 @@ Keys
 
 .. autoclass:: bit.wallet.BaseKey
     :members:
+    :undoc-members:

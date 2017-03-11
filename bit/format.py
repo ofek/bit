@@ -48,7 +48,7 @@ def address_to_public_key_hash(address):
     return b58decode_check(address)[1:]
 
 
-def private_key_hex_to_wif(private_key, version='main', compressed=False):
+def hex_to_wif(private_key, version='main', compressed=False):
 
     if version == 'test':
         prefix = TEST_PRIVATE_KEY
@@ -68,7 +68,7 @@ def private_key_hex_to_wif(private_key, version='main', compressed=False):
     return b58encode_check(private_key)
 
 
-def wif_to_private_key_hex(wif):
+def wif_to_hex(wif):
 
     private_key = b58decode_check(wif)
 

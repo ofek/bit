@@ -42,7 +42,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy'
     ),
 
-    install_requires=('cryptography>=1.6', 'requests'),
+    install_requires=('cryptography>=1.8.1', 'requests'),
     extras_require={
         'cli': ('appdirs', 'click', 'privy', 'tinydb'),
         'cache': ('lmdb', ),
