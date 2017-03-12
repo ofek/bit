@@ -102,8 +102,8 @@ WIF
 ^^^
 
 The `wallet import format`_ is the primary way of representing private keys. This
-format stores the secret value as well as some metadata such as whether or not it
-should compress the public key.
+format stores the secret value as well as some metadata such as whether or not the
+public key should be compressed.
 
 To import a private key you can pass a key in wallet import format directly to
 the initializer:
@@ -121,6 +121,17 @@ Export:
     >>> key = Key()
     >>> key.to_wif()
     'KxVhypbvS3hEYPAP3pYuH1LtcfbdEUcugiqg7fNFUUnmEfWVXJV4'
+
+If you don't know what kind of private key your WIF represents, and you don't
+want to force the use of a particular class, you can use `wif_to_key`.
+
+.. code-block:: python
+
+    >>> from bit import wif_to_key
+    >>>
+    >>> key = wif_to_key('cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ')
+    >>> print(key)
+    <PrivateKeyTestnet: muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz>
 
 Hex
 ^^^
