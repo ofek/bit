@@ -47,7 +47,7 @@ SUPPORTED_CURRENCIES = OrderedDict([
     ('clp', 'Chilean Peso')
 ])
 
-# http://apps.cybersource.com/library/documentation/sbc/quickref/currencies.pdf
+# https://en.wikipedia.org/wiki/ISO_4217
 CURRENCY_PRECISION = {
     'satoshi': 0,
     'ubtc': 2,
