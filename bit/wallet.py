@@ -14,6 +14,21 @@ from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_dat
 from bit.utils import hex_to_int, int_to_hex
 
 
+def wif_to_key(wif):
+    private_key_hex, compressed, version = wif_to_hex(wif)
+
+    if version == 'main':
+        if compressed:
+            return PrivateKey.from_hex(private_key_hex)
+        else:
+            return PrivateKey(wif)
+    else:
+        if compressed:
+            return PrivateKeyTestnet.from_hex(private_key_hex)
+        else:
+            return PrivateKeyTestnet(wif)
+
+
 class BaseKey:
     """This class represents a point on the elliptic curve secp256k1 and
     provides all necessary cryptographic functionality.
@@ -29,7 +44,7 @@ class BaseKey:
     def __init__(self, wif=None):
         if wif:
             if isinstance(wif, str):
-                private_key_hex, compressed = wif_to_hex(wif)
+                private_key_hex, compressed, version = wif_to_hex(wif)
                 self._pk = derive_private_key(hex_to_int(private_key_hex))
             elif isinstance(wif, EllipticCurvePrivateKey):
                 self._pk = wif
@@ -87,30 +102,6 @@ class BaseKey:
     def to_int(self):
         return self._pk.private_numbers().private_value
 
-    @classmethod
-    def from_hex(cls, hexed):
-        return PrivateKey(derive_private_key(hex_to_int(hexed)))
-
-    @classmethod
-    def from_der(cls, der):
-        return PrivateKey(load_der_private_key(
-            der,
-            password=None,
-            backend=DEFAULT_BACKEND
-        ))
-
-    @classmethod
-    def from_pem(cls, pem):
-        return PrivateKey(load_pem_private_key(
-            pem,
-            password=None,
-            backend=DEFAULT_BACKEND
-        ))
-
-    @classmethod
-    def from_int(cls, num):
-        return PrivateKey(derive_private_key(num))
-
     def is_compressed(self):
         return True if len(self.public_key) == 33 else False
 
@@ -138,7 +129,7 @@ class PrivateKey(BaseKey):
         return hex_to_wif(
             self.to_hex(),
             version='main',
-            compressed=True if len(self._public_key) == 33 else False
+            compressed=self.is_compressed()
         )
 
     def balance_as(self, currency):
@@ -182,6 +173,30 @@ class PrivateKey(BaseKey):
 
         return calc_txid(tx_hex)
 
+    @classmethod
+    def from_hex(cls, hexed):
+        return PrivateKey(derive_private_key(hex_to_int(hexed)))
+
+    @classmethod
+    def from_der(cls, der):
+        return PrivateKey(load_der_private_key(
+            der,
+            password=None,
+            backend=DEFAULT_BACKEND
+        ))
+
+    @classmethod
+    def from_pem(cls, pem):
+        return PrivateKey(load_pem_private_key(
+            pem,
+            password=None,
+            backend=DEFAULT_BACKEND
+        ))
+
+    @classmethod
+    def from_int(cls, num):
+        return PrivateKey(derive_private_key(num))
+
     def __repr__(self):
         return '<PrivateKey: {}>'.format(self.address)
 
@@ -206,7 +221,7 @@ class PrivateKeyTestnet(BaseKey):
         return hex_to_wif(
             self.to_hex(),
             version='test',
-            compressed=True if len(self._public_key) == 33 else False
+            compressed=self.is_compressed()
         )
 
     def balance_as(self, currency):
@@ -247,6 +262,30 @@ class PrivateKeyTestnet(BaseKey):
         NetworkApi.broadcast_test_tx(tx_hex)
 
         return calc_txid(tx_hex)
+
+    @classmethod
+    def from_hex(cls, hexed):
+        return PrivateKeyTestnet(derive_private_key(hex_to_int(hexed)))
+
+    @classmethod
+    def from_der(cls, der):
+        return PrivateKeyTestnet(load_der_private_key(
+            der,
+            password=None,
+            backend=DEFAULT_BACKEND
+        ))
+
+    @classmethod
+    def from_pem(cls, pem):
+        return PrivateKeyTestnet(load_pem_private_key(
+            pem,
+            password=None,
+            backend=DEFAULT_BACKEND
+        ))
+
+    @classmethod
+    def from_int(cls, num):
+        return PrivateKeyTestnet(derive_private_key(num))
 
     def __repr__(self):
         return '<PrivateKeyTestnet: {}>'.format(self.address)

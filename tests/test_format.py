@@ -51,13 +51,13 @@ class TestHexToWIF:
 
 class TestWIFToHex:
     def test_wif_to_hex_main(self):
-        assert wif_to_hex(WALLET_FORMAT_MAIN) == (PRIVATE_KEY_HEX, False)
+        assert wif_to_hex(WALLET_FORMAT_MAIN) == (PRIVATE_KEY_HEX, False, 'main')
 
     def test_wif_to_hex_test(self):
-        assert wif_to_hex(WALLET_FORMAT_TEST) == (PRIVATE_KEY_HEX, False)
+        assert wif_to_hex(WALLET_FORMAT_TEST) == (PRIVATE_KEY_HEX, False, 'test')
 
     def test_wif_to_hex_compressed(self):
-        assert wif_to_hex(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_HEX, True)
+        assert wif_to_hex(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_HEX, True, 'main')
 
     def test_wif_to_hex_invalid_network(self):
         with pytest.raises(ValueError):

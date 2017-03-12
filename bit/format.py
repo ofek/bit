@@ -72,7 +72,13 @@ def wif_to_hex(wif):
 
     private_key = b58decode_check(wif)
 
-    if private_key[:1] not in (MAIN_PRIVATE_KEY, TEST_PRIVATE_KEY):
+    version = private_key[:1]
+
+    if version == MAIN_PRIVATE_KEY:
+        version = 'main'
+    elif version == TEST_PRIVATE_KEY:
+        version = 'test'
+    else:
         raise ValueError('{} does not correspond to a mainnet nor '
                          'testnet address.'.format(private_key[:1]))
 
@@ -82,7 +88,7 @@ def wif_to_hex(wif):
     else:
         private_key, compressed = private_key[1:], False
 
-    return bytes_to_hex(private_key), compressed
+    return bytes_to_hex(private_key), compressed, version
 
 
 def wif_checksum_check(wif):

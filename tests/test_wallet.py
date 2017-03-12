@@ -5,7 +5,7 @@
 # from bit.crypto import ECDSA_SHA256, EllipticCurvePrivateKey
 # from bit.curve import Point
 # from bit.keygen import generate_private_key
-# from bit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet
+# from bit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
 # from .samples import (
 #     BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_DER,
 #     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
@@ -13,6 +13,28 @@
 #     PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
 #     WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 # )
+#
+#
+# class TestWIFToKey:
+#     def test_compressed_main(self):
+#         key = wif_to_key(WALLET_FORMAT_COMPRESSED_MAIN)
+#         assert isinstance(key, PrivateKey)
+#         assert key.is_compressed()
+#
+#     def test_uncompressed_main(self):
+#         key = wif_to_key(WALLET_FORMAT_MAIN)
+#         assert isinstance(key, PrivateKey)
+#         assert not key.is_compressed()
+#
+#     def test_compressed_test(self):
+#         key = wif_to_key(WALLET_FORMAT_COMPRESSED_TEST)
+#         assert isinstance(key, PrivateKeyTestnet)
+#         assert key.is_compressed()
+#
+#     def test_uncompressed_test(self):
+#         key = wif_to_key(WALLET_FORMAT_TEST)
+#         assert isinstance(key, PrivateKeyTestnet)
+#         assert not key.is_compressed()
 #
 #
 # class TestBaseKey:
@@ -76,24 +98,12 @@
 #         base_key = BaseKey(WALLET_FORMAT_MAIN)
 #         assert base_key.to_int() == PRIVATE_KEY_NUM
 #
-#     def test_from_hex(self):
-#         assert BaseKey.from_hex(PRIVATE_KEY_HEX).to_hex() == PRIVATE_KEY_HEX
-#
-#     def test_from_der(self):
-#         assert BaseKey.from_der(PRIVATE_KEY_DER).to_der() == PRIVATE_KEY_DER
-#
-#     def test_from_pem(self):
-#         assert BaseKey.from_pem(PRIVATE_KEY_PEM).to_pem() == PRIVATE_KEY_PEM
-#
-#     def test_from_int(self):
-#         assert BaseKey.from_int(PRIVATE_KEY_NUM).to_int() == PRIVATE_KEY_NUM
-#
 #     def test_is_compressed(self):
 #         assert BaseKey(WALLET_FORMAT_COMPRESSED_MAIN).is_compressed() is True
 #         assert BaseKey(WALLET_FORMAT_MAIN).is_compressed() is False
 #
 #     def test_equal(self):
-#         assert BaseKey.from_int(10) == BaseKey.from_int(10)
+#         assert BaseKey(WALLET_FORMAT_COMPRESSED_MAIN) == BaseKey(WALLET_FORMAT_COMPRESSED_MAIN)
 #
 #
 # class TestPrivateKey:
@@ -134,6 +144,26 @@
 #         private_key = PrivateKey(WALLET_FORMAT_MAIN)
 #         transactions = private_key.get_transactions()
 #         assert transactions == private_key.transactions
+#
+#     def test_from_hex(self):
+#         key = PrivateKey.from_hex(PRIVATE_KEY_HEX)
+#         assert isinstance(key, PrivateKey)
+#         assert key.to_hex() == PRIVATE_KEY_HEX
+#
+#     def test_from_der(self):
+#         key = PrivateKey.from_der(PRIVATE_KEY_DER)
+#         assert isinstance(key, PrivateKey)
+#         assert key.to_der() == PRIVATE_KEY_DER
+#
+#     def test_from_pem(self):
+#         key = PrivateKey.from_pem(PRIVATE_KEY_PEM)
+#         assert isinstance(key, PrivateKey)
+#         assert key.to_pem() == PRIVATE_KEY_PEM
+#
+#     def test_from_int(self):
+#         key = PrivateKey.from_int(PRIVATE_KEY_NUM)
+#         assert isinstance(key, PrivateKey)
+#         assert key.to_int() == PRIVATE_KEY_NUM
 #
 #     def test_repr(self):
 #         assert repr(PrivateKey(WALLET_FORMAT_MAIN)) == '<PrivateKey: 1ELReFsTCUY2mfaDTy32qxYiT49z786eFg>'
@@ -192,6 +222,26 @@
 #             tries += 1
 #
 #         assert current > initial
+#
+#     def test_from_hex(self):
+#         key = PrivateKeyTestnet.from_hex(PRIVATE_KEY_HEX)
+#         assert isinstance(key, PrivateKeyTestnet)
+#         assert key.to_hex() == PRIVATE_KEY_HEX
+#
+#     def test_from_der(self):
+#         key = PrivateKeyTestnet.from_der(PRIVATE_KEY_DER)
+#         assert isinstance(key, PrivateKeyTestnet)
+#         assert key.to_der() == PRIVATE_KEY_DER
+#
+#     def test_from_pem(self):
+#         key = PrivateKeyTestnet.from_pem(PRIVATE_KEY_PEM)
+#         assert isinstance(key, PrivateKeyTestnet)
+#         assert key.to_pem() == PRIVATE_KEY_PEM
+#
+#     def test_from_int(self):
+#         key = PrivateKeyTestnet.from_int(PRIVATE_KEY_NUM)
+#         assert isinstance(key, PrivateKeyTestnet)
+#         assert key.to_int() == PRIVATE_KEY_NUM
 #
 #     def test_repr(self):
 #         assert repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN)) == '<PrivateKeyTestnet: mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS>'
