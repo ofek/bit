@@ -67,13 +67,21 @@ class BaseKey:
 
     @property
     def public_point(self):
-        """"""
+        """The public point (x, y)."""
         if self._public_point is None:
             point = self._pk.public_key().public_numbers()
             self._public_point = Point(point.x, point.y)
         return self._public_point
 
     def sign(self, data):
+        """Signs some data which can be verified later by others using
+        the public key.
+
+        :param data: The message to sign.
+        :type data: bytes
+        :return: Signature compliant with BIP-62.
+        :rtype: bytes
+        """
         return make_compliant_sig(self._pk.sign(data, ECDSA_SHA256))
 
     def verify(self, signature, data):
