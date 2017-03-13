@@ -31,13 +31,14 @@ def wif_to_key(wif):
 
 class BaseKey:
     """This class represents a point on the elliptic curve secp256k1 and
-    provides all necessary cryptographic functionality.
+    provides all necessary cryptographic functionality. You shouldn't use
+    this class directly.
 
     :param wif: A private key serialized to the Wallet Import Format. If the
                 argument is not supplied, a new private key will be created.
                 The WIF compression flag will be adhered to, but the version
                 byte is disregarded. Compression will be used by all new keys.
-    :type wif: str
+    :type wif: ``str``
     :raises TypeError: If ``wif`` is not a ``str``.
     """
 
@@ -78,22 +79,32 @@ class BaseKey:
         the public key.
 
         :param data: The message to sign.
-        :type data: bytes
-        :return: Signature compliant with BIP-62.
-        :rtype: bytes
+        :type data: ``bytes``
+        :returns: A signature compliant with BIP-62.
+        :rtype: ``bytes``
         """
         return make_compliant_sig(self._pk.sign(data, ECDSA_SHA256))
 
     def verify(self, signature, data):
+        """Verifies some data was signed by this private key.
+
+        :param signature: The signature to verify.
+        :type signature: ``bytes``
+        :param data: The data that was supposedly signed.
+        :type data: ``bytes``
+        :rtype: ``bool``
+        """
         try:
             return self._pk.public_key().verify(signature, data, ECDSA_SHA256)
         except InvalidSignature:
             return False
 
     def to_hex(self):
+        """:rtype: ``str``"""
         return int_to_hex(self._pk.private_numbers().private_value)
 
     def to_der(self):
+        """:rtype: ``bytes``"""
         return self._pk.private_bytes(
             encoding=Encoding.DER,
             format=PrivateFormat.PKCS8,
@@ -101,6 +112,7 @@ class BaseKey:
         )
 
     def to_pem(self):
+        """:rtype: ``bytes``"""
         return self._pk.private_bytes(
             encoding=Encoding.PEM,
             format=PrivateFormat.PKCS8,
@@ -108,9 +120,15 @@ class BaseKey:
         )
 
     def to_int(self):
+        """:rtype: ``int``"""
         return self._pk.private_numbers().private_value
 
     def is_compressed(self):
+        """Returns whether or not this private key corresponds to a compressed
+        public key.
+
+        :rtype: ``bool``
+        """
         return True if len(self.public_key) == 33 else False
 
     def __eq__(self, other):
@@ -118,6 +136,16 @@ class BaseKey:
 
 
 class PrivateKey(BaseKey):
+    """This class represents a Bitcoin private key. ``Key`` is an alias.
+
+    :param wif: A private key serialized to the Wallet Import Format. If the
+                argument is not supplied, a new private key will be created.
+                The WIF compression flag will be adhered to, but the version
+                byte is disregarded. Compression will be used by all new keys.
+    :type wif: ``str``
+    :raises TypeError: If ``wif`` is not a ``str``.
+    """
+
     def __init__(self, wif=None):
         super().__init__(wif=wif)
 
@@ -129,6 +157,7 @@ class PrivateKey(BaseKey):
 
     @property
     def address(self):
+        """The public address you share with others to receive funds."""
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='main')
         return self._address
@@ -141,22 +170,75 @@ class PrivateKey(BaseKey):
         )
 
     def balance_as(self, currency):
+        """Returns your balance as a formatted string in a particular currency.
+
+        :param currency: One of the :ref:`supported currencies`.
+        :type currency: ``str``
+        :rtype: ``str``
+        """
         return satoshi_to_currency_cached(self.balance, currency)
 
     def get_balance(self, currency='satoshi'):
+        """Fetches the current balance by calling
+        :func:`~bit.wallet.PrivateKey.get_unspents` and returns it using
+        :func:`~bit.wallet.PrivateKey.balance_as`.
+
+        :param currency: One of the :ref:`supported currencies`.
+        :type currency: ``str``
+        :rtype: ``str``
+        """
         self.balance = sum(unspent.amount for unspent in self.get_unspents())
         return self.balance_as(currency)
 
     def get_unspents(self):
+        """Fetches all available unspent transaction outputs.
+
+        :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
+        """
         self.unspents[:] = NetworkApi.get_unspent(self.address)
         return self.unspents
 
     def get_transactions(self):
+        """Fetches transaction history.
+
+        :rtype: ``list`` of ``str`` transaction IDs
+        """
         self.transactions[:] = NetworkApi.get_transactions(self.address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
                            message=None, unspents=None):  # pragma: no cover
+        """Creates a signed P2PKH transaction.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple`` objects
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bit should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bit will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :returns: The signed transaction as hex.
+        :rtype: ``str``
+        """
 
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
@@ -172,6 +254,39 @@ class PrivateKey(BaseKey):
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
              message=None, unspents=None):  # pragma: no cover
+        """Creates a signed P2PKH transaction and attempts to broadcast it on
+        the blockchain. This accepts the same arguments as
+        :func:`~bit.wallet.PrivateKey.create_transaction`.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple`` objects
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bit should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bit will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :returns: The transaction ID.
+        :rtype: ``str``
+        """
 
         tx_hex = self.create_transaction(
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
@@ -183,10 +298,20 @@ class PrivateKey(BaseKey):
 
     @classmethod
     def from_hex(cls, hexed):
+        """
+        :param hexed: A private key previously encoded as hex.
+        :type hexed: ``str``
+        :rtype: :class:`~bit.wallet.PrivateKey`
+        """
         return PrivateKey(derive_private_key(hex_to_int(hexed)))
 
     @classmethod
     def from_der(cls, der):
+        """
+        :param der: A private key previously encoded as DER.
+        :type der: ``bytes``
+        :rtype: :class:`~bit.wallet.PrivateKey`
+        """
         return PrivateKey(load_der_private_key(
             der,
             password=None,
@@ -195,6 +320,11 @@ class PrivateKey(BaseKey):
 
     @classmethod
     def from_pem(cls, pem):
+        """
+        :param pem: A private key previously encoded as PEM.
+        :type pem: ``bytes``
+        :rtype: :class:`~bit.wallet.PrivateKey`
+        """
         return PrivateKey(load_pem_private_key(
             pem,
             password=None,
@@ -203,6 +333,11 @@ class PrivateKey(BaseKey):
 
     @classmethod
     def from_int(cls, num):
+        """
+        :param num: A private key in raw integer form.
+        :type num: ``int``
+        :rtype: :class:`~bit.wallet.PrivateKey`
+        """
         return PrivateKey(derive_private_key(num))
 
     def __repr__(self):
@@ -210,6 +345,17 @@ class PrivateKey(BaseKey):
 
 
 class PrivateKeyTestnet(BaseKey):
+    """This class represents a testnet Bitcoin private key. **Note:** coins
+    on the test network have no monetary value!
+
+    :param wif: A private key serialized to the Wallet Import Format. If the
+                argument is not supplied, a new private key will be created.
+                The WIF compression flag will be adhered to, but the version
+                byte is disregarded. Compression will be used by all new keys.
+    :type wif: ``str``
+    :raises TypeError: If ``wif`` is not a ``str``.
+    """
+
     def __init__(self, wif=None):
         super().__init__(wif=wif)
 
@@ -221,6 +367,7 @@ class PrivateKeyTestnet(BaseKey):
 
     @property
     def address(self):
+        """The public address you share with others to receive funds."""
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='test')
         return self._address
@@ -233,21 +380,75 @@ class PrivateKeyTestnet(BaseKey):
         )
 
     def balance_as(self, currency):
+        """Returns your balance as a formatted string in a particular currency.
+
+        :param currency: One of the :ref:`supported currencies`.
+        :type currency: ``str``
+        :rtype: ``str``
+        """
         return satoshi_to_currency_cached(self.balance, currency)
 
     def get_balance(self, currency='satoshi'):
+        """Fetches the current balance by calling
+        :func:`~bit.wallet.PrivateKeyTestnet.get_unspents` and returns it using
+        :func:`~bit.wallet.PrivateKeyTestnet.balance_as`.
+
+        :param currency: One of the :ref:`supported currencies`.
+        :type currency: ``str``
+        :rtype: ``str``
+        """
         self.balance = sum(unspent.amount for unspent in self.get_unspents())
         return self.balance_as(currency)
 
     def get_unspents(self):
+        """Fetches all available unspent transaction outputs.
+
+        :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
+        """
         self.unspents[:] = NetworkApi.get_test_unspent(self.address)
         return self.unspents
 
     def get_transactions(self):
+        """Fetches transaction history.
+
+        :rtype: ``list`` of ``str`` transaction IDs
+        """
         self.transactions[:] = NetworkApi.get_test_transactions(self.address)
         return self.transactions
 
-    def create_transaction(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
+    def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
+                           message=None, unspents=None):
+        """Creates a signed P2PKH transaction.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple`` objects
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bit should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bit will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the testnet blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :returns: The signed transaction as hex.
+        :rtype: ``str``
+        """
 
         unspents, outputs = sanitize_tx_data(
             unspents or self.unspents,
@@ -261,7 +462,41 @@ class PrivateKeyTestnet(BaseKey):
 
         return create_p2pkh_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, leftover=None, combine=True, message=None, unspents=None):
+    def send(self, outputs, fee=None, leftover=None, combine=True,
+             message=None, unspents=None):
+        """Creates a signed P2PKH transaction and attempts to broadcast it on
+        the testnet blockchain. This accepts the same arguments as
+        :func:`~bit.wallet.PrivateKeyTestnet.create_transaction`.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple`` objects
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bit should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bit will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the testnet blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :returns: The transaction ID.
+        :rtype: ``str``
+        """
 
         tx_hex = self.create_transaction(
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
@@ -273,10 +508,20 @@ class PrivateKeyTestnet(BaseKey):
 
     @classmethod
     def from_hex(cls, hexed):
+        """
+        :param hexed: A private key previously encoded as hex.
+        :type hexed: ``str``
+        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        """
         return PrivateKeyTestnet(derive_private_key(hex_to_int(hexed)))
 
     @classmethod
     def from_der(cls, der):
+        """
+        :param der: A private key previously encoded as DER.
+        :type der: ``bytes``
+        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        """
         return PrivateKeyTestnet(load_der_private_key(
             der,
             password=None,
@@ -285,6 +530,11 @@ class PrivateKeyTestnet(BaseKey):
 
     @classmethod
     def from_pem(cls, pem):
+        """
+        :param pem: A private key previously encoded as PEM.
+        :type pem: ``bytes``
+        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        """
         return PrivateKeyTestnet(load_pem_private_key(
             pem,
             password=None,
@@ -293,6 +543,11 @@ class PrivateKeyTestnet(BaseKey):
 
     @classmethod
     def from_int(cls, num):
+        """
+        :param num: A private key in raw integer form.
+        :type num: ``int``
+        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        """
         return PrivateKeyTestnet(derive_private_key(num))
 
     def __repr__(self):
