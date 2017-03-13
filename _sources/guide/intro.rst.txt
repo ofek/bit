@@ -36,7 +36,7 @@ Instantiate a compressed private key and get its computed public key:
 .. code-block:: bash
 
     $ python -m timeit -s "from bit import Key" "Key('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key"
-    1000 loops, best of 3: 969 usec per loop
+    1000 loops, best of 3: 1.01 msec per loop
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey" "PrivateKey.from_b58check('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key.compressed_bytes"
     100 loops, best of 3: 11 msec per loop
     $ python -m timeit -s "from pycoin.key import Key" "Key.from_text('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').sec()"
@@ -49,7 +49,7 @@ We'll use two1 only as that was the closest to Bit. Computing the address:
 .. code-block:: bash
 
     $ python -m timeit -s "from bit import Key;k=Key()" "k.address"
-    1000000 loops, best of 3: 0.259 usec per loop
+    1000000 loops, best of 3: 0.251 usec per loop
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()" "k.public_key.address()"
     10000 loops, best of 3: 31.1 usec per loop
 
@@ -58,7 +58,7 @@ Signing, which is the most used operation:
 .. code-block:: bash
 
     $ python -m timeit -s "from bit import Key;k=Key()" "k.sign(b'data')"
-    1000 loops, best of 3: 882 usec per loop
+    1000 loops, best of 3: 765 usec per loop
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()" "k.raw_sign(b'data')"
     100 loops, best of 3: 10.7 msec per loop
 

@@ -90,7 +90,7 @@ will also be different.</p>
 is a one-way function, there is no known way to derive the private value
 from the point.</p>
 <p>You can see it like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_point</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_point</span>
 <span class="go">Point(x=97142194878787224003202190607135598251247304976930950188466413219499502457410, y=43606604972619611673144670688496329906728122067438546662512577612023859619611)</span>
 </pre></div>
 </div>
@@ -123,8 +123,8 @@ derive your address and is needed in the construction of every transaction.</p>
 <div class="section" id="wif">
 <h3>WIF<a class="headerlink" href="#wif" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format">wallet import format</a> is the primary way of representing private keys. This
-format stores the secret value as well as some metadata such as whether or not it
-should compress the public key.</p>
+format stores the secret value as well as some metadata such as whether or not the
+public key should be compressed.</p>
 <p>To import a private key you can pass a key in wallet import format directly to
 the initializer:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="s1">&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;</span><span class="p">)</span>
@@ -136,6 +136,15 @@ the initializer:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_wif</span><span class="p">()</span>
 <span class="go">&#39;KxVhypbvS3hEYPAP3pYuH1LtcfbdEUcugiqg7fNFUUnmEfWVXJV4&#39;</span>
+</pre></div>
+</div>
+<p>If you don&#8217;t know what kind of private key your WIF represents, and you don&#8217;t
+want to force the use of a particular class, you can use <cite>wif_to_key</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">wif_to_key</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<span class="go">&lt;PrivateKeyTestnet: muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz&gt;</span>
 </pre></div>
 </div>
 </div>

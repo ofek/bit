@@ -90,14 +90,14 @@ or recommended fees (10 minutes):</p>
 <span id="hextowif"></span><h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
 <p>If you store your keys as hex instead of WIF you lose the ability to retain
 metadata. To convert your hex keys to WIF to use certain properties, use
-<cite>bit.format.private_key_hex_to_wif</cite>.</p>
+<cite>bit.format.hex_to_wif</cite>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">private_key_hex_to_wif</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">hex_to_wif</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compressed by default</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">wif</span> <span class="o">=</span> <span class="n">private_key_hex_to_wif</span><span class="p">(</span><span class="n">key1</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(),</span> <span class="n">compressed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wif</span> <span class="o">=</span> <span class="n">hex_to_wif</span><span class="p">(</span><span class="n">key1</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(),</span> <span class="n">compressed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key2</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">wif</span><span class="p">)</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Same point on curve</span>
