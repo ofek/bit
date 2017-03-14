@@ -2,7 +2,7 @@
 #
 # import bit
 # from bit.network.services import (
-#     BitpayAPI, BlockchainAPI, BlockrAPI, NetworkApi, SmartbitAPI,
+#     BitpayAPI, BlockchainAPI, BlockrAPI, NetworkAPI, SmartbitAPI,
 #     set_service_timeout
 # )
 # from tests.utils import (
@@ -39,8 +39,8 @@
 #     set_service_timeout(original)
 #
 #
-# class MockBackend(NetworkApi):
-#     IGNORED_ERRORS = NetworkApi.IGNORED_ERRORS
+# class MockBackend(NetworkAPI):
+#     IGNORED_ERRORS = NetworkAPI.IGNORED_ERRORS
 #     GET_BALANCE_MAIN = [raise_connection_error]
 #     GET_TRANSACTIONS_MAIN = [raise_connection_error]
 #     GET_UNSPENT_MAIN = [raise_connection_error]
@@ -49,9 +49,9 @@
 #     GET_UNSPENT_TEST = [raise_connection_error]
 #
 #
-# class TestNetworkApi:
+# class TestNetworkAPI:
 #     def test_get_balance_main_equal(self):
-#         results = [call(MAIN_ADDRESS_USED2) for call in NetworkApi.GET_BALANCE_MAIN]
+#         results = [call(MAIN_ADDRESS_USED2) for call in NetworkAPI.GET_BALANCE_MAIN]
 #         assert all(result == results[0] for result in results)
 #
 #     def test_get_balance_main_failure(self):
@@ -59,7 +59,7 @@
 #             MockBackend.get_balance(MAIN_ADDRESS_USED2)
 #
 #     def test_get_balance_test_equal(self):
-#         results = [call(TEST_ADDRESS_USED2) for call in NetworkApi.GET_BALANCE_TEST]
+#         results = [call(TEST_ADDRESS_USED2) for call in NetworkAPI.GET_BALANCE_TEST]
 #         assert all(result == results[0] for result in results)
 #
 #     def test_get_balance_test_failure(self):
@@ -67,7 +67,7 @@
 #             MockBackend.get_balance_testnet(TEST_ADDRESS_USED2)
 #
 #     def test_get_transactions_main_equal(self):
-#         results = [call(MAIN_ADDRESS_USED1)[:200] for call in NetworkApi.GET_TRANSACTIONS_MAIN]
+#         results = [call(MAIN_ADDRESS_USED1)[:200] for call in NetworkAPI.GET_TRANSACTIONS_MAIN]
 #         assert all_items_common(results)
 #
 #     def test_get_transactions_main_failure(self):
@@ -75,7 +75,7 @@
 #             MockBackend.get_transactions(MAIN_ADDRESS_USED1)
 #
 #     def test_get_transactions_test_equal(self):
-#         results = [call(TEST_ADDRESS_USED2)[:200] for call in NetworkApi.GET_TRANSACTIONS_TEST]
+#         results = [call(TEST_ADDRESS_USED2)[:200] for call in NetworkAPI.GET_TRANSACTIONS_TEST]
 #         assert all_items_common(results)
 #
 #     def test_get_transactions_test_failure(self):
@@ -83,7 +83,7 @@
 #             MockBackend.get_transactions_testnet(TEST_ADDRESS_USED2)
 #
 #     def test_get_unspent_main_equal(self):
-#         results = [call(MAIN_ADDRESS_USED1) for call in NetworkApi.GET_UNSPENT_MAIN]
+#         results = [call(MAIN_ADDRESS_USED1) for call in NetworkAPI.GET_UNSPENT_MAIN]
 #         assert all_items_equal(results)
 #
 #     def test_get_unspent_main_failure(self):
@@ -91,7 +91,7 @@
 #             MockBackend.get_unspent(MAIN_ADDRESS_USED1)
 #
 #     def test_get_unspent_test_equal(self):
-#         results = [call(TEST_ADDRESS_USED2) for call in NetworkApi.GET_UNSPENT_TEST]
+#         results = [call(TEST_ADDRESS_USED2) for call in NetworkAPI.GET_UNSPENT_TEST]
 #         assert all_items_equal(results)
 #
 #     def test_get_unspent_test_failure(self):
@@ -99,7 +99,7 @@
 #             MockBackend.get_unspent_testnet(TEST_ADDRESS_USED2)
 #
 #
-# @decorate_methods(catch_errors_raise_warnings, NetworkApi.IGNORED_ERRORS)
+# @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
 # class TestBitpayAPI:
 #     def test_get_balance_return_type(self):
 #         assert isinstance(BitpayAPI.get_balance(MAIN_ADDRESS_USED1), int)
@@ -147,7 +147,7 @@
 #         assert len(BitpayAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
 #
 #
-# @decorate_methods(catch_errors_raise_warnings, NetworkApi.IGNORED_ERRORS)
+# @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
 # class TestBlockrAPI:
 #     def test_get_balance_return_type(self):
 #         assert isinstance(BlockrAPI.get_balance(MAIN_ADDRESS_USED1), int)
@@ -197,7 +197,7 @@
 #         assert len(BlockrAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
 #
 #
-# @decorate_methods(catch_errors_raise_warnings, NetworkApi.IGNORED_ERRORS)
+# @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
 # class TestBlockchainAPI:
 #     def test_get_balance_return_type(self):
 #         assert isinstance(BlockchainAPI.get_balance(MAIN_ADDRESS_USED1), int)
@@ -227,7 +227,7 @@
 #         assert len(BlockchainAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 #
 #
-# @decorate_methods(catch_errors_raise_warnings, NetworkApi.IGNORED_ERRORS)
+# @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
 # class TestSmartbitAPI:
 #     def test_get_balance_return_type(self):
 #         assert isinstance(SmartbitAPI.get_balance(MAIN_ADDRESS_USED1), int)

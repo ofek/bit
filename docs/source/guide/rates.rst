@@ -9,10 +9,10 @@ it can access:
 - `<https://bitpay.com/bitcoin-exchange-rates>`_ via `bit.network.rates.BitpayRates`
 - `<https://blockchain.info/api/exchange_rates_api>`_ via `bit.network.rates.BlockchainRates`
 
-RatesApi
+RatesAPI
 --------
 
-Core operations use `bit.network.rates.RatesApi`. For each method,
+Core operations use `bit.network.rates.RatesAPI`. For each method,
 it polls a service and if an error occurs it tries another.
 
 You will likely never use this directly.

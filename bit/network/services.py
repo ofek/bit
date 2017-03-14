@@ -298,7 +298,7 @@ class SmartbitAPI:
         return True if r.status_code == 200 else False
 
 
-class NetworkApi:
+class NetworkAPI:
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout)
 

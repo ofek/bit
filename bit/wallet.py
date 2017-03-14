@@ -9,7 +9,7 @@ from bit.format import (
     public_key_to_address, wif_to_hex
 )
 from bit.keygen import derive_private_key, generate_private_key
-from bit.network import NetworkApi, get_fee_cached, satoshi_to_currency_cached
+from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 from bit.utils import hex_to_int, int_to_hex
 
@@ -195,7 +195,7 @@ class PrivateKey(BaseKey):
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkApi.get_unspent(self.address)
+        self.unspents[:] = NetworkAPI.get_unspent(self.address)
         return self.unspents
 
     def get_transactions(self):
@@ -203,7 +203,7 @@ class PrivateKey(BaseKey):
 
         :rtype: ``list`` of ``str`` transaction IDs
         """
-        self.transactions[:] = NetworkApi.get_transactions(self.address)
+        self.transactions[:] = NetworkAPI.get_transactions(self.address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -292,7 +292,7 @@ class PrivateKey(BaseKey):
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
-        NetworkApi.broadcast_tx(tx_hex)
+        NetworkAPI.broadcast_tx(tx_hex)
 
         return calc_txid(tx_hex)
 
@@ -405,7 +405,7 @@ class PrivateKeyTestnet(BaseKey):
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkApi.get_unspent_testnet(self.address)
+        self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
         return self.unspents
 
     def get_transactions(self):
@@ -413,7 +413,7 @@ class PrivateKeyTestnet(BaseKey):
 
         :rtype: ``list`` of ``str`` transaction IDs
         """
-        self.transactions[:] = NetworkApi.get_transactions_testnet(self.address)
+        self.transactions[:] = NetworkAPI.get_transactions_testnet(self.address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -502,7 +502,7 @@ class PrivateKeyTestnet(BaseKey):
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
-        NetworkApi.broadcast_tx_testnet(tx_hex)
+        NetworkAPI.broadcast_tx_testnet(tx_hex)
 
         return calc_txid(tx_hex)
 

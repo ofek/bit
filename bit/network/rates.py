@@ -284,7 +284,7 @@ class BlockchainRates:
         return cls.currency_to_satoshi('TWD')
 
 
-class RatesApi:
+class RatesAPI:
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout)
 
@@ -547,27 +547,27 @@ EXCHANGE_RATES = {
     'ubtc': ubtc_to_satoshi,
     'mbtc': mbtc_to_satoshi,
     'btc': btc_to_satoshi,
-    'usd': RatesApi.usd_to_satoshi,
-    'eur': RatesApi.eur_to_satoshi,
-    'gbp': RatesApi.gbp_to_satoshi,
-    'jpy': RatesApi.jpy_to_satoshi,
-    'cny': RatesApi.cny_to_satoshi,
-    'cad': RatesApi.cad_to_satoshi,
-    'aud': RatesApi.aud_to_satoshi,
-    'nzd': RatesApi.nzd_to_satoshi,
-    'rub': RatesApi.rub_to_satoshi,
-    'brl': RatesApi.brl_to_satoshi,
-    'chf': RatesApi.chf_to_satoshi,
-    'sek': RatesApi.sek_to_satoshi,
-    'dkk': RatesApi.dkk_to_satoshi,
-    'isk': RatesApi.isk_to_satoshi,
-    'pln': RatesApi.pln_to_satoshi,
-    'hkd': RatesApi.hkd_to_satoshi,
-    'krw': RatesApi.krw_to_satoshi,
-    'sgd': RatesApi.sgd_to_satoshi,
-    'thb': RatesApi.thb_to_satoshi,
-    'twd': RatesApi.twd_to_satoshi,
-    'clp': RatesApi.clp_to_satoshi
+    'usd': RatesAPI.usd_to_satoshi,
+    'eur': RatesAPI.eur_to_satoshi,
+    'gbp': RatesAPI.gbp_to_satoshi,
+    'jpy': RatesAPI.jpy_to_satoshi,
+    'cny': RatesAPI.cny_to_satoshi,
+    'cad': RatesAPI.cad_to_satoshi,
+    'aud': RatesAPI.aud_to_satoshi,
+    'nzd': RatesAPI.nzd_to_satoshi,
+    'rub': RatesAPI.rub_to_satoshi,
+    'brl': RatesAPI.brl_to_satoshi,
+    'chf': RatesAPI.chf_to_satoshi,
+    'sek': RatesAPI.sek_to_satoshi,
+    'dkk': RatesAPI.dkk_to_satoshi,
+    'isk': RatesAPI.isk_to_satoshi,
+    'pln': RatesAPI.pln_to_satoshi,
+    'hkd': RatesAPI.hkd_to_satoshi,
+    'krw': RatesAPI.krw_to_satoshi,
+    'sgd': RatesAPI.sgd_to_satoshi,
+    'thb': RatesAPI.thb_to_satoshi,
+    'twd': RatesAPI.twd_to_satoshi,
+    'clp': RatesAPI.clp_to_satoshi
 }
 
 

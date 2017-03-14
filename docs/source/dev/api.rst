@@ -27,7 +27,24 @@ Keys
 Network
 -------
 
-.. autoclass:: bit.network.NetworkApi
+.. autoclass:: bit.network.NetworkAPI
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.services.BitpayAPI
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+.. autoclass:: bit.network.services.BlockchainAPI
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.services.SmartbitAPI
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.services.BlockrAPI
     :members:
     :undoc-members:
 

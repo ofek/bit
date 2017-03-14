@@ -114,10 +114,10 @@ Specifically, it can access:
 - `<https://smartbit.com.au>`_ via `bit.network.services.SmartbitAPI`
 - `<http://blockr.io>`_ via `bit.network.services.BlockrAPI`
 
-NetworkApi
+NetworkAPI
 ^^^^^^^^^^
 
-Private key network operations use `bit.network.NetworkApi`. For each method,
+Private key network operations use `bit.network.NetworkAPI`. For each method,
 it polls a service and if an error occurs it tries another.
 
 .. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)
