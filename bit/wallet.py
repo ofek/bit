@@ -180,8 +180,8 @@ class PrivateKey(BaseKey):
 
     def get_balance(self, currency='satoshi'):
         """Fetches the current balance by calling
-        :func:`~bit.wallet.PrivateKey.get_unspents` and returns it using
-        :func:`~bit.wallet.PrivateKey.balance_as`.
+        :func:`~bit.PrivateKey.get_unspents` and returns it using
+        :func:`~bit.PrivateKey.balance_as`.
 
         :param currency: One of the :ref:`supported currencies`.
         :type currency: ``str``
@@ -256,7 +256,7 @@ class PrivateKey(BaseKey):
              message=None, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
-        :func:`~bit.wallet.PrivateKey.create_transaction`.
+        :func:`~bit.PrivateKey.create_transaction`.
 
         :param outputs: A sequence of outputs you wish to send in the form
                         ``(destination, amount, currency)``. The amount can
@@ -301,7 +301,7 @@ class PrivateKey(BaseKey):
         """
         :param hexed: A private key previously encoded as hex.
         :type hexed: ``str``
-        :rtype: :class:`~bit.wallet.PrivateKey`
+        :rtype: :class:`~bit.PrivateKey`
         """
         return PrivateKey(derive_private_key(hex_to_int(hexed)))
 
@@ -310,7 +310,7 @@ class PrivateKey(BaseKey):
         """
         :param der: A private key previously encoded as DER.
         :type der: ``bytes``
-        :rtype: :class:`~bit.wallet.PrivateKey`
+        :rtype: :class:`~bit.PrivateKey`
         """
         return PrivateKey(load_der_private_key(
             der,
@@ -323,7 +323,7 @@ class PrivateKey(BaseKey):
         """
         :param pem: A private key previously encoded as PEM.
         :type pem: ``bytes``
-        :rtype: :class:`~bit.wallet.PrivateKey`
+        :rtype: :class:`~bit.PrivateKey`
         """
         return PrivateKey(load_pem_private_key(
             pem,
@@ -336,7 +336,7 @@ class PrivateKey(BaseKey):
         """
         :param num: A private key in raw integer form.
         :type num: ``int``
-        :rtype: :class:`~bit.wallet.PrivateKey`
+        :rtype: :class:`~bit.PrivateKey`
         """
         return PrivateKey(derive_private_key(num))
 
@@ -390,8 +390,8 @@ class PrivateKeyTestnet(BaseKey):
 
     def get_balance(self, currency='satoshi'):
         """Fetches the current balance by calling
-        :func:`~bit.wallet.PrivateKeyTestnet.get_unspents` and returns it using
-        :func:`~bit.wallet.PrivateKeyTestnet.balance_as`.
+        :func:`~bit.PrivateKeyTestnet.get_unspents` and returns it using
+        :func:`~bit.PrivateKeyTestnet.balance_as`.
 
         :param currency: One of the :ref:`supported currencies`.
         :type currency: ``str``
@@ -466,7 +466,7 @@ class PrivateKeyTestnet(BaseKey):
              message=None, unspents=None):
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
-        :func:`~bit.wallet.PrivateKeyTestnet.create_transaction`.
+        :func:`~bit.PrivateKeyTestnet.create_transaction`.
 
         :param outputs: A sequence of outputs you wish to send in the form
                         ``(destination, amount, currency)``. The amount can
@@ -511,7 +511,7 @@ class PrivateKeyTestnet(BaseKey):
         """
         :param hexed: A private key previously encoded as hex.
         :type hexed: ``str``
-        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        :rtype: :class:`~bit.PrivateKeyTestnet`
         """
         return PrivateKeyTestnet(derive_private_key(hex_to_int(hexed)))
 
@@ -520,7 +520,7 @@ class PrivateKeyTestnet(BaseKey):
         """
         :param der: A private key previously encoded as DER.
         :type der: ``bytes``
-        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        :rtype: :class:`~bit.PrivateKeyTestnet`
         """
         return PrivateKeyTestnet(load_der_private_key(
             der,
@@ -533,7 +533,7 @@ class PrivateKeyTestnet(BaseKey):
         """
         :param pem: A private key previously encoded as PEM.
         :type pem: ``bytes``
-        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        :rtype: :class:`~bit.PrivateKeyTestnet`
         """
         return PrivateKeyTestnet(load_pem_private_key(
             pem,
@@ -546,7 +546,7 @@ class PrivateKeyTestnet(BaseKey):
         """
         :param num: A private key in raw integer form.
         :type num: ``int``
-        :rtype: :class:`~bit.wallet.PrivateKeyTestnet`
+        :rtype: :class:`~bit.PrivateKeyTestnet`
         """
         return PrivateKeyTestnet(derive_private_key(num))
 

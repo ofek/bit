@@ -10,12 +10,12 @@ Developer Interface
 Keys
 ----
 
-.. autoclass:: bit.wallet.PrivateKey
+.. autoclass:: bit.PrivateKey
     :members:
     :undoc-members:
     :inherited-members:
 
-.. autoclass:: bit.wallet.PrivateKeyTestnet
+.. autoclass:: bit.PrivateKeyTestnet
     :members:
     :undoc-members:
     :inherited-members:
@@ -23,3 +23,8 @@ Keys
 .. autoclass:: bit.wallet.BaseKey
     :members:
     :undoc-members:
+
+Network
+-------
+
+.. autoclass:: bit.network
