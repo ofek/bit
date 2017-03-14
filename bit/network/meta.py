@@ -4,6 +4,7 @@ TX_TRUST_HIGH = 30
 
 
 class Unspent:
+    """Represents an unspent transaction output (UTXO)."""
     __slots__ = ('amount', 'confirmations', 'script', 'txid', 'txindex')
 
     def __init__(self, amount, confirmations, script, txid, txindex):

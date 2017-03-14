@@ -7,8 +7,8 @@ DEFAULT_TIMEOUT = 5
 
 
 def set_service_timeout(seconds):
-    global DEFAULT_CACHE_TIME
-    DEFAULT_CACHE_TIME = seconds
+    global DEFAULT_TIMEOUT
+    DEFAULT_TIMEOUT = seconds
 
 
 class InsightAPI:
@@ -61,17 +61,17 @@ class BitpayAPI(InsightAPI):
     TX_PUSH_PARAM = 'rawtx'
 
     @classmethod
-    def get_test_balance(cls, address):
+    def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
         return r.json()
 
     @classmethod
-    def get_test_transactions(cls, address):
+    def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
         return r.json()['transactions']
 
     @classmethod
-    def get_test_unspent(cls, address):
+    def get_unspent_testnet(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'btc'),
@@ -83,7 +83,7 @@ class BitpayAPI(InsightAPI):
         ]
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
         r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
@@ -109,7 +109,7 @@ class BlockrAPI:
         return currency_to_satoshi(r.json()['data']['balance'], 'btc')
 
     @classmethod
-    def get_test_balance(cls, address):
+    def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API + address, timeout=DEFAULT_TIMEOUT)
         return currency_to_satoshi(r.json()['data']['balance'], 'btc')
 
@@ -120,7 +120,7 @@ class BlockrAPI:
         return [d['tx'] for d in tx_data]
 
     @classmethod
-    def get_test_transactions(cls, address):
+    def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_TRANSACTION_API + address, timeout=DEFAULT_TIMEOUT)
         tx_data = r.json()['data']['txs']
         return [d['tx'] for d in tx_data]
@@ -138,7 +138,7 @@ class BlockrAPI:
         ]
 
     @classmethod
-    def get_test_unspent(cls, address):
+    def get_unspent_testnet(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'btc'),
@@ -155,7 +155,7 @@ class BlockrAPI:
         return True if r.status_code == 200 else False
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
         r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
@@ -235,7 +235,7 @@ class SmartbitAPI:
         return r.json()['address']['total']['balance_int']
 
     @classmethod
-    def get_test_balance(cls, address):
+    def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1', timeout=DEFAULT_TIMEOUT)
         return r.json()['address']['total']['balance_int']
 
@@ -252,7 +252,7 @@ class SmartbitAPI:
         return transactions
 
     @classmethod
-    def get_test_transactions(cls, address):
+    def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
         data = r.json()['address']
 
@@ -276,7 +276,7 @@ class SmartbitAPI:
         ]
 
     @classmethod
-    def get_test_unspent(cls, address):
+    def get_unspent_testnet(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API.format(address) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
         return [
             Unspent(currency_to_satoshi(tx['value'], 'btc'),
@@ -293,7 +293,7 @@ class SmartbitAPI:
         return True if r.status_code == 200 else False
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
         r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
@@ -319,21 +319,28 @@ class NetworkApi:
                          SmartbitAPI.broadcast_tx,
                          BlockrAPI.broadcast_tx]  # Limit 5/minute
 
-    GET_BALANCE_TEST = [BitpayAPI.get_test_balance,
-                        BlockrAPI.get_test_balance,
-                        SmartbitAPI.get_test_balance]
-    GET_TRANSACTIONS_TEST = [BitpayAPI.get_test_transactions,  # Limit 1000
-                             SmartbitAPI.get_test_transactions,  # Limit 1000
-                             BlockrAPI.get_test_transactions]  # Limit 200
-    GET_UNSPENT_TEST = [BitpayAPI.get_test_unspent,  # No limit
-                        BlockrAPI.get_test_unspent,  # No limit
-                        SmartbitAPI.get_test_unspent]  # Limit 1000
-    BROADCAST_TX_TEST = [BitpayAPI.broadcast_test_tx,
-                         SmartbitAPI.broadcast_test_tx,
-                         BlockrAPI.broadcast_test_tx]  # Limit 5/minute
+    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
+                        BlockrAPI.get_balance_testnet,
+                        SmartbitAPI.get_balance_testnet]
+    GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,  # Limit 1000
+                             SmartbitAPI.get_transactions_testnet,  # Limit 1000
+                             BlockrAPI.get_transactions_testnet]  # Limit 200
+    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,  # No limit
+                        BlockrAPI.get_unspent_testnet,  # No limit
+                        SmartbitAPI.get_unspent_testnet]  # Limit 1000
+    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
+                         SmartbitAPI.broadcast_tx_testnet,
+                         BlockrAPI.broadcast_tx_testnet]  # Limit 5/minute
 
     @classmethod
     def get_balance(cls, address):
+        """Gets the balance of an address in satoshi.
+
+        :param address: The address in question.
+        :type address: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``int``
+        """
 
         for api_call in cls.GET_BALANCE_MAIN:
             try:
@@ -344,7 +351,14 @@ class NetworkApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def get_test_balance(cls, address):
+    def get_balance_testnet(cls, address):
+        """Gets the balance of an address on the test network in satoshi.
+
+        :param address: The address in question.
+        :type address: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``int``
+        """
 
         for api_call in cls.GET_BALANCE_TEST:
             try:
@@ -356,6 +370,13 @@ class NetworkApi:
 
     @classmethod
     def get_transactions(cls, address):
+        """Gets the ID of all transactions related to an address.
+
+        :param address: The address in question.
+        :type address: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``list`` of ``str``
+        """
 
         for api_call in cls.GET_TRANSACTIONS_MAIN:
             try:
@@ -366,7 +387,15 @@ class NetworkApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def get_test_transactions(cls, address):
+    def get_transactions_testnet(cls, address):
+        """Gets the ID of all transactions related to an address on the test
+        network.
+
+        :param address: The address in question.
+        :type address: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``list`` of ``str``
+        """
 
         for api_call in cls.GET_TRANSACTIONS_TEST:
             try:
@@ -378,6 +407,13 @@ class NetworkApi:
 
     @classmethod
     def get_unspent(cls, address):
+        """Gets all unspent transaction outputs belonging to an address.
+
+        :param address: The address in question.
+        :type address: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
+        """
 
         for api_call in cls.GET_UNSPENT_MAIN:
             try:
@@ -388,7 +424,15 @@ class NetworkApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def get_test_unspent(cls, address):
+    def get_unspent_testnet(cls, address):
+        """Gets all unspent transaction outputs belonging to an address on the
+        test network.
+
+        :param address: The address in question.
+        :type address: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
+        """
 
         for api_call in cls.GET_UNSPENT_TEST:
             try:
@@ -400,6 +444,12 @@ class NetworkApi:
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        """Broadcasts a transaction to the blockchain.
+
+        :param tx_hex: A signed transaction in hex form.
+        :type tx_hex: ``str``
+        :raises ConnectionError: If all API services fail.
+        """
         success = None
 
         for api_call in cls.BROADCAST_TX_MAIN:
@@ -418,7 +468,13 @@ class NetworkApi:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def broadcast_test_tx(cls, tx_hex):  # pragma: no cover
+    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
+        """Broadcasts a transaction to the test network's blockchain.
+
+        :param tx_hex: A signed transaction in hex form.
+        :type tx_hex: ``str``
+        :raises ConnectionError: If all API services fail.
+        """
         success = None
 
         for api_call in cls.BROADCAST_TX_TEST:

@@ -215,7 +215,7 @@ class PrivateKey(BaseKey):
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple`` objects
+        :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
@@ -263,7 +263,7 @@ class PrivateKey(BaseKey):
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple`` objects
+        :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
@@ -405,7 +405,7 @@ class PrivateKeyTestnet(BaseKey):
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkApi.get_test_unspent(self.address)
+        self.unspents[:] = NetworkApi.get_unspent_testnet(self.address)
         return self.unspents
 
     def get_transactions(self):
@@ -413,7 +413,7 @@ class PrivateKeyTestnet(BaseKey):
 
         :rtype: ``list`` of ``str`` transaction IDs
         """
-        self.transactions[:] = NetworkApi.get_test_transactions(self.address)
+        self.transactions[:] = NetworkApi.get_transactions_testnet(self.address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -425,7 +425,7 @@ class PrivateKeyTestnet(BaseKey):
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple`` objects
+        :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
@@ -473,7 +473,7 @@ class PrivateKeyTestnet(BaseKey):
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple`` objects
+        :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
@@ -502,7 +502,7 @@ class PrivateKeyTestnet(BaseKey):
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
-        NetworkApi.broadcast_test_tx(tx_hex)
+        NetworkApi.broadcast_tx_testnet(tx_hex)
 
         return calc_txid(tx_hex)
 

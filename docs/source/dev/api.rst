@@ -27,4 +27,10 @@ Keys
 Network
 -------
 
-.. autoclass:: bit.network
+.. autoclass:: bit.network.NetworkApi
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.meta.Unspent
+    :members:
+    :undoc-members:
