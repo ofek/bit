@@ -16,6 +16,7 @@ from .samples import (
     WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
+print(os.environ)
 TRAVIS = os.environ['TOXENV'] == 'py36'
 
 
