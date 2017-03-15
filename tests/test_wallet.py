@@ -16,7 +16,7 @@ from .samples import (
     WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
-TRAVIS = 'TRAVIS' in os.environ
+TRAVIS = 'CI' in os.environ
 
 
 class TestWIFToKey:
