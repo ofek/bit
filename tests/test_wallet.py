@@ -16,8 +16,7 @@ from .samples import (
     WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
-print(os.environ)
-TRAVIS = os.environ['TOXENV'] == 'py36'
+TRAVIS = 'TRAVIS' in os.environ
 
 
 class TestWIFToKey:
@@ -211,26 +210,25 @@ class TestPrivateKeyTestnet:
         assert transactions == private_key.transactions
 
     def test_send(self):
-        if TRAVIS:  # and sys.version_info[:2] != (3, 6):
+        if TRAVIS and sys.version_info[:2] != (3, 6):
             assert True
         else:
-            assert False
-            # private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-            # private_key.get_unspents()
-            # initial = len(private_key.get_transactions())
-            # private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
-            #
-            # current = initial
-            # tries = 0
-            #
-            # while tries < 15:  # pragma: no cover
-            #     current = len(private_key.get_transactions())
-            #     if current > initial:
-            #         break
-            #     time.sleep(5)
-            #     tries += 1
-            #
-            # assert current > initial
+            private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+            private_key.get_unspents()
+            initial = len(private_key.get_transactions())
+            private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+
+            current = initial
+            tries = 0
+
+            while tries < 15:  # pragma: no cover
+                current = len(private_key.get_transactions())
+                if current > initial:
+                    break
+                time.sleep(5)
+                tries += 1
+
+            assert current > initial
 
     def test_from_hex(self):
         key = PrivateKeyTestnet.from_hex(PRIVATE_KEY_HEX)
