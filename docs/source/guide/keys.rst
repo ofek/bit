@@ -23,8 +23,9 @@ on the curve from that value.
 Types
 -----
 
-Bit defines 2 kinds of private keys: `PrivateKey`, aliased as simply `Key`, and
-`PrivateKeyTestnet`. Both classes have the exact same functionality.
+Bit defines 2 kinds of private keys: :class:`~bit.PrivateKey`, aliased as
+simply :class:`~bit.Key`, and :class:`~bit.PrivateKeyTestnet`. Both classes
+have the exact same functionality.
 
 .. code-block:: python
 
@@ -36,9 +37,9 @@ Bit defines 2 kinds of private keys: `PrivateKey`, aliased as simply `Key`, and
     >>> dir(Key) == dir(PrivateKeyTestnet)
     True
 
-The only difference is the network operations for `PrivateKeyTestnet` will use
-Bitcoin's test network where coins have no value. As such, the derived address
-will also be different.
+The only difference is the network operations for :class:`~bit.PrivateKeyTestnet`
+will use Bitcoin's test network where coins have no value. As such, the derived
+address will also be different.
 
 Creation
 --------
@@ -86,7 +87,7 @@ derive your address and is needed in the construction of every transaction.
 Address
 -------
 
-All keys possess an `address` property which is derived from your public key:
+All keys possess an :func:`~bit.PrivateKey.address` property which is derived from your public key:
 
 .. code-block:: python
 
@@ -123,7 +124,7 @@ Export:
     'KxVhypbvS3hEYPAP3pYuH1LtcfbdEUcugiqg7fNFUUnmEfWVXJV4'
 
 If you don't know what kind of private key your WIF represents, and you don't
-want to force the use of a particular class, you can use `wif_to_key`.
+want to force the use of a particular class, you can do this:
 
 .. code-block:: python
 

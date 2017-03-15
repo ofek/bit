@@ -3,9 +3,10 @@
 Transactions
 ============
 
-Keys in Bit allow 2 ways of handling transactions: a `create_transaction`
-method that creates a signed transaction and returns the aforementioned
-transaction in hex, and a `send` method that does the same thing but will
+Keys in Bit allow 2 ways of handling transactions: a
+:func:`~bit.PrivateKey.create_transaction` method that creates a signed
+transaction and returns the aforementioned transaction in hex, and a
+:func:`~bit.PrivateKey.send` method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.
 
@@ -25,7 +26,7 @@ Output Format
 
 Each output should be a tuple of arity 3 in the form `(destination, amount, currency)`.
 The amount can be either an int, float, or string as long as it is a valid input to
-`decimal.Decimal`_. The currency must be :ref:`supported <supported currencies>`.
+:py:class:`decimal.Decimal`. The currency must be :ref:`supported <supported currencies>`.
 
 Change Address
 --------------

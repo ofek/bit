@@ -9,7 +9,8 @@ Server Integration
 If you only want to use Bit for its raw speed to lessen the load on your
 servers, you don't have to use any of our network capabilities.
 
-- Use `create_transaction` instead of `send`
+- Use :func:`~bit.PrivateKey.create_transaction` instead of
+  :func:`~bit.PrivateKey.send`
 - Supply :ref:`your own UTXOs <unspentparam>`
 - Set :ref:`your own fee <feeparam>`
 - Make sure all :ref:`outputsparam` only use these currencies: satoshi, ubtc,
@@ -19,7 +20,8 @@ Blockchain Storage
 ------------------
 
 Bit allows you to easily `store messages or data`_ in the blockchain itself
-using the `message` parameter of `create_transaction` or `send`:
+using the ``message`` parameter of :func:`~bit.PrivateKey.create_transaction`
+or :func:`~bit.PrivateKey.send`:
 
 .. code-block:: python
 
@@ -59,8 +61,7 @@ Hex to WIF
 ----------
 
 If you store your keys as hex instead of WIF you lose the ability to retain
-metadata. To convert your hex keys to WIF to use certain properties, use
-`bit.format.hex_to_wif`.
+metadata. To convert your hex keys to WIF to use certain properties, do this:
 
 .. code-block:: python
 

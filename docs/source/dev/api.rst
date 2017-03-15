@@ -10,6 +10,8 @@ Developer Interface
 Keys
 ----
 
+.. autoclass:: bit.Key
+
 .. autoclass:: bit.PrivateKey
     :members:
     :undoc-members:

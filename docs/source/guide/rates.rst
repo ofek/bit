@@ -6,13 +6,13 @@ Exchange Rates
 Bit gets exchange rate data from trusted third-party APIs. Specifically,
 it can access:
 
-- `<https://bitpay.com/bitcoin-exchange-rates>`_ via `bit.network.rates.BitpayRates`
-- `<https://blockchain.info/api/exchange_rates_api>`_ via `bit.network.rates.BlockchainRates`
+- `<https://bitpay.com/bitcoin-exchange-rates>`_ via :class:`~bit.network.rates.BitpayRates`
+- `<https://blockchain.info/api/exchange_rates_api>`_ via :class:`~bit.network.rates.BlockchainRates`
 
 RatesAPI
 --------
 
-Core operations use `bit.network.rates.RatesAPI`. For each method,
+Core operations use :class:`~bit.network.rates.RatesAPI`. For each method,
 it polls a service and if an error occurs it tries another.
 
 You will likely never use this directly.
@@ -21,11 +21,12 @@ Currency to Satoshi
 -------------------
 
 Bit exposes 2 ways to convert a given amount of currency to the equivalent
-number of satoshi: `currency_to_satoshi` and `currency_to_satoshi_cached`. The
-latter function will cache results for 1 minute :ref:`by default <cache times>`.
+number of satoshi: :func:`~bit.network.currency_to_satoshi` and
+:func:`~bit.network.currency_to_satoshi_cached`. The latter function will
+cache results for 1 minute :ref:`by default <cache times>`.
 
-Bit uses `currency_to_satoshi_cached` in transactions to convert the amount in
-each output to spendable satoshi.
+Bit uses :func:`~bit.network.currency_to_satoshi_cached` in transactions to convert the
+amount in each output to spendable satoshi.
 
 To illustrate, here is how your outputs in `(destination, amount, currency)`
 format are converted to `(destination, satoshi)` format for spending during
@@ -44,8 +45,8 @@ Satoshi to Currency
 -------------------
 
 Converting satoshi to another currency as a formatted string can be done using
-`satoshi_to_currency` or `satoshi_to_currency_cached`. The result will be
-rounded down to the proper number of decimal places for each currency.
+:func:`~bit.network.satoshi_to_currency` or :func:`~bit.network.satoshi_to_currency_cached`.
+The result will be rounded down to the proper number of decimal places for each currency.
 
 .. code-block:: python
 
