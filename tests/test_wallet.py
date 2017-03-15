@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 import pytest
@@ -15,11 +16,7 @@ from .samples import (
     WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
-TRAVIS = False
-
-for env_key in os.environ.keys():  # pragma: no cover
-    if 'travis_python_version' in env_key:
-        TRAVIS = True
+TRAVIS = 'TRAVIS' in os.environ
 
 
 class TestWIFToKey:
@@ -213,7 +210,7 @@ class TestPrivateKeyTestnet:
         assert transactions == private_key.transactions
 
     def test_send(self):
-        if TRAVIS:# and os.environ['TRAVIS_PYTHON_VERSION'] != '3.6':
+        if TRAVIS and sys.version_info[:2] != (3, 6):
             assert True
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
