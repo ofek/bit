@@ -210,7 +210,7 @@ class TestPrivateKeyTestnet:
         assert transactions == private_key.transactions
 
     def test_send(self):
-        if TRAVIS:  # and sys.version_info[:2] != (3, 6):
+        if 'TRAVIS' in os.environ:  # and sys.version_info[:2] != (3, 6):
             assert True
         else:
             assert False
