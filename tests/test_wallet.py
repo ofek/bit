@@ -211,24 +211,24 @@ class TestPrivateKeyTestnet:
 
     def test_send(self):
         if TRAVIS and sys.version_info[:2] != (3, 6):
-            assert True
-        else:
-            private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-            private_key.get_unspents()
-            initial = len(private_key.get_transactions())
-            private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+            return
 
-            current = initial
-            tries = 0
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+        private_key.get_unspents()
+        initial = len(private_key.get_transactions())
+        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
 
-            while tries < 15:  # pragma: no cover
-                current = len(private_key.get_transactions())
-                if current > initial:
-                    break
-                time.sleep(5)
-                tries += 1
+        current = initial
+        tries = 0
 
-            assert current > initial
+        while tries < 15:  # pragma: no cover
+            current = len(private_key.get_transactions())
+            if current > initial:
+                break
+            time.sleep(5)
+            tries += 1
+
+        assert current > initial
 
     def test_from_hex(self):
         key = PrivateKeyTestnet.from_hex(PRIVATE_KEY_HEX)

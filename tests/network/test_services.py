@@ -14,6 +14,7 @@ MAIN_ADDRESS_USED2 = '17SkEw2md5avVNyYgj6RiXuQKNwkXaxFyQ'
 MAIN_ADDRESS_UNUSED = '1DvnoW4vsXA1H9KDgNiMqY7iNkzC187ve1'
 TEST_ADDRESS_USED1 = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
 TEST_ADDRESS_USED2 = 'mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5'
+TEST_ADDRESS_USED3 = 'mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS'
 TEST_ADDRESS_UNUSED = 'mp1xDKvvZ4yd8h9mLC4P76syUirmxpXhuk'
 
 
@@ -91,7 +92,7 @@ class TestNetworkAPI:
             MockBackend.get_unspent(MAIN_ADDRESS_USED1)
 
     def test_get_unspent_test_equal(self):
-        results = [call(TEST_ADDRESS_USED2) for call in NetworkAPI.GET_UNSPENT_TEST]
+        results = [call(TEST_ADDRESS_USED3) for call in NetworkAPI.GET_UNSPENT_TEST]
         assert all_items_equal(results)
 
     def test_get_unspent_test_failure(self):
