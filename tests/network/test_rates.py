@@ -72,11 +72,13 @@
 #         sleep(0.2)
 #
 #         start_time = time()
-#         currency_to_satoshi_cached(1, 'usd', expires=0)
+#         set_rate_cache_time(0)
+#         currency_to_satoshi_cached(1, 'usd')
 #         initial_time = time() - start_time
 #
 #         start_time = time()
-#         currency_to_satoshi_cached(1, 'usd', expires=600)
+#         set_rate_cache_time(60)
+#         currency_to_satoshi_cached(1, 'usd')
 #         cached_time = time() - start_time
 #
 #         assert initial_time > cached_time
@@ -84,16 +86,19 @@
 #     def test_expires(self):
 #         sleep(0.2)
 #
-#         currency_to_satoshi_cached(1, 'usd', expires=0)
+#         set_rate_cache_time(0)
+#         currency_to_satoshi_cached(1, 'usd')
 #
 #         start_time = time()
-#         currency_to_satoshi_cached(1, 'usd', expires=600)
+#         set_rate_cache_time(60)
+#         currency_to_satoshi_cached(1, 'usd')
 #         cached_time = time() - start_time
 #
 #         sleep(0.2)
 #
 #         start_time = time()
-#         currency_to_satoshi_cached(1, 'usd', expires=0.1)
+#         set_rate_cache_time(0.1)
+#         currency_to_satoshi_cached(1, 'usd')
 #         update_time = time() - start_time
 #
 #         assert update_time > cached_time

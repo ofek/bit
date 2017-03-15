@@ -24,11 +24,13 @@
 #         sleep(0.2)
 #
 #         start_time = time()
-#         get_fee_cached(fast=True, expires=0)
+#         set_fee_cache_time(0)
+#         get_fee_cached(fast=True)
 #         initial_time = time() - start_time
 #
 #         start_time = time()
-#         get_fee_cached(fast=True, expires=600)
+#         set_fee_cache_time(600)
+#         get_fee_cached(fast=True)
 #         cached_time = time() - start_time
 #
 #         assert initial_time > cached_time
@@ -37,11 +39,13 @@
 #         sleep(0.2)
 #
 #         start_time = time()
-#         get_fee_cached(fast=False, expires=0)
+#         set_fee_cache_time(0)
+#         get_fee_cached(fast=False)
 #         initial_time = time() - start_time
 #
 #         start_time = time()
-#         get_fee_cached(fast=False, expires=600)
+#         set_fee_cache_time(600)
+#         get_fee_cached(fast=False)
 #         cached_time = time() - start_time
 #
 #         assert initial_time > cached_time
@@ -49,16 +53,19 @@
 #     def test_expires(self):
 #         sleep(0.2)
 #
-#         get_fee_cached(fast=False, expires=0)
+#         set_fee_cache_time(0)
+#         get_fee_cached()
 #
 #         start_time = time()
-#         get_fee_cached(fast=False, expires=600)
+#         set_fee_cache_time(600)
+#         get_fee_cached()
 #         cached_time = time() - start_time
 #
 #         sleep(0.2)
 #
 #         start_time = time()
-#         get_fee_cached(expires=0.1)
+#         set_fee_cache_time(0.1)
+#         get_fee_cached()
 #         update_time = time() - start_time
 #
 #         assert update_time > cached_time

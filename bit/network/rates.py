@@ -597,7 +597,6 @@ class CachedRate:
 
 
 def currency_to_satoshi_local_cache(f):
-    expiry_time = DEFAULT_CACHE_TIME
     start_time = time()
 
     cached_rates = dict([
@@ -605,16 +604,12 @@ def currency_to_satoshi_local_cache(f):
     ])
 
     @wraps(f)
-    def wrapper(amount, currency, expires=None):
+    def wrapper(amount, currency):
         now = time()
-
-        if expires is not None:
-            nonlocal expiry_time
-            expiry_time = expires
 
         cached_rate = cached_rates[currency]
 
-        if not cached_rate.satoshis or now - cached_rate.last_update > expiry_time:
+        if not cached_rate.satoshis or now - cached_rate.last_update > DEFAULT_CACHE_TIME:
             cached_rate.satoshis = EXCHANGE_RATES[currency]()
             cached_rate.last_update = now
 
@@ -628,7 +623,7 @@ def currency_to_satoshi_local_cached():
     pass  # pragma: no cover
 
 
-def currency_to_satoshi_cached(*args, **kwargs):
+def currency_to_satoshi_cached(amount, currency):
     """Converts a given amount of currency to the equivalent number of
     satoshi. The amount can be either an int, float, or string as long as
     it is a valid input to :py:class:`decimal.Decimal`. Results are cached
@@ -639,7 +634,7 @@ def currency_to_satoshi_cached(*args, **kwargs):
     :type currency: ``str``
     :rtype: ``int``
     """
-    return currency_to_satoshi_local_cached(*args, **kwargs)
+    return currency_to_satoshi_local_cached(amount, currency)
 
 
 def satoshi_to_currency(num, currency):
