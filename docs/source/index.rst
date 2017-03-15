@@ -113,3 +113,6 @@ pedantry, or lack thereof.
     :maxdepth: 2
 
     dev/api
+
+Well done! There will be more soon, but right now you have nothing left to see.
+Remember, `a watched pot never boils <https://www.youtube.com/watch?v=EPr-JrW-a8o>`_.
