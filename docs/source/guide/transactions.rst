@@ -133,7 +133,7 @@ or
     >>> unspents = [Unspent(...), Unspent(...), ...]
     >>> key.create_transaction(..., unspents=unspents)
 
-Each item must be an instance of `Unspent`_.
+Each item must be an instance of :class:`~bit.network.meta.Unspent`.
 
 .. _decimal.Decimal: https://docs.python.org/3/library/decimal.html#decimal.Decimal
 .. _read this: https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care
