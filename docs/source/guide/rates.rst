@@ -65,6 +65,11 @@ These are all the currencies currently supported by Bit. Note that converting
 satoshi to itself, ubtc, mbtc, or btc never requires exchange rate data and
 therefore no network calls are needed.
 
+.. code-block:: python
+
+    >>> from bit import SUPPORTED_CURRENCIES
+    >>> print(SUPPORTED_CURRENCIES)
+
 +---------+----------------------+
 | Code    | Currency             |
 +=========+======================+

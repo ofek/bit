@@ -285,6 +285,9 @@ class BlockchainRates:
 
 
 class RatesAPI:
+    """Each method converts exactly 1 unit of the currency to the equivalent
+    number of satoshi.
+    """
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout)
 
@@ -572,6 +575,15 @@ EXCHANGE_RATES = {
 
 
 def currency_to_satoshi(amount, currency):
+    """Converts a given amount of currency to the equivalent number of
+    satoshi. The amount can be either an int, float, or string as long as
+    it is a valid input to :py:class:`decimal.Decimal`.
+
+    :param amount: The quantity of currency.
+    :param currency: One of the :ref:`supported currencies`.
+    :type currency: ``str``
+    :rtype: ``int``
+    """
     satoshis = EXCHANGE_RATES[currency]()
     return int(satoshis * Decimal(amount))
 
@@ -617,13 +629,32 @@ def currency_to_satoshi_local_cached():
 
 
 def currency_to_satoshi_cached(*args, **kwargs):
+    """Converts a given amount of currency to the equivalent number of
+    satoshi. The amount can be either an int, float, or string as long as
+    it is a valid input to :py:class:`decimal.Decimal`. Results are cached
+    using a decorator for 60 seconds by default. See :ref:`cache times`.
+
+    :param amount: The quantity of currency.
+    :param currency: One of the :ref:`supported currencies`.
+    :type currency: ``str``
+    :rtype: ``int``
+    """
     return currency_to_satoshi_local_cached(*args, **kwargs)
 
 
-def satoshi_to_currency(amount, currency):
+def satoshi_to_currency(num, currency):
+    """Converts a given number of satoshi to another currency as a formatted
+    string rounded down to the proper number of decimal places.
+
+    :param num: The number of satoshi.
+    :type num: ``int``
+    :param currency: One of the :ref:`supported currencies`.
+    :type currency: ``str``
+    :rtype: ``str``
+    """
     return '{:f}'.format(
         Decimal(
-            amount / Decimal(EXCHANGE_RATES[currency]())
+            num / Decimal(EXCHANGE_RATES[currency]())
         ).quantize(
             Decimal('0.' + '0' * CURRENCY_PRECISION[currency]),
             rounding=ROUND_DOWN
@@ -631,10 +662,20 @@ def satoshi_to_currency(amount, currency):
     )
 
 
-def satoshi_to_currency_cached(amount, currency):
+def satoshi_to_currency_cached(num, currency):
+    """Converts a given number of satoshi to another currency as a formatted
+    string rounded down to the proper number of decimal places. Results are
+    cached using a decorator for 60 seconds by default. See :ref:`cache times`.
+
+    :param num: The number of satoshi.
+    :type num: ``int``
+    :param currency: One of the :ref:`supported currencies`.
+    :type currency: ``str``
+    :rtype: ``str``
+    """
     return '{:f}'.format(
         Decimal(
-            amount / Decimal(currency_to_satoshi_cached(1, currency))
+            num / Decimal(currency_to_satoshi_cached(1, currency))
         ).quantize(
             Decimal('0.' + '0' * CURRENCY_PRECISION[currency]),
             rounding=ROUND_DOWN
