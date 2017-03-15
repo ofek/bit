@@ -17,8 +17,8 @@ from .samples import (
 
 TRAVIS = False
 
-for key in os.environ.keys():  # pragma: no cover
-    if 'TRAVIS_PYTHON_VERSION' in key:
+for env_key in os.environ.keys():  # pragma: no cover
+    if 'TRAVIS_PYTHON_VERSION' in env_key:
         TRAVIS = True
 
 
@@ -213,7 +213,7 @@ class TestPrivateKeyTestnet:
         assert transactions == private_key.transactions
 
     def test_send(self):
-        if TRAVIS and os.environ['TRAVIS_PYTHON_VERSION'] != '3.6':
+        if TRAVIS:# and os.environ['TRAVIS_PYTHON_VERSION'] != '3.6':
             assert True
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
