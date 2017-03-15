@@ -18,7 +18,7 @@ from .samples import (
 TRAVIS = False
 
 for env_key in os.environ.keys():  # pragma: no cover
-    if 'TRAVIS_PYTHON_VERSION' in env_key:
+    if 'travis_python_version' in env_key:
         TRAVIS = True
 
 
