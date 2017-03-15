@@ -16,6 +16,17 @@ def set_fee_cache_time(seconds):
 
 
 def get_fee(fast=True):
+    """Gets the recommended satoshi per byte fee.
+
+    :param fast: If ``True``, the fee returned will be "The lowest fee (in
+                 satoshis per byte) that will currently result in the fastest
+                 transaction confirmations (usually 0 to 1 block delay)".
+                 Otherwise, the number returned will be "The lowest fee (in
+                 satoshis per byte) that will confirm transactions within an
+                 hour (with 90% probability)".
+    :type fast: ``bool``
+    :rtype: ``int``
+    """
     return requests.get(URL).json()['fastestFee' if fast else 'hourFee']
 
 
@@ -70,4 +81,16 @@ def get_fee_local_cached():
 
 
 def get_fee_cached(*args, **kwargs):
+    """Gets the recommended satoshi per byte fee. Results are cached using a
+    decorator for 10 minutes by default. See :ref:`cache times`.
+
+    :param fast: If ``True``, the fee returned will be "The lowest fee (in
+                 satoshis per byte) that will currently result in the fastest
+                 transaction confirmations (usually 0 to 1 block delay)".
+                 Otherwise, the number returned will be "The lowest fee (in
+                 satoshis per byte) that will confirm transactions within an
+                 hour (with 90% probability)".
+    :type fast: ``bool``
+    :rtype: ``int``
+    """
     return get_fee_local_cached(*args, **kwargs)

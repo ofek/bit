@@ -55,10 +55,10 @@ Network
 Exchange Rates
 --------------
 
-.. autofunction:: bit.network.rates.currency_to_satoshi
-.. autofunction:: bit.network.rates.currency_to_satoshi_cached
-.. autofunction:: bit.network.rates.satoshi_to_currency
-.. autofunction:: bit.network.rates.satoshi_to_currency_cached
+.. autofunction:: bit.network.currency_to_satoshi
+.. autofunction:: bit.network.currency_to_satoshi_cached
+.. autofunction:: bit.network.satoshi_to_currency
+.. autofunction:: bit.network.satoshi_to_currency_cached
 
 .. autoclass:: bit.network.rates.RatesAPI
     :members:
@@ -71,3 +71,9 @@ Exchange Rates
 .. autoclass:: bit.network.rates.BlockchainRates
     :members:
     :undoc-members:
+
+Fees
+----
+
+.. autofunction:: bit.network.get_fee
+.. autofunction:: bit.network.get_fee_cached
