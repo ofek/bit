@@ -187,7 +187,7 @@ class PrivateKey(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.balance = sum(unspent.amount for unspent in self.get_unspents())
+        self.get_unspents()
         return self.balance_as(currency)
 
     def get_unspents(self):
@@ -196,6 +196,7 @@ class PrivateKey(BaseKey):
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
         self.unspents[:] = NetworkAPI.get_unspent(self.address)
+        self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
     def get_transactions(self):
@@ -397,7 +398,7 @@ class PrivateKeyTestnet(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.balance = sum(unspent.amount for unspent in self.get_unspents())
+        self.get_unspents()
         return self.balance_as(currency)
 
     def get_unspents(self):
@@ -406,6 +407,7 @@ class PrivateKeyTestnet(BaseKey):
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
         self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
+        self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
     def get_transactions(self):
