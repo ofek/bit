@@ -22,7 +22,7 @@ before_install:
   - cd $TRAVIS_BUILD_DIR
 
 install:
-  - "pip install tox"
+  - "pip install tox-travis"
   - "pip install codecov"
   - "pip install sphinx"
 
