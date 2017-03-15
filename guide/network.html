@@ -47,7 +47,7 @@
 <span id="id1"></span><h1>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="balance">
 <h2>Balance<a class="headerlink" href="#balance" title="Permalink to this headline">¶</a></h2>
-<p>Every private key has a <cite>balance</cite> property which is initially set to <cite>0</cite>. This
+<p>Every private key has a <code class="docutils literal"><span class="pre">balance</span></code> property which is initially set to 0. This
 internal balance will always be in <a class="reference external" href="https://en.bitcoin.it/wiki/Satoshi_(unit)">satoshi</a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">PrivateKeyTestnet</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -56,10 +56,11 @@ internal balance will always be in <a class="reference external" href="https://e
 <span class="go">0</span>
 </pre></div>
 </div>
-<p>You can query the <a class="reference external" href="https://en.bitcoin.it/wiki/Block_chain">blockchain</a> for the current balance by calling <cite>get_balance</cite>.
-It takes an optional argument <cite>currency</cite> (see <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>) and
-returns a formatted string rounded down to the proper number of decimal places.
-By default it will return the balance in satoshi.</p>
+<p>You can query the <a class="reference external" href="https://en.bitcoin.it/wiki/Block_chain">blockchain</a> for the current balance by calling
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_balance" title="bit.PrivateKey.get_balance"><code class="xref py py-func docutils literal"><span class="pre">get_balance()</span></code></a>. It takes an optional argument <code class="docutils literal"><span class="pre">currency</span></code>
+(see <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>) and returns a formatted string rounded down
+to the proper number of decimal places. By default it will return the balance
+in satoshi.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;btc&#39;</span><span class="p">)</span>
 <span class="go">&#39;0.82721202&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance</span>
@@ -67,7 +68,7 @@ By default it will return the balance in satoshi.</p>
 </pre></div>
 </div>
 <p>After you communicate with the network, you can view the internal balance in
-terms of other currencies using <cite>balance_as</cite>.</p>
+terms of other currencies using <a class="reference internal" href="../dev/api.html#bit.PrivateKey.balance_as" title="bit.PrivateKey.balance_as"><code class="xref py py-func docutils literal"><span class="pre">balance_as()</span></code></a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;mbtc&#39;</span><span class="p">)</span>
 <span class="go">&#39;827.21202&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;usd&#39;</span><span class="p">)</span>
@@ -83,7 +84,7 @@ terms of other currencies using <cite>balance_as</cite>.</p>
 <div class="section" id="unspent">
 <h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
 <p>You can see what <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction outputs</a> (commonly referred to as UTXO)
-you have available to spend by calling <cite>get_unspents</cite>.</p>
+you have available to spend by calling <a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_unspents" title="bit.PrivateKey.get_unspents"><code class="xref py py-func docutils literal"><span class="pre">get_unspents()</span></code></a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span>
 <span class="go">[]</span>
@@ -94,12 +95,13 @@ you have available to spend by calling <cite>get_unspents</cite>.</p>
 </pre></div>
 </div>
 <p>As you can see, this address has 1 available UTXO to spend worth 82721202
-satoshi. <cite>get_balance</cite> uses this method by totalling the amount of all UTXO.
-You will never have to use this directly.</p>
+satoshi. <a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_balance" title="bit.PrivateKey.get_balance"><code class="xref py py-func docutils literal"><span class="pre">get_balance()</span></code></a> uses this method by totalling the
+amount of all UTXO. You will never have to use this directly.</p>
 </div>
 <div class="section" id="transaction-history">
 <h2>Transaction History<a class="headerlink" href="#transaction-history" title="Permalink to this headline">¶</a></h2>
-<p>Get a list of all transactions from newest to oldest by calling <cite>get_transactions</cite>.</p>
+<p>Get a list of all transactions from newest to oldest by calling
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_transactions" title="bit.PrivateKey.get_transactions"><code class="xref py py-func docutils literal"><span class="pre">get_transactions()</span></code></a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">transactions</span>
 <span class="go">[]</span>
@@ -137,14 +139,14 @@ a future release they will become proper objects.</p>
 <p>Bit communicates with the blockchain using trusted third-party APIs.
 Specifically, it can access:</p>
 <ul class="simple">
-<li><a class="reference external" href="https://insight.bitpay.com">https://insight.bitpay.com</a> via <cite>bit.network.services.BitpayAPI</cite></li>
-<li><a class="reference external" href="https://blockchain.info">https://blockchain.info</a> via <cite>bit.network.services.BlockchainAPI</cite></li>
-<li><a class="reference external" href="https://smartbit.com.au">https://smartbit.com.au</a> via <cite>bit.network.services.SmartbitAPI</cite></li>
-<li><a class="reference external" href="http://blockr.io">http://blockr.io</a> via <cite>bit.network.services.BlockrAPI</cite></li>
+<li><a class="reference external" href="https://insight.bitpay.com">https://insight.bitpay.com</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.BitpayAPI" title="bit.network.services.BitpayAPI"><code class="xref py py-class docutils literal"><span class="pre">BitpayAPI</span></code></a></li>
+<li><a class="reference external" href="https://blockchain.info">https://blockchain.info</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.BlockchainAPI" title="bit.network.services.BlockchainAPI"><code class="xref py py-class docutils literal"><span class="pre">BlockchainAPI</span></code></a></li>
+<li><a class="reference external" href="https://smartbit.com.au">https://smartbit.com.au</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.SmartbitAPI" title="bit.network.services.SmartbitAPI"><code class="xref py py-class docutils literal"><span class="pre">SmartbitAPI</span></code></a></li>
+<li><a class="reference external" href="http://blockr.io">http://blockr.io</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.BlockrAPI" title="bit.network.services.BlockrAPI"><code class="xref py py-class docutils literal"><span class="pre">BlockrAPI</span></code></a></li>
 </ul>
 <div class="section" id="networkapi">
 <h3>NetworkAPI<a class="headerlink" href="#networkapi" title="Permalink to this headline">¶</a></h3>
-<p>Private key network operations use <cite>bit.network.NetworkAPI</cite>. For each method,
+<p>Private key network operations use <a class="reference internal" href="../dev/api.html#bit.network.NetworkAPI" title="bit.network.NetworkAPI"><code class="xref py py-class docutils literal"><span class="pre">NetworkAPI</span></code></a>. For each method,
 it polls a service and if an error occurs it tries another.</p>
 </div>
 </div>

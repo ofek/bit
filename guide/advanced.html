@@ -50,7 +50,8 @@
 <p>If you only want to use Bit for its raw speed to lessen the load on your
 servers, you don&#8217;t have to use any of our network capabilities.</p>
 <ul class="simple">
-<li>Use <cite>create_transaction</cite> instead of <cite>send</cite></li>
+<li>Use <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a> instead of
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal"><span class="pre">send()</span></code></a></li>
 <li>Supply <a class="reference internal" href="transactions.html#unspentparam"><span class="std std-ref">your own UTXOs</span></a></li>
 <li>Set <a class="reference internal" href="transactions.html#feeparam"><span class="std std-ref">your own fee</span></a></li>
 <li>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Outputs</span></a> only use these currencies: satoshi, ubtc,
@@ -60,7 +61,8 @@ mbtc, or btc.</li>
 <div class="section" id="blockchain-storage">
 <h2>Blockchain Storage<a class="headerlink" href="#blockchain-storage" title="Permalink to this headline">¶</a></h2>
 <p>Bit allows you to easily <a class="reference external" href="https://en.bitcoin.it/wiki/OP_RETURN">store messages or data</a> in the blockchain itself
-using the <cite>message</cite> parameter of <cite>create_transaction</cite> or <cite>send</cite>:</p>
+using the <code class="docutils literal"><span class="pre">message</span></code> parameter of <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>
+or <a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal"><span class="pre">send()</span></code></a>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Simplicity level is over 9000!!!&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -89,8 +91,7 @@ or recommended fees (10 minutes):</p>
 <div class="section" id="hex-to-wif">
 <span id="hextowif"></span><h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
 <p>If you store your keys as hex instead of WIF you lose the ability to retain
-metadata. To convert your hex keys to WIF to use certain properties, use
-<cite>bit.format.hex_to_wif</cite>.</p>
+metadata. To convert your hex keys to WIF to use certain properties, do this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">hex_to_wif</span>
 <span class="go">&gt;&gt;&gt;</span>

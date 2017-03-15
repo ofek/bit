@@ -10,6 +10,8 @@ Developer Interface
 Keys
 ----
 
+.. autoclass:: bit.Key
+
 .. autoclass:: bit.PrivateKey
     :members:
     :undoc-members:
@@ -51,3 +53,29 @@ Network
 .. autoclass:: bit.network.meta.Unspent
     :members:
     :undoc-members:
+
+Exchange Rates
+--------------
+
+.. autofunction:: bit.network.currency_to_satoshi
+.. autofunction:: bit.network.currency_to_satoshi_cached
+.. autofunction:: bit.network.satoshi_to_currency
+.. autofunction:: bit.network.satoshi_to_currency_cached
+
+.. autoclass:: bit.network.rates.RatesAPI
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.rates.BitpayRates
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.rates.BlockchainRates
+    :members:
+    :undoc-members:
+
+Fees
+----
+
+.. autofunction:: bit.network.get_fee
+.. autofunction:: bit.network.get_fee_cached

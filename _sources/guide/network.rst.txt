@@ -6,7 +6,7 @@ Network
 Balance
 -------
 
-Every private key has a `balance` property which is initially set to `0`. This
+Every private key has a ``balance`` property which is initially set to 0. This
 internal balance will always be in `satoshi`_.
 
 .. code-block:: python
@@ -17,10 +17,11 @@ internal balance will always be in `satoshi`_.
     >>> key.balance
     0
 
-You can query the `blockchain`_ for the current balance by calling `get_balance`.
-It takes an optional argument `currency` (see :ref:`supported currencies`) and
-returns a formatted string rounded down to the proper number of decimal places.
-By default it will return the balance in satoshi.
+You can query the `blockchain`_ for the current balance by calling
+:func:`~bit.PrivateKey.get_balance`. It takes an optional argument ``currency``
+(see :ref:`supported currencies`) and returns a formatted string rounded down
+to the proper number of decimal places. By default it will return the balance
+in satoshi.
 
 .. code-block:: python
 
@@ -30,7 +31,7 @@ By default it will return the balance in satoshi.
     82721202
 
 After you communicate with the network, you can view the internal balance in
-terms of other currencies using `balance_as`.
+terms of other currencies using :func:`~bit.PrivateKey.balance_as`.
 
 .. code-block:: python
 
@@ -49,7 +50,7 @@ Unspent
 -------
 
 You can see what `unspent transaction outputs`_ (commonly referred to as UTXO)
-you have available to spend by calling `get_unspents`.
+you have available to spend by calling :func:`~bit.PrivateKey.get_unspents`.
 
 .. code-block:: python
 
@@ -62,13 +63,14 @@ you have available to spend by calling `get_unspents`.
     [Unspent(amount=82721202, confirmations=688, script='76a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac', txid='2ae6f3cc21cf11cfc7ad5d79436ecf08521df6a106691dcd1672b076138ea6ff', txindex=1)]
 
 As you can see, this address has 1 available UTXO to spend worth 82721202
-satoshi. `get_balance` uses this method by totalling the amount of all UTXO.
-You will never have to use this directly.
+satoshi. :func:`~bit.PrivateKey.get_balance` uses this method by totalling the
+amount of all UTXO. You will never have to use this directly.
 
 Transaction History
 -------------------
 
-Get a list of all transactions from newest to oldest by calling `get_transactions`.
+Get a list of all transactions from newest to oldest by calling
+:func:`~bit.PrivateKey.get_transactions`.
 
 .. code-block:: python
 
@@ -109,15 +111,15 @@ Services
 Bit communicates with the blockchain using trusted third-party APIs.
 Specifically, it can access:
 
-- `<https://insight.bitpay.com>`_ via `bit.network.services.BitpayAPI`
-- `<https://blockchain.info>`_ via `bit.network.services.BlockchainAPI`
-- `<https://smartbit.com.au>`_ via `bit.network.services.SmartbitAPI`
-- `<http://blockr.io>`_ via `bit.network.services.BlockrAPI`
+- `<https://insight.bitpay.com>`_ via :class:`~bit.network.services.BitpayAPI`
+- `<https://blockchain.info>`_ via :class:`~bit.network.services.BlockchainAPI`
+- `<https://smartbit.com.au>`_ via :class:`~bit.network.services.SmartbitAPI`
+- `<http://blockr.io>`_ via :class:`~bit.network.services.BlockrAPI`
 
 NetworkAPI
 ^^^^^^^^^^
 
-Private key network operations use `bit.network.NetworkAPI`. For each method,
+Private key network operations use :class:`~bit.network.NetworkAPI`. For each method,
 it polls a service and if an error occurs it tries another.
 
 .. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)

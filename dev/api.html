@@ -46,6 +46,12 @@
 <span id="developer-interface"></span><span id="api"></span><h1>Developer Interface<a class="headerlink" href="#module-bit" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="keys">
 <span id="keysapi"></span><h2>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="bit.Key">
+<code class="descclassname">bit.</code><code class="descname">Key</code><a class="headerlink" href="#bit.Key" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></p>
+</dd></dl>
+
 <dl class="class">
 <dt id="bit.PrivateKey">
 <em class="property">class </em><code class="descclassname">bit.</code><code class="descname">PrivateKey</code><span class="sig-paren">(</span><em>wif=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey" title="Permalink to this definition">¶</a></dt>
@@ -1481,6 +1487,609 @@ test network.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="exchange-rates">
+<h2>Exchange Rates<a class="headerlink" href="#exchange-rates" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bit.network.currency_to_satoshi">
+<code class="descclassname">bit.network.</code><code class="descname">currency_to_satoshi</code><span class="sig-paren">(</span><em>amount</em>, <em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a given amount of currency to the equivalent number of
+satoshi. The amount can be either an int, float, or string as long as
+it is a valid input to <code class="xref py py-class docutils literal"><span class="pre">decimal.Decimal</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>amount</strong> &#8211; The quantity of currency.</li>
+<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">int</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bit.network.currency_to_satoshi_cached">
+<code class="descclassname">bit.network.</code><code class="descname">currency_to_satoshi_cached</code><span class="sig-paren">(</span><em>amount</em>, <em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.currency_to_satoshi_cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a given amount of currency to the equivalent number of
+satoshi. The amount can be either an int, float, or string as long as
+it is a valid input to <code class="xref py py-class docutils literal"><span class="pre">decimal.Decimal</span></code>. Results are cached
+using a decorator for 60 seconds by default. See <a class="reference internal" href="../guide/advanced.html#cache-times"><span class="std std-ref">Cache Times</span></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>amount</strong> &#8211; The quantity of currency.</li>
+<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">int</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bit.network.satoshi_to_currency">
+<code class="descclassname">bit.network.</code><code class="descname">satoshi_to_currency</code><span class="sig-paren">(</span><em>num</em>, <em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.satoshi_to_currency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a given number of satoshi to another currency as a formatted
+string rounded down to the proper number of decimal places.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; The number of satoshi.</li>
+<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bit.network.satoshi_to_currency_cached">
+<code class="descclassname">bit.network.</code><code class="descname">satoshi_to_currency_cached</code><span class="sig-paren">(</span><em>num</em>, <em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.satoshi_to_currency_cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a given number of satoshi to another currency as a formatted
+string rounded down to the proper number of decimal places. Results are
+cached using a decorator for 60 seconds by default. See <a class="reference internal" href="../guide/advanced.html#cache-times"><span class="std std-ref">Cache Times</span></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; The number of satoshi.</li>
+<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="bit.network.rates.RatesAPI">
+<em class="property">class </em><code class="descclassname">bit.network.rates.</code><code class="descname">RatesAPI</code><a class="headerlink" href="#bit.network.rates.RatesAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Each method converts exactly 1 unit of the currency to the equivalent
+number of satoshi.</p>
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.AUD_RATES">
+<code class="descname">AUD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.aud_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.aud_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.AUD_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.BRL_RATES">
+<code class="descname">BRL_RATES</code><em class="property"> = [&lt;bound method BitpayRates.brl_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.brl_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.BRL_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.CAD_RATES">
+<code class="descname">CAD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.cad_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.cad_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.CAD_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.CHF_RATES">
+<code class="descname">CHF_RATES</code><em class="property"> = [&lt;bound method BitpayRates.chf_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.chf_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.CHF_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.CLP_RATES">
+<code class="descname">CLP_RATES</code><em class="property"> = [&lt;bound method BitpayRates.clp_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.clp_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.CLP_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.CNY_RATES">
+<code class="descname">CNY_RATES</code><em class="property"> = [&lt;bound method BitpayRates.cny_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.cny_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.CNY_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.DKK_RATES">
+<code class="descname">DKK_RATES</code><em class="property"> = [&lt;bound method BitpayRates.dkk_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.dkk_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.DKK_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.EUR_RATES">
+<code class="descname">EUR_RATES</code><em class="property"> = [&lt;bound method BitpayRates.eur_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.eur_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.EUR_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.GBP_RATES">
+<code class="descname">GBP_RATES</code><em class="property"> = [&lt;bound method BitpayRates.gbp_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.gbp_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.GBP_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.HKD_RATES">
+<code class="descname">HKD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.hkd_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.hkd_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.HKD_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.IGNORED_ERRORS">
+<code class="descname">IGNORED_ERRORS</code><em class="property"> = (&lt;class 'requests.exceptions.ConnectionError'&gt;, &lt;class 'requests.exceptions.Timeout'&gt;)</em><a class="headerlink" href="#bit.network.rates.RatesAPI.IGNORED_ERRORS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.ISK_RATES">
+<code class="descname">ISK_RATES</code><em class="property"> = [&lt;bound method BitpayRates.isk_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.isk_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.ISK_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.JPY_RATES">
+<code class="descname">JPY_RATES</code><em class="property"> = [&lt;bound method BitpayRates.jpy_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.jpy_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.JPY_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.KRW_RATES">
+<code class="descname">KRW_RATES</code><em class="property"> = [&lt;bound method BitpayRates.krw_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.krw_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.KRW_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.NZD_RATES">
+<code class="descname">NZD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.nzd_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.nzd_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.NZD_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.PLN_RATES">
+<code class="descname">PLN_RATES</code><em class="property"> = [&lt;bound method BitpayRates.pln_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.pln_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.PLN_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.RUB_RATES">
+<code class="descname">RUB_RATES</code><em class="property"> = [&lt;bound method BitpayRates.rub_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.rub_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.RUB_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.SEK_RATES">
+<code class="descname">SEK_RATES</code><em class="property"> = [&lt;bound method BitpayRates.sek_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.sek_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.SEK_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.SGD_RATES">
+<code class="descname">SGD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.sgd_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.sgd_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.SGD_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.THB_RATES">
+<code class="descname">THB_RATES</code><em class="property"> = [&lt;bound method BitpayRates.thb_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.thb_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.THB_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.TWD_RATES">
+<code class="descname">TWD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.twd_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.twd_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.TWD_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.rates.RatesAPI.USD_RATES">
+<code class="descname">USD_RATES</code><em class="property"> = [&lt;bound method BitpayRates.usd_to_satoshi of &lt;class 'bit.network.rates.BitpayRates'&gt;&gt;, &lt;bound method BlockchainRates.usd_to_satoshi of &lt;class 'bit.network.rates.BlockchainRates'&gt;&gt;]</em><a class="headerlink" href="#bit.network.rates.RatesAPI.USD_RATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.aud_to_satoshi">
+<em class="property">classmethod </em><code class="descname">aud_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.aud_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.brl_to_satoshi">
+<em class="property">classmethod </em><code class="descname">brl_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.brl_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.cad_to_satoshi">
+<em class="property">classmethod </em><code class="descname">cad_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.cad_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.chf_to_satoshi">
+<em class="property">classmethod </em><code class="descname">chf_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.chf_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.clp_to_satoshi">
+<em class="property">classmethod </em><code class="descname">clp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.clp_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.cny_to_satoshi">
+<em class="property">classmethod </em><code class="descname">cny_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.cny_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.dkk_to_satoshi">
+<em class="property">classmethod </em><code class="descname">dkk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.dkk_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.eur_to_satoshi">
+<em class="property">classmethod </em><code class="descname">eur_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.eur_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.gbp_to_satoshi">
+<em class="property">classmethod </em><code class="descname">gbp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.gbp_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.hkd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">hkd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.hkd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.isk_to_satoshi">
+<em class="property">classmethod </em><code class="descname">isk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.isk_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.jpy_to_satoshi">
+<em class="property">classmethod </em><code class="descname">jpy_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.jpy_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.krw_to_satoshi">
+<em class="property">classmethod </em><code class="descname">krw_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.krw_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.nzd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">nzd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.nzd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.pln_to_satoshi">
+<em class="property">classmethod </em><code class="descname">pln_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.pln_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.rub_to_satoshi">
+<em class="property">classmethod </em><code class="descname">rub_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.rub_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.sek_to_satoshi">
+<em class="property">classmethod </em><code class="descname">sek_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.sek_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.sgd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">sgd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.sgd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.thb_to_satoshi">
+<em class="property">classmethod </em><code class="descname">thb_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.thb_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.twd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">twd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.twd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.RatesAPI.usd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">usd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.RatesAPI.usd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bit.network.rates.BitpayRates">
+<em class="property">class </em><code class="descclassname">bit.network.rates.</code><code class="descname">BitpayRates</code><a class="headerlink" href="#bit.network.rates.BitpayRates" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="bit.network.rates.BitpayRates.SINGLE_RATE">
+<code class="descname">SINGLE_RATE</code><em class="property"> = 'https://bitpay.com/api/rates/'</em><a class="headerlink" href="#bit.network.rates.BitpayRates.SINGLE_RATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.aud_to_satoshi">
+<em class="property">classmethod </em><code class="descname">aud_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.aud_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.brl_to_satoshi">
+<em class="property">classmethod </em><code class="descname">brl_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.brl_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.cad_to_satoshi">
+<em class="property">classmethod </em><code class="descname">cad_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.cad_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.chf_to_satoshi">
+<em class="property">classmethod </em><code class="descname">chf_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.chf_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.clp_to_satoshi">
+<em class="property">classmethod </em><code class="descname">clp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.clp_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.cny_to_satoshi">
+<em class="property">classmethod </em><code class="descname">cny_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.cny_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.currency_to_satoshi">
+<em class="property">classmethod </em><code class="descname">currency_to_satoshi</code><span class="sig-paren">(</span><em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.dkk_to_satoshi">
+<em class="property">classmethod </em><code class="descname">dkk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.dkk_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.eur_to_satoshi">
+<em class="property">classmethod </em><code class="descname">eur_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.eur_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.gbp_to_satoshi">
+<em class="property">classmethod </em><code class="descname">gbp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.gbp_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.hkd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">hkd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.hkd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.isk_to_satoshi">
+<em class="property">classmethod </em><code class="descname">isk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.isk_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.jpy_to_satoshi">
+<em class="property">classmethod </em><code class="descname">jpy_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.jpy_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.krw_to_satoshi">
+<em class="property">classmethod </em><code class="descname">krw_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.krw_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.nzd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">nzd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.nzd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.pln_to_satoshi">
+<em class="property">classmethod </em><code class="descname">pln_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.pln_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.rub_to_satoshi">
+<em class="property">classmethod </em><code class="descname">rub_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.rub_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.sek_to_satoshi">
+<em class="property">classmethod </em><code class="descname">sek_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.sek_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.sgd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">sgd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.sgd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.thb_to_satoshi">
+<em class="property">classmethod </em><code class="descname">thb_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.thb_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.twd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">twd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.twd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BitpayRates.usd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">usd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BitpayRates.usd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bit.network.rates.BlockchainRates">
+<em class="property">class </em><code class="descclassname">bit.network.rates.</code><code class="descname">BlockchainRates</code><a class="headerlink" href="#bit.network.rates.BlockchainRates" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="bit.network.rates.BlockchainRates.SINGLE_RATE">
+<code class="descname">SINGLE_RATE</code><em class="property"> = 'https://blockchain.info/tobtc?currency={}&amp;value=1'</em><a class="headerlink" href="#bit.network.rates.BlockchainRates.SINGLE_RATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.aud_to_satoshi">
+<em class="property">classmethod </em><code class="descname">aud_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.aud_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.brl_to_satoshi">
+<em class="property">classmethod </em><code class="descname">brl_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.brl_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.cad_to_satoshi">
+<em class="property">classmethod </em><code class="descname">cad_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.cad_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.chf_to_satoshi">
+<em class="property">classmethod </em><code class="descname">chf_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.chf_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.clp_to_satoshi">
+<em class="property">classmethod </em><code class="descname">clp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.clp_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.cny_to_satoshi">
+<em class="property">classmethod </em><code class="descname">cny_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.cny_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.currency_to_satoshi">
+<em class="property">classmethod </em><code class="descname">currency_to_satoshi</code><span class="sig-paren">(</span><em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.dkk_to_satoshi">
+<em class="property">classmethod </em><code class="descname">dkk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.dkk_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.eur_to_satoshi">
+<em class="property">classmethod </em><code class="descname">eur_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.eur_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.gbp_to_satoshi">
+<em class="property">classmethod </em><code class="descname">gbp_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.gbp_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.hkd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">hkd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.hkd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.isk_to_satoshi">
+<em class="property">classmethod </em><code class="descname">isk_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.isk_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.jpy_to_satoshi">
+<em class="property">classmethod </em><code class="descname">jpy_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.jpy_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.krw_to_satoshi">
+<em class="property">classmethod </em><code class="descname">krw_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.krw_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.nzd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">nzd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.nzd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.pln_to_satoshi">
+<em class="property">classmethod </em><code class="descname">pln_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.pln_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.rub_to_satoshi">
+<em class="property">classmethod </em><code class="descname">rub_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.rub_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.sek_to_satoshi">
+<em class="property">classmethod </em><code class="descname">sek_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.sek_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.sgd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">sgd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.sgd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.thb_to_satoshi">
+<em class="property">classmethod </em><code class="descname">thb_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.thb_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.twd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">twd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.twd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.network.rates.BlockchainRates.usd_to_satoshi">
+<em class="property">classmethod </em><code class="descname">usd_to_satoshi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.rates.BlockchainRates.usd_to_satoshi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="fees">
+<h2>Fees<a class="headerlink" href="#fees" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bit.network.get_fee">
+<code class="descclassname">bit.network.</code><code class="descname">get_fee</code><span class="sig-paren">(</span><em>fast=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.get_fee" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the recommended satoshi per byte fee.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fast</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; If <code class="docutils literal"><span class="pre">True</span></code>, the fee returned will be &#8220;The lowest fee (in
+satoshis per byte) that will currently result in the fastest
+transaction confirmations (usually 0 to 1 block delay)&#8221;.
+Otherwise, the number returned will be &#8220;The lowest fee (in
+satoshis per byte) that will confirm transactions within an
+hour (with 90% probability)&#8221;.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bit.network.get_fee_cached">
+<code class="descclassname">bit.network.</code><code class="descname">get_fee_cached</code><span class="sig-paren">(</span><em>fast=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.get_fee_cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the recommended satoshi per byte fee. Results are cached using a
+decorator for 10 minutes by default. See <a class="reference internal" href="../guide/advanced.html#cache-times"><span class="std std-ref">Cache Times</span></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fast</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; If <code class="docutils literal"><span class="pre">True</span></code>, the fee returned will be &#8220;The lowest fee (in
+satoshis per byte) that will currently result in the fastest
+transaction confirmations (usually 0 to 1 block delay)&#8221;.
+Otherwise, the number returned will be &#8220;The lowest fee (in
+satoshis per byte) that will confirm transactions within an
+hour (with 90% probability)&#8221;.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -1564,6 +2173,8 @@ test network.</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Interface</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#keys">Keys</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#network">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exchange-rates">Exchange Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fees">Fees</a></li>
 </ul>
 </li>
 </ul>

@@ -48,22 +48,23 @@
 <p>Bit gets exchange rate data from trusted third-party APIs. Specifically,
 it can access:</p>
 <ul class="simple">
-<li><a class="reference external" href="https://bitpay.com/bitcoin-exchange-rates">https://bitpay.com/bitcoin-exchange-rates</a> via <cite>bit.network.rates.BitpayRates</cite></li>
-<li><a class="reference external" href="https://blockchain.info/api/exchange_rates_api">https://blockchain.info/api/exchange_rates_api</a> via <cite>bit.network.rates.BlockchainRates</cite></li>
+<li><a class="reference external" href="https://bitpay.com/bitcoin-exchange-rates">https://bitpay.com/bitcoin-exchange-rates</a> via <a class="reference internal" href="../dev/api.html#bit.network.rates.BitpayRates" title="bit.network.rates.BitpayRates"><code class="xref py py-class docutils literal"><span class="pre">BitpayRates</span></code></a></li>
+<li><a class="reference external" href="https://blockchain.info/api/exchange_rates_api">https://blockchain.info/api/exchange_rates_api</a> via <a class="reference internal" href="../dev/api.html#bit.network.rates.BlockchainRates" title="bit.network.rates.BlockchainRates"><code class="xref py py-class docutils literal"><span class="pre">BlockchainRates</span></code></a></li>
 </ul>
 <div class="section" id="ratesapi">
 <h2>RatesAPI<a class="headerlink" href="#ratesapi" title="Permalink to this headline">¶</a></h2>
-<p>Core operations use <cite>bit.network.rates.RatesAPI</cite>. For each method,
+<p>Core operations use <a class="reference internal" href="../dev/api.html#bit.network.rates.RatesAPI" title="bit.network.rates.RatesAPI"><code class="xref py py-class docutils literal"><span class="pre">RatesAPI</span></code></a>. For each method,
 it polls a service and if an error occurs it tries another.</p>
 <p>You will likely never use this directly.</p>
 </div>
 <div class="section" id="currency-to-satoshi">
 <h2>Currency to Satoshi<a class="headerlink" href="#currency-to-satoshi" title="Permalink to this headline">¶</a></h2>
 <p>Bit exposes 2 ways to convert a given amount of currency to the equivalent
-number of satoshi: <cite>currency_to_satoshi</cite> and <cite>currency_to_satoshi_cached</cite>. The
-latter function will cache results for 1 minute <a class="reference internal" href="advanced.html#cache-times"><span class="std std-ref">by default</span></a>.</p>
-<p>Bit uses <cite>currency_to_satoshi_cached</cite> in transactions to convert the amount in
-each output to spendable satoshi.</p>
+number of satoshi: <a class="reference internal" href="../dev/api.html#bit.network.currency_to_satoshi" title="bit.network.currency_to_satoshi"><code class="xref py py-func docutils literal"><span class="pre">currency_to_satoshi()</span></code></a> and
+<a class="reference internal" href="../dev/api.html#bit.network.currency_to_satoshi_cached" title="bit.network.currency_to_satoshi_cached"><code class="xref py py-func docutils literal"><span class="pre">currency_to_satoshi_cached()</span></code></a>. The latter function will
+cache results for 1 minute <a class="reference internal" href="advanced.html#cache-times"><span class="std std-ref">by default</span></a>.</p>
+<p>Bit uses <a class="reference internal" href="../dev/api.html#bit.network.currency_to_satoshi_cached" title="bit.network.currency_to_satoshi_cached"><code class="xref py py-func docutils literal"><span class="pre">currency_to_satoshi_cached()</span></code></a> in transactions to convert the
+amount in each output to spendable satoshi.</p>
 <p>To illustrate, here is how your outputs in <cite>(destination, amount, currency)</cite>
 format are converted to <cite>(destination, satoshi)</cite> format for spending during
 transactions:</p>
@@ -79,8 +80,8 @@ transactions:</p>
 <div class="section" id="satoshi-to-currency">
 <h2>Satoshi to Currency<a class="headerlink" href="#satoshi-to-currency" title="Permalink to this headline">¶</a></h2>
 <p>Converting satoshi to another currency as a formatted string can be done using
-<cite>satoshi_to_currency</cite> or <cite>satoshi_to_currency_cached</cite>. The result will be
-rounded down to the proper number of decimal places for each currency.</p>
+<a class="reference internal" href="../dev/api.html#bit.network.satoshi_to_currency" title="bit.network.satoshi_to_currency"><code class="xref py py-func docutils literal"><span class="pre">satoshi_to_currency()</span></code></a> or <a class="reference internal" href="../dev/api.html#bit.network.satoshi_to_currency_cached" title="bit.network.satoshi_to_currency_cached"><code class="xref py py-func docutils literal"><span class="pre">satoshi_to_currency_cached()</span></code></a>.
+The result will be rounded down to the proper number of decimal places for each currency.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">satoshi_to_currency_cached</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">satoshi_to_currency_cached</span><span class="p">(</span><span class="mi">56789</span><span class="p">,</span> <span class="s1">&#39;usd&#39;</span><span class="p">)</span>
@@ -95,6 +96,10 @@ rounded down to the proper number of decimal places for each currency.</p>
 <p>These are all the currencies currently supported by Bit. Note that converting
 satoshi to itself, ubtc, mbtc, or btc never requires exchange rate data and
 therefore no network calls are needed.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">SUPPORTED_CURRENCIES</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">SUPPORTED_CURRENCIES</span><span class="p">)</span>
+</pre></div>
+</div>
 <table border="1" class="docutils">
 <colgroup>
 <col width="29%" />

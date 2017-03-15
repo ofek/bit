@@ -45,9 +45,10 @@
     
   <div class="section" id="transactions">
 <span id="id1"></span><h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this headline">¶</a></h1>
-<p>Keys in Bit allow 2 ways of handling transactions: a <cite>create_transaction</cite>
-method that creates a signed transaction and returns the aforementioned
-transaction in hex, and a <cite>send</cite> method that does the same thing but will
+<p>Keys in Bit allow 2 ways of handling transactions: a
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a> method that creates a signed
+transaction and returns the aforementioned transaction in hex, and a
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal"><span class="pre">send()</span></code></a> method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.</p>
 <div class="section" id="outputs">
@@ -61,7 +62,7 @@ for future lookup. Both methods take the exact same arguments.</p>
 <h2>Output Format<a class="headerlink" href="#output-format" title="Permalink to this headline">¶</a></h2>
 <p>Each output should be a tuple of arity 3 in the form <cite>(destination, amount, currency)</cite>.
 The amount can be either an int, float, or string as long as it is a valid input to
-<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal">decimal.Decimal</a>. The currency must be <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</p>
+<code class="xref py py-class docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency must be <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</p>
 </div>
 <div class="section" id="change-address">
 <h2>Change Address<a class="headerlink" href="#change-address" title="Permalink to this headline">¶</a></h2>
@@ -145,7 +146,7 @@ supply your own list of unspent transaction outputs by doing either:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">unspents</span><span class="o">=</span><span class="n">unspents</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Each item must be an instance of <a class="reference internal" href="#unspent">Unspent</a>.</p>
+<p>Each item must be an instance of <a class="reference internal" href="../dev/api.html#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>.</p>
 </div>
 </div>
 
