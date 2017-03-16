@@ -1,6 +1,6 @@
 from bit.base58 import b58decode_check, b58encode_check
 from bit.crypto import (
-    DEFAULT_BACKEND, RIPEMD160, SHA256, Hash, decode_dss_signature
+    decode_dss_signature, ripemd160_sha256
 )
 from bit.curve import GROUP_ORDER, x_to_y
 from bit.utils import bytes_to_hex, hex_to_bytes, int_to_unknown_bytes
@@ -116,15 +116,7 @@ def public_key_to_address(public_key, version='main'):
     if length not in (33, 65):
         raise ValueError('{} is an invalid length for a public key.'.format(length))
 
-    public_key_digest = Hash(SHA256, DEFAULT_BACKEND)
-    public_key_digest.update(public_key)
-    public_key_digest = public_key_digest.finalize()
-
-    ripemd160 = Hash(RIPEMD160, DEFAULT_BACKEND)
-    ripemd160.update(public_key_digest)
-    ripemd160 = version + ripemd160.finalize()
-
-    return b58encode_check(ripemd160)
+    return b58encode_check(version + ripemd160_sha256(public_key))
 
 
 def public_key_to_coords(public_key):

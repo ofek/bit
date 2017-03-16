@@ -1,9 +1,8 @@
 from multiprocessing import Event, Process, Queue, cpu_count
 
-from bit.base58 import BASE58_ALPHABET, b58encode
+from bit.base58 import BASE58_ALPHABET
 from bit.crypto import (
-    DEFAULT_BACKEND, RIPEMD160, SECP256K1, SHA256, Hash,
-    gen_privkey, derive_privkey
+    DEFAULT_BACKEND, SECP256K1, gen_privkey, derive_privkey
 )
 from bit.format import point_to_public_key, public_key_to_address
 from bit.utils import int_to_hex
@@ -19,17 +18,15 @@ def generate_private_key():
 
 def generate_key_address_pair():
 
-    private_key = gen_privkey(SECP256K1, DEFAULT_BACKEND)
+    private_key = generate_private_key()
 
     public_key = point_to_public_key(
         private_key.public_key().public_numbers(), compressed=True
     )
 
-    bitcoin_address = public_key_to_address(public_key)
+    address = public_key_to_address(public_key)
 
-    return int_to_hex(
-        private_key.private_numbers().private_value
-    ), bitcoin_address
+    return int_to_hex(private_key.private_numbers().private_value), address
 
 
 def generate_matching_address(prefix, cores='all'):  # pragma: no cover
@@ -79,32 +76,15 @@ def stream_key_address_pairs(queue, event):  # pragma: no cover
 
     while True:
 
-        private_key = gen_privkey(SECP256K1, DEFAULT_BACKEND)
-        public_key_point = private_key.public_key().public_numbers()
+        private_key = generate_private_key()
 
-        y = b'\x03' if public_key_point.y & 1 else b'\x02'
-        public_key = y + public_key_point.x.to_bytes(32, 'big')
+        public_key = point_to_public_key(
+            private_key.public_key().public_numbers(), compressed=True
+        )
 
-        public_key_digest = Hash(SHA256, DEFAULT_BACKEND)
-        public_key_digest.update(public_key)
-        public_key_digest = public_key_digest.finalize()
+        address = public_key_to_address(public_key)
 
-        ripemd160 = Hash(RIPEMD160, DEFAULT_BACKEND)
-        ripemd160.update(public_key_digest)
-        ripemd160 = b'\x00' + ripemd160.finalize()
-
-        ripemd160_digest = Hash(SHA256, DEFAULT_BACKEND)
-        ripemd160_digest.update(ripemd160)
-        ripemd160_digest = ripemd160_digest.finalize()
-
-        address_checksum = Hash(SHA256, DEFAULT_BACKEND)
-        address_checksum.update(ripemd160_digest)
-        address_checksum = address_checksum.finalize()[:4]
-
-        binary_address = ripemd160 + address_checksum
-        bitcoin_address = b58encode(binary_address)
-
-        queue.put_nowait((private_key.private_numbers().private_value, bitcoin_address))
+        queue.put_nowait((private_key.private_numbers().private_value, address))
 
         if event.is_set():
             return

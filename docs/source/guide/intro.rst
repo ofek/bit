@@ -36,7 +36,7 @@ Instantiate a compressed private key and get its computed public key:
 .. code-block:: bash
 
     $ python -m timeit -s "from bit import Key" "Key('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key"
-    1000 loops, best of 3: 978 usec per loop
+    1000 loops, best of 3: 956 usec per loop
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey" "PrivateKey.from_b58check('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key.compressed_bytes"
     100 loops, best of 3: 11 msec per loop
     $ python -m timeit -s "from pycoin.key import Key" "Key.from_text('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').sec()"
@@ -44,7 +44,7 @@ Instantiate a compressed private key and get its computed public key:
     (py2) >python -m timeit -s "from pybitcoin import BitcoinPrivateKey" "BitcoinPrivateKey('c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3').public_key().to_hex()"
     10 loops, best of 3: 190 msec per loop
 
-We'll use two1 only as that was the closest to Bit. Computing the address:
+We'll use two1 only as that was the closest to Bit. Getting the address:
 
 .. code-block:: bash
 
