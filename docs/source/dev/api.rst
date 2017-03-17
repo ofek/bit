@@ -84,3 +84,9 @@ Utilities
 ---------
 
 .. autofunction:: bit.verify_sig
+
+Exceptions
+----------
+
+.. autoexception:: bit.exceptions.InvalidSignature
+.. autoexception:: bit.exceptions.InsufficientFunds
