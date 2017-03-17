@@ -25,7 +25,7 @@ ECDSA_SHA256 = ECDSA(SHA256())
 
 def verify_signature(signature, data, point):
     public_key = EllipticCurvePublicNumbers(
-        *point, SECP256K1
+        *point, curve=SECP256K1
     ).public_key(DEFAULT_BACKEND)
 
     return public_key.verify(signature, data, ECDSA_SHA256)
