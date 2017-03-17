@@ -1,9 +1,10 @@
 import pytest
 
+from bit.exceptions import InvalidSignature
 from bit.format import (
     address_to_public_key_hash, coords_to_public_key, make_compliant_sig,
     point_to_public_key, hex_to_wif, public_key_to_coords,
-    public_key_to_address, wif_checksum_check, wif_to_hex
+    public_key_to_address, verify_sig, wif_checksum_check, wif_to_hex
 )
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_ADDRESS_TEST_COMPRESSED,
@@ -12,6 +13,32 @@ from .samples import (
     PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
     WALLET_FORMAT_COMPRESSED_TEST, WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
+
+VALID_SIGNATURE = (b'0E\x02!\x00\xd7y\xe0\xa4\xfc\xea\x88\x18sDit\x9d\x01\xf3'
+                   b'\x03\xa0\xceO\xab\x80\xe8PY.*\xda\x11w|\x9fq\x02 u\xdaR'
+                   b'\xd8\x84a\xad\xfamN\xae&\x91\xfd\xd6\xbd\xe1\xb0e\xfe\xf4'
+                   b'\xc5S\xd9\x02D\x1d\x0b\xba\xe0=@')
+SIGNATURE_HIGH_S = (b'0E\x02 \x18NeS,"r\x1e\x01?\xa5\xa8C\xe4\xba\x07x \xc9\xf6'
+                    b'\x8fe\x17\xa3\x03\'\xac\xd8\x97\x97\x1b\xd0\x02!\x00\xdc^'
+                    b'\xf2M\xe7\x0e\xbaz\xd3\xa3\x94\xcc\xef\x17\x04\xb2\xfb0!'
+                    b'\n\xc3\x1fa3\x83\x01\xc9\xbf\xbd\r)\x82')
+DATA = b'data'
+
+
+class TestVerifySig:
+    def test_valid(self):
+        assert verify_sig(VALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED)
+
+    def test_invalid(self):
+        with pytest.raises(InvalidSignature):
+            verify_sig(b'invalid', DATA, PUBLIC_KEY_COMPRESSED)
+
+    def test_strict_valid(self):
+        assert verify_sig(VALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED, strict=True)
+
+    def test_high_s(self):
+        with pytest.raises(InvalidSignature):
+            verify_sig(SIGNATURE_HIGH_S, DATA, PUBLIC_KEY_COMPRESSED, strict=True)
 
 
 class TestMakeCompliantDer:

@@ -79,3 +79,8 @@ Fees
 
 .. autofunction:: bit.network.get_fee
 .. autofunction:: bit.network.get_fee_cached
+
+Utilities
+---------
+
+.. autofunction:: bit.verify_sig

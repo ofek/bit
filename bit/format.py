@@ -1,8 +1,9 @@
 from bit.base58 import b58decode_check, b58encode_check
 from bit.crypto import (
-    decode_dss_signature, ripemd160_sha256
+    decode_dss_signature, ripemd160_sha256, verify_signature
 )
 from bit.curve import GROUP_ORDER, x_to_y
+from bit.exceptions import InvalidSignature
 from bit.utils import bytes_to_hex, hex_to_bytes, int_to_unknown_bytes
 
 MAIN_PUBKEY_HASH = b'\x00'
@@ -19,6 +20,28 @@ PUBLIC_KEY_UNCOMPRESSED = b'\x04'
 PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
 PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
 PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
+
+
+def verify_sig(signature, data, public_key, strict=False):
+    """Verifies some data was signed by the owner of a public key.
+
+    :param signature: The signature to verify.
+    :type signature: ``bytes``
+    :param data: The data that was supposedly signed.
+    :type data: ``bytes``
+    :param public_key: The public key.
+    :type public_key: ``bytes``
+    :param strict: Whether or not to check for BIP-62 compliance.
+    :type strict: ``bool``
+    :raises InvalidSignature: If any checks fail.
+    :returns: ``True`` if all checks pass.
+    """
+    if strict:  # pragma: no cover
+        _, s = decode_dss_signature(signature)
+        if s > GROUP_ORDER // 2:
+            raise InvalidSignature('High S')
+
+    return verify_signature(signature, data, public_key_to_coords(public_key))
 
 
 def make_compliant_sig(signature):
