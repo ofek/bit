@@ -300,7 +300,8 @@ class SmartbitAPI:
 
 class NetworkAPI:
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
-                      requests.exceptions.Timeout)
+                      requests.exceptions.Timeout,
+                      requests.exceptions.ReadTimeout)
 
     GET_BALANCE_MAIN = [BitpayAPI.get_balance,
                         BlockchainAPI.get_balance,
