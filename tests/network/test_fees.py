@@ -16,7 +16,7 @@ def test_set_fee_cache_time():
 
 
 def test_get_fee():
-    assert get_fee(fast=True) != get_fee(fast=False)
+    assert get_fee(fast=True) >= get_fee(fast=False)
 
 
 class TestFeeCache:
