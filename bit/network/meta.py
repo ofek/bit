@@ -16,7 +16,6 @@ class Unspent:
 
     def __eq__(self, other):
         return (self.amount == other.amount and
-                self.confirmations == other.confirmations and
                 self.script == other.script and
                 self.txid == other.txid and
                 self.txindex == other.txindex)
