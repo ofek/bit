@@ -87,7 +87,7 @@ Credits
 - Logo courtesy of `<https://textcraft.net>`_
 - `Gregory Maxwell`_ (Bitcoin core dev) for teaching me a bit of `ECC`_ math
 - `arubi`_ in #bitcoin for helping me understand transaction gotchas
-- `fuzeman`_ for bestowing me the name `bit` on the `Python Package Index`_
+- `fuzeman`_ for bestowing me the name ``bit`` on the `Python Package Index`_
 
 .. _PyPI: https://pypi.org/project/bit
 .. _hosted by Github Pages: https://ofek.github.io/bit
