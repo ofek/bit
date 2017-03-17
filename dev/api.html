@@ -2090,6 +2090,48 @@ hour (with 90% probability)&#8221;.</td>
 </dd></dl>
 
 </div>
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bit.verify_sig">
+<code class="descclassname">bit.</code><code class="descname">verify_sig</code><span class="sig-paren">(</span><em>signature</em>, <em>data</em>, <em>public_key</em>, <em>strict=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.verify_sig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies some data was signed by the owner of a public key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>signature</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; The signature to verify.</li>
+<li><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; The data that was supposedly signed.</li>
+<li><strong>public_key</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; The public key.</li>
+<li><strong>strict</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; Whether or not to check for BIP-62 compliance.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><a class="reference internal" href="#bit.exceptions.InvalidSignature" title="bit.exceptions.InvalidSignature"><strong>InvalidSignature</strong></a> &#8211; If any checks fail.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">True</span></code> if all checks pass.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="bit.exceptions.InvalidSignature">
+<em class="property">exception </em><code class="descclassname">bit.exceptions.</code><code class="descname">InvalidSignature</code><a class="headerlink" href="#bit.exceptions.InvalidSignature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="bit.exceptions.InsufficientFunds">
+<em class="property">exception </em><code class="descclassname">bit.exceptions.</code><code class="descname">InsufficientFunds</code><a class="headerlink" href="#bit.exceptions.InsufficientFunds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 
 
@@ -2175,6 +2217,8 @@ hour (with 90% probability)&#8221;.</td>
 <li class="toctree-l2"><a class="reference internal" href="#network">Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exchange-rates">Exchange Rates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fees">Fees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
 </ul>
