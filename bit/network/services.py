@@ -22,16 +22,22 @@ class InsightAPI:
     @classmethod
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return r.json()
 
     @classmethod
     def get_transactions(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return r.json()['transactions']
 
     @classmethod
     def get_unspent(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'btc'),
                     tx['confirmations'],
@@ -63,16 +69,22 @@ class BitpayAPI(InsightAPI):
     @classmethod
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return r.json()
 
     @classmethod
     def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return r.json()['transactions']
 
     @classmethod
     def get_unspent_testnet(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'btc'),
                     tx['confirmations'],
@@ -106,28 +118,38 @@ class BlockrAPI:
     @classmethod
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_BALANCE_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return currency_to_satoshi(r.json()['data']['balance'], 'btc')
 
     @classmethod
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return currency_to_satoshi(r.json()['data']['balance'], 'btc')
 
     @classmethod
     def get_transactions(cls, address):
         r = requests.get(cls.MAIN_TRANSACTION_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         tx_data = r.json()['data']['txs']
         return [d['tx'] for d in tx_data]
 
     @classmethod
     def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_TRANSACTION_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         tx_data = r.json()['data']['txs']
         return [d['tx'] for d in tx_data]
 
     @classmethod
     def get_unspent(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'btc'),
                     tx['confirmations'],
@@ -140,6 +162,8 @@ class BlockrAPI:
     @classmethod
     def get_unspent_testnet(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return [
             Unspent(currency_to_satoshi(tx['amount'], 'btc'),
                     tx['confirmations'],
@@ -170,6 +194,8 @@ class BlockchainAPI:
     @classmethod
     def get_balance(cls, address):
         r = requests.get(cls.ADDRESS_API.format(address) + '&limit=0', timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return r.json()['final_balance']
 
     @classmethod
@@ -202,6 +228,8 @@ class BlockchainAPI:
 
         if r.status_code == 500:
             return []
+        elif r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
 
         return [
             Unspent(tx['value'],
@@ -232,16 +260,23 @@ class SmartbitAPI:
     @classmethod
     def get_balance(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1', timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return r.json()['address']['total']['balance_int']
 
     @classmethod
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1', timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return r.json()['address']['total']['balance_int']
 
     @classmethod
     def get_transactions(cls, address):
         r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+
         data = r.json()['address']
 
         transactions = []
@@ -254,6 +289,9 @@ class SmartbitAPI:
     @classmethod
     def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+
         data = r.json()['address']
 
         transactions = []
@@ -266,6 +304,8 @@ class SmartbitAPI:
     @classmethod
     def get_unspent(cls, address):
         r = requests.get(cls.MAIN_UNSPENT_API.format(address) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return [
             Unspent(currency_to_satoshi(tx['value'], 'btc'),
                     tx['confirmations'],
@@ -278,6 +318,8 @@ class SmartbitAPI:
     @classmethod
     def get_unspent_testnet(cls, address):
         r = requests.get(cls.TEST_UNSPENT_API.format(address) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
         return [
             Unspent(currency_to_satoshi(tx['value'], 'btc'),
                     tx['confirmations'],
@@ -299,9 +341,10 @@ class SmartbitAPI:
 
 
 class NetworkAPI:
-    IGNORED_ERRORS = (requests.exceptions.ConnectionError,
+    IGNORED_ERRORS = {ConnectionError,
+                      requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout,
-                      requests.exceptions.ReadTimeout)
+                      requests.exceptions.ReadTimeout}
 
     GET_BALANCE_MAIN = [BitpayAPI.get_balance,
                         BlockchainAPI.get_balance,
