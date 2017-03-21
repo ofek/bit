@@ -56,6 +56,7 @@ Features
 --------
 
 - Seamless integration with existing server setups
+- Supports keys in cold storage
 - Fully supports 25 different currencies
 - First class support for storing data in the blockchain
 - Access to the blockchain (and testnet chain) through multiple APIs for redundancy

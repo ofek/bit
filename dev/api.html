@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Developer Interface &#8212; Bit 0.2.0 documentation</title>
+    <title>Developer Interface &#8212; Bit 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.0',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -254,6 +254,50 @@ public key.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="bit.PrivateKey.prepare_transaction">
+<code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares a P2PKH transaction for offline signing. This accepts the
+same arguments as <a class="reference internal" href="#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) &#8211; A sequence of outputs you wish to send in the form
+<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+be either an int, float, or string as long as it is
+a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
+<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; <p>The number of satoshi per byte to pay to miners. By default
+Bit will poll <a class="reference external" href="https://bitcoinfees.21.co">https://bitcoinfees.21.co</a> and use a fee
+that will allow your transaction to be confirmed as soon as
+possible.</p>
+</li>
+<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; The destination that will receive any change from the
+transaction. By default Bit will send any change to
+the same address you sent from.</li>
+<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; Whether or not Bit should use all available UTXOs to
+make future transactions smaller and therefore reduce
+fees. By default Bit will consolidate UTXOs.</li>
+<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; A message to include in the transaction. This will be
+stored in the blockchain forever. Due to size limits,
+each message will be stored in chunks of 40 bytes.</li>
+<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) &#8211; The UTXOs to use as the inputs. By default Bit will
+communicate with the blockchain itself.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">JSON storing data required to create an offline transaction.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="bit.PrivateKey.public_key">
 <code class="descname">public_key</code><a class="headerlink" href="#bit.PrivateKey.public_key" title="Permalink to this definition">¶</a></dt>
@@ -325,6 +369,25 @@ the public key.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A signature compliant with BIP-62.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bit.PrivateKey.sign_transaction">
+<code class="descname">sign_transaction</code><span class="sig-paren">(</span><em>tx_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.sign_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a signed P2PKH transaction using previously prepared
+transaction data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Output of <a class="reference internal" href="#bit.PrivateKey.prepare_transaction" title="bit.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal"><span class="pre">prepare_transaction()</span></code></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The signed transaction as hex.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -614,6 +677,50 @@ public key.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="bit.PrivateKeyTestnet.prepare_transaction">
+<code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares a P2PKH transaction for offline signing. This accepts the
+same arguments as <a class="reference internal" href="#bit.PrivateKeyTestnet.create_transaction" title="bit.PrivateKeyTestnet.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) &#8211; A sequence of outputs you wish to send in the form
+<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+be either an int, float, or string as long as it is
+a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
+<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; <p>The number of satoshi per byte to pay to miners. By default
+Bit will poll <a class="reference external" href="https://bitcoinfees.21.co">https://bitcoinfees.21.co</a> and use a fee
+that will allow your transaction to be confirmed as soon as
+possible.</p>
+</li>
+<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; The destination that will receive any change from the
+transaction. By default Bit will send any change to
+the same address you sent from.</li>
+<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; Whether or not Bit should use all available UTXOs to
+make future transactions smaller and therefore reduce
+fees. By default Bit will consolidate UTXOs.</li>
+<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; A message to include in the transaction. This will be
+stored in the blockchain forever. Due to size limits,
+each message will be stored in chunks of 40 bytes.</li>
+<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) &#8211; The UTXOs to use as the inputs. By default Bit will
+communicate with the blockchain itself.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">JSON storing data required to create an offline transaction.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="bit.PrivateKeyTestnet.public_key">
 <code class="descname">public_key</code><a class="headerlink" href="#bit.PrivateKeyTestnet.public_key" title="Permalink to this definition">¶</a></dt>
@@ -685,6 +792,25 @@ the public key.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A signature compliant with BIP-62.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bit.PrivateKeyTestnet.sign_transaction">
+<code class="descname">sign_transaction</code><span class="sig-paren">(</span><em>tx_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.sign_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a signed P2PKH transaction using previously prepared
+transaction data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; Output of <a class="reference internal" href="#bit.PrivateKeyTestnet.prepare_transaction" title="bit.PrivateKeyTestnet.prepare_transaction"><code class="xref py py-func docutils literal"><span class="pre">prepare_transaction()</span></code></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The signed transaction as hex.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1469,9 +1595,19 @@ test network.</p>
 <code class="descname">confirmations</code><a class="headerlink" href="#bit.network.meta.Unspent.confirmations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="classmethod">
+<dt id="bit.network.meta.Unspent.from_dict">
+<em class="property">classmethod </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.meta.Unspent.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="bit.network.meta.Unspent.script">
 <code class="descname">script</code><a class="headerlink" href="#bit.network.meta.Unspent.script" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bit.network.meta.Unspent.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.meta.Unspent.to_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">

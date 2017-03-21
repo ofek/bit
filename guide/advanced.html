@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Advanced &#8212; Bit 0.2.0 documentation</title>
+    <title>Advanced &#8212; Bit 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.0',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -57,6 +57,33 @@ servers, you don&#8217;t have to use any of our network capabilities.</p>
 <li>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Outputs</span></a> only use these currencies: satoshi, ubtc,
 mbtc, or btc.</li>
 </ul>
+</div>
+<div class="section" id="offline-transactions">
+<span id="coldstorage"></span><h2>Offline Transactions<a class="headerlink" href="#offline-transactions" title="Permalink to this headline">¶</a></h2>
+<p>Bit supports the signing of transactions for keys in cold storage. First you
+need to prepare a transaction while connected to the internet using the
+<code class="docutils literal"><span class="pre">prepare_transaction</span></code> method of a private key. It accepts the same arguments
+as <code class="docutils literal"><span class="pre">create_transaction</span></code> and <code class="docutils literal"><span class="pre">send</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;usd&#39;</span><span class="p">)</span>
+<span class="go">&#39;833.03&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_data</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">prepare_transaction</span><span class="p">([(</span><span class="s1">&#39;n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_data</span>
+<span class="go">&#39;{&quot;unspents&quot;:[{&quot;amount&quot;:80775726,&quot;confirmations&quot;:1,&quot;script&quot;:&quot;76a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac&quot;,&quot;txid&quot;:&quot;c47061643341aca8665ca7e447aff8c57bc0fd61a3ef731f44642b1d9fa46d5a&quot;,&quot;txindex&quot;:1}],&quot;outputs&quot;:[[&quot;n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi&quot;,861],[&quot;muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz&quot;,80720625]]}&#39;</span>
+</pre></div>
+</div>
+<p>This performs validation and returns a JSON string containing all the required
+information to create a transaction. You should then take this to your offline
+machine and use <code class="docutils literal"><span class="pre">sign_transaction</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_hex</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">sign_transaction</span><span class="p">(</span><span class="n">tx_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tx_hex</span>
+<span class="go">&#39;01000000015a6da49f1d2b64441f73efa361fdc07bc5f8af47e4a75c66a8ac4133646170c4010000006a4730440220266c56a2592fbd6948f3e5d17720ad2dad57ce23a5cc0d2d4fd2315cbe5a798802203372b9b0d10e920462f9553392333e84cd8fa1d92953d0b4598888370dc187140121033d5c2875c9bd116875a71a5db64cffcb13396b163d039b1d9327824891804334ffffffff025d030000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88acf1b2cf04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac00000000&#39;</span>
+</pre></div>
+</div>
+<p>Finally, bring this transaction back to your connected device and broadcast it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">NetworkAPI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkAPI</span><span class="o">.</span><span class="n">broadcast_tx</span><span class="p">(</span><span class="n">tx_hex</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="blockchain-storage">
 <h2>Blockchain Storage<a class="headerlink" href="#blockchain-storage" title="Permalink to this headline">¶</a></h2>
@@ -184,6 +211,7 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:</p
 <li class="toctree-l1"><a class="reference internal" href="fees.html">Fees</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#server-integration">Server Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#offline-transactions">Offline Transactions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#blockchain-storage">Blockchain Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#services-timeout">Services Timeout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cache-times">Cache Times</a></li>

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &#8212; Bit 0.2.0 documentation</title>
+    <title>Index &#8212; Bit 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.0',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -270,6 +270,8 @@
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.from_der">(bit.PrivateKeyTestnet class method)</a>
 </li>
       </ul></li>
+      <li><a href="dev/api.html#bit.network.meta.Unspent.from_dict">from_dict() (bit.network.meta.Unspent class method)</a>
+</li>
       <li><a href="dev/api.html#bit.PrivateKey.from_hex">from_hex() (bit.PrivateKey class method)</a>
 
       <ul>
@@ -576,12 +578,18 @@
         <li><a href="dev/api.html#bit.network.rates.RatesAPI.pln_to_satoshi">(bit.network.rates.RatesAPI class method)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.PrivateKey">PrivateKey (class in bit)</a>
+      <li><a href="dev/api.html#bit.PrivateKey.prepare_transaction">prepare_transaction() (bit.PrivateKey method)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.prepare_transaction">(bit.PrivateKeyTestnet method)</a>
 </li>
-      <li><a href="dev/api.html#bit.PrivateKeyTestnet">PrivateKeyTestnet (class in bit)</a>
+      </ul></li>
+      <li><a href="dev/api.html#bit.PrivateKey">PrivateKey (class in bit)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dev/api.html#bit.PrivateKeyTestnet">PrivateKeyTestnet (class in bit)</a>
+</li>
       <li><a href="dev/api.html#bit.PrivateKey.public_key">public_key (bit.PrivateKey attribute)</a>
 
       <ul>
@@ -646,10 +654,10 @@
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.send">(bit.PrivateKeyTestnet method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.SGD_RATES">SGD_RATES (bit.network.rates.RatesAPI attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.network.rates.BitpayRates.sgd_to_satoshi">sgd_to_satoshi() (bit.network.rates.BitpayRates class method)</a>
 
       <ul>
@@ -664,6 +672,12 @@
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.sign">(bit.PrivateKeyTestnet method)</a>
 </li>
         <li><a href="dev/api.html#bit.wallet.BaseKey.sign">(bit.wallet.BaseKey method)</a>
+</li>
+      </ul></li>
+      <li><a href="dev/api.html#bit.PrivateKey.sign_transaction">sign_transaction() (bit.PrivateKey method)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.sign_transaction">(bit.PrivateKeyTestnet method)</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.network.rates.BitpayRates.SINGLE_RATE">SINGLE_RATE (bit.network.rates.BitpayRates attribute)</a>
@@ -740,6 +754,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dev/api.html#bit.network.meta.Unspent.to_dict">to_dict() (bit.network.meta.Unspent method)</a>
+</li>
       <li><a href="dev/api.html#bit.PrivateKey.to_hex">to_hex() (bit.PrivateKey method)</a>
 
       <ul>

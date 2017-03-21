@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Stay Informed &#8212; Bit 0.2.0 documentation</title>
+    <title>Stay Informed &#8212; Bit 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.0',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -63,15 +63,23 @@ Twitter for occasional updates.</p>
 <h2>Unreleased (see <a class="reference external" href="https://github.com/ofek/bit">master</a>)<a class="headerlink" href="#unreleased-see-master" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="id1">
-<h2>0.2.0 (2017-03-17)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>0.3.0 (2017-03-20)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Implemented a way to use private keys in <a class="reference internal" href="../guide/advanced.html#coldstorage"><span class="std std-ref">cold storage</span></a>.</li>
+<li>Changed the default timeout of services from 5 to 10 seconds.</li>
+<li>Fixed network service redundancy by failing if response code is not 200.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>0.2.0 (2017-03-17)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Improved stability of network tests.</li>
 <li>Added <a class="reference internal" href="../dev/api.html#bit.verify_sig" title="bit.verify_sig"><code class="xref py py-func docutils literal"><span class="pre">verify_sig()</span></code></a>.</li>
 <li>Refactored crypto to yield over an order of magnitude faster hashing.</li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>0.1.0 (2017-03-15)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>0.1.0 (2017-03-15)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Initial release.</li>
 </ul>
@@ -161,8 +169,9 @@ Twitter for occasional updates.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#release-history">Release History</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#unreleased-see-master">Unreleased (see master)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">0.2.0 (2017-03-17)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">0.1.0 (2017-03-15)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">0.3.0 (2017-03-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">0.2.0 (2017-03-17)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">0.1.0 (2017-03-15)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
