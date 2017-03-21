@@ -3,7 +3,7 @@ import requests
 from bit.network import currency_to_satoshi
 from bit.network.meta import Unspent
 
-DEFAULT_TIMEOUT = 5
+DEFAULT_TIMEOUT = 10
 
 
 def set_service_timeout(seconds):
