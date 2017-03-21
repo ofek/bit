@@ -4,6 +4,9 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.3.0 (2017-03-20)
+------------------
+
 - Implemented a way to use private keys in :ref:`cold storage <coldstorage>`.
 - Changed the default timeout of services from 5 to 10 seconds.
 - Fixed network service redundancy by failing if response code is not 200.
