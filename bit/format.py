@@ -71,6 +71,18 @@ def address_to_public_key_hash(address):
     return b58decode_check(address)[1:]
 
 
+def get_version(address):
+    version = b58decode_check(address)[:1]
+
+    if version == MAIN_PUBKEY_HASH:
+        return 'main'
+    elif version == TEST_PUBKEY_HASH:
+        return 'test'
+    else:
+        raise ValueError('{} does not correspond to a mainnet nor '
+                         'testnet address.'.format(version))
+
+
 def hex_to_wif(private_key, version='main', compressed=False):
 
     if version == 'test':
@@ -103,7 +115,7 @@ def wif_to_hex(wif):
         version = 'test'
     else:
         raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet address.'.format(private_key[:1]))
+                         'testnet address.'.format(version))
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:

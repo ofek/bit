@@ -2,8 +2,8 @@ import pytest
 
 from bit.exceptions import InvalidSignature
 from bit.format import (
-    address_to_public_key_hash, coords_to_public_key, make_compliant_sig,
-    point_to_public_key, hex_to_wif, public_key_to_coords,
+    address_to_public_key_hash, coords_to_public_key, get_version,
+    make_compliant_sig, point_to_public_key, hex_to_wif, public_key_to_coords,
     public_key_to_address, verify_sig, wif_checksum_check, wif_to_hex,
     wif_to_int
 )
@@ -24,6 +24,20 @@ SIGNATURE_HIGH_S = (b'0E\x02 \x18NeS,"r\x1e\x01?\xa5\xa8C\xe4\xba\x07x \xc9\xf6'
                     b'\xf2M\xe7\x0e\xbaz\xd3\xa3\x94\xcc\xef\x17\x04\xb2\xfb0!'
                     b'\n\xc3\x1fa3\x83\x01\xc9\xbf\xbd\r)\x82')
 DATA = b'data'
+
+
+class TestGetVersion:
+    def test_mainnet(self):
+        assert get_version(BITCOIN_ADDRESS) == 'main'
+        assert get_version(BITCOIN_ADDRESS_COMPRESSED) == 'main'
+
+    def test_testnet(self):
+        assert get_version(BITCOIN_ADDRESS_TEST) == 'test'
+        assert get_version(BITCOIN_ADDRESS_TEST_COMPRESSED) == 'test'
+
+    def test_invalid(self):
+        with pytest.raises(ValueError):
+            get_version('dg2dNAjuezub6iJVPNML5pW5ZQvtA9ocL')
 
 
 class TestVerifySig:
