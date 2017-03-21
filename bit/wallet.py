@@ -301,17 +301,22 @@ class PrivateKey(BaseKey):
 
         return calc_txid(tx_hex)
 
-    def prepare_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                            message=None, unspents=None):  # pragma: no cover
-        """Prepares a P2PKH transaction for offline signing. This accepts the
-        same arguments as :func:`~bit.PrivateKey.create_transaction`.
+    @classmethod
+    def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
+                            combine=True, message=None, unspents=None):  # pragma: no cover
+        """Prepares a P2PKH transaction for offline signing.
 
+        :param address: The address the funds will be sent from.
+        :type address: ``str``
         :param outputs: A sequence of outputs you wish to send in the form
                         ``(destination, amount, currency)``. The amount can
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
+        :param compressed: Whether or not the ``address`` corresponds to a
+                           compressed public key. This influences the fee.
+        :type compressed: ``bool``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
@@ -335,20 +340,20 @@ class PrivateKey(BaseKey):
         :returns: JSON storing data required to create an offline transaction.
         :rtype: ``str``
         """
-        data = {}
-
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents or NetworkAPI.get_unspent(address),
             outputs,
             fee or get_fee_cached(),
-            leftover or self.address,
+            leftover or address,
             combine=combine,
             message=message,
-            compressed=self.is_compressed()
+            compressed=compressed
         )
 
-        data['unspents'] = [unspent.to_dict() for unspent in unspents]
-        data['outputs'] = outputs
+        data = {
+            'unspents': [unspent.to_dict() for unspent in unspents],
+            'outputs': outputs
+        }
 
         return json.dumps(data, separators=(',', ':'))
 
@@ -579,17 +584,22 @@ class PrivateKeyTestnet(BaseKey):
 
         return calc_txid(tx_hex)
 
-    def prepare_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                            message=None, unspents=None):
-        """Prepares a P2PKH transaction for offline signing. This accepts the
-        same arguments as :func:`~bit.PrivateKeyTestnet.create_transaction`.
+    @classmethod
+    def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
+                            combine=True, message=None, unspents=None):
+        """Prepares a P2PKH transaction for offline signing.
 
+        :param address: The address the funds will be sent from.
+        :type address: ``str``
         :param outputs: A sequence of outputs you wish to send in the form
                         ``(destination, amount, currency)``. The amount can
                         be either an int, float, or string as long as it is
                         a valid input to ``decimal.Decimal``. The currency
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
+        :param compressed: Whether or not the ``address`` corresponds to a
+                           compressed public key. This influences the fee.
+        :type compressed: ``bool``
         :param fee: The number of satoshi per byte to pay to miners. By default
                     Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
@@ -613,20 +623,20 @@ class PrivateKeyTestnet(BaseKey):
         :returns: JSON storing data required to create an offline transaction.
         :rtype: ``str``
         """
-        data = {}
-
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents or NetworkAPI.get_unspent_testnet(address),
             outputs,
             fee or get_fee_cached(),
-            leftover or self.address,
+            leftover or address,
             combine=combine,
             message=message,
-            compressed=self.is_compressed()
+            compressed=compressed
         )
 
-        data['unspents'] = [unspent.to_dict() for unspent in unspents]
-        data['outputs'] = outputs
+        data = {
+            'unspents': [unspent.to_dict() for unspent in unspents],
+            'outputs': outputs
+        }
 
         return json.dumps(data, separators=(',', ':'))
 

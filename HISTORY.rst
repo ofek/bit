@@ -4,6 +4,7 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+- Fixed :ref:`cold storage <coldstorage>` workflow.
 - Improved performance of private key instantiation.
 
 0.3.0 (2017-03-20)

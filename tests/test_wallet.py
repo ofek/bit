@@ -216,11 +216,12 @@ class TestPrivateKeyTestnet:
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         private_key.get_unspents()
-        initial = len(private_key.get_transactions())
-        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
 
+        initial = len(private_key.get_transactions())
         current = initial
         tries = 0
+
+        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
 
         while tries < 15:  # pragma: no cover
             current = len(private_key.get_transactions())
@@ -236,15 +237,18 @@ class TestPrivateKeyTestnet:
             return
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
-        private_key.get_unspents()
-        initial = len(private_key.get_transactions())
+        address = private_key.address
 
-        prepared = private_key.prepare_transaction([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+        prepared = PrivateKeyTestnet.prepare_transaction(
+            address, [('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')]
+        )
         tx_hex = private_key.sign_transaction(prepared)
-        NetworkAPI.broadcast_tx_testnet(tx_hex)
 
+        initial = len(private_key.get_transactions())
         current = initial
         tries = 0
+
+        NetworkAPI.broadcast_tx_testnet(tx_hex)
 
         while tries < 15:  # pragma: no cover
             current = len(private_key.get_transactions())
