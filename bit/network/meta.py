@@ -14,6 +14,13 @@ class Unspent:
         self.txid = txid
         self.txindex = txindex
 
+    def to_dict(self):
+        return {attr: getattr(self, attr) for attr in Unspent.__slots__}
+
+    @classmethod
+    def from_dict(cls, d):
+        return Unspent(**{attr: d[attr] for attr in Unspent.__slots__})
+
     def __eq__(self, other):
         return (self.amount == other.amount and
                 self.script == other.script and

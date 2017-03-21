@@ -7,6 +7,7 @@ import pytest
 from bit.crypto import ECDSA_SHA256, EllipticCurvePrivateKey
 from bit.curve import Point
 from bit.keygen import generate_private_key
+from bit.network import NetworkAPI
 from bit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_DER,
@@ -217,6 +218,30 @@ class TestPrivateKeyTestnet:
         private_key.get_unspents()
         initial = len(private_key.get_transactions())
         private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+
+        current = initial
+        tries = 0
+
+        while tries < 15:  # pragma: no cover
+            current = len(private_key.get_transactions())
+            if current > initial:
+                break
+            time.sleep(5)
+            tries += 1
+
+        assert current > initial
+
+    def test_cold_storage(self):
+        if TRAVIS and sys.version_info[:2] != (3, 6):
+            return
+
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
+        private_key.get_unspents()
+        initial = len(private_key.get_transactions())
+
+        prepared = private_key.prepare_transaction([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+        tx_hex = private_key.sign_transaction(prepared)
+        NetworkAPI.broadcast_tx_testnet(tx_hex)
 
         current = initial
         tries = 0

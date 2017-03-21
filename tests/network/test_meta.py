@@ -10,6 +10,11 @@ class TestUnspent:
         assert unspent.txid == 'txid'
         assert unspent.txindex == 0
 
+    def test_dict_conversion(self):
+        unspent = Unspent(10000, 7, 'script', 'txid', 0)
+
+        assert unspent == Unspent.from_dict(unspent.to_dict())
+
     def test_equality(self):
         unspent1 = Unspent(10000, 7, 'script', 'txid', 0)
         unspent2 = Unspent(10000, 7, 'script', 'txid', 0)

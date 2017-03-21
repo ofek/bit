@@ -16,6 +16,41 @@ servers, you don't have to use any of our network capabilities.
 - Make sure all :ref:`outputsparam` only use these currencies: satoshi, ubtc,
   mbtc, or btc.
 
+.. _coldstorage:
+
+Offline Transactions
+--------------------
+
+Bit supports the signing of transactions for keys in cold storage. First you
+need to prepare a transaction while connected to the internet using the
+``prepare_transaction`` method of a private key. It accepts the same arguments
+as ``create_transaction`` and ``send``.
+
+.. code-block:: python
+
+    >>> key.get_balance('usd')
+    '833.03'
+    >>> tx_data = key.prepare_transaction([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+    >>> tx_data
+    '{"unspents":[{"amount":80775726,"confirmations":1,"script":"76a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac","txid":"c47061643341aca8665ca7e447aff8c57bc0fd61a3ef731f44642b1d9fa46d5a","txindex":1}],"outputs":[["n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi",861],["muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz",80720625]]}'
+
+This performs validation and returns a JSON string containing all the required
+information to create a transaction. You should then take this to your offline
+machine and use ``sign_transaction``.
+
+.. code-block:: python
+
+    >>> tx_hex = key.sign_transaction(tx_data)
+    >>> tx_hex
+    '01000000015a6da49f1d2b64441f73efa361fdc07bc5f8af47e4a75c66a8ac4133646170c4010000006a4730440220266c56a2592fbd6948f3e5d17720ad2dad57ce23a5cc0d2d4fd2315cbe5a798802203372b9b0d10e920462f9553392333e84cd8fa1d92953d0b4598888370dc187140121033d5c2875c9bd116875a71a5db64cffcb13396b163d039b1d9327824891804334ffffffff025d030000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88acf1b2cf04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac00000000'
+
+Finally, bring this transaction back to your connected device and broadcast it.
+
+.. code-block:: python
+
+    >>> from bit.network import NetworkAPI
+    >>> NetworkAPI.broadcast_tx(tx_hex)
+
 Blockchain Storage
 ------------------
 

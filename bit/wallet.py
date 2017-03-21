@@ -1,3 +1,5 @@
+import json
+
 from bit.crypto import (
     DEFAULT_BACKEND, ECDSA_SHA256, NOENCRYPTION, EllipticCurvePrivateKey,
     Encoding, PrivateFormat, load_der_private_key, load_pem_private_key
@@ -10,6 +12,7 @@ from bit.format import (
 )
 from bit.keygen import derive_private_key, generate_private_key
 from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
+from bit.network.meta import Unspent
 from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 from bit.utils import hex_to_int, int_to_hex
 
@@ -297,6 +300,73 @@ class PrivateKey(BaseKey):
 
         return calc_txid(tx_hex)
 
+    def prepare_transaction(self, outputs, fee=None, leftover=None, combine=True,
+                            message=None, unspents=None):  # pragma: no cover
+        """Prepares a P2PKH transaction for offline signing. This accepts the
+        same arguments as :func:`~bit.PrivateKey.create_transaction`.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple``
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bit should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bit will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :returns: JSON storing data required to create an offline transaction.
+        :rtype: ``str``
+        """
+        data = {}
+
+        unspents, outputs = sanitize_tx_data(
+            unspents or self.unspents,
+            outputs,
+            fee or get_fee_cached(),
+            leftover or self.address,
+            combine=combine,
+            message=message,
+            compressed=self.is_compressed()
+        )
+
+        data['unspents'] = [unspent.to_dict() for unspent in unspents]
+        data['outputs'] = outputs
+
+        return json.dumps(data, separators=(',', ':'))
+
+    def sign_transaction(self, tx_data):  # pragma: no cover
+        """Creates a signed P2PKH transaction using previously prepared
+        transaction data.
+
+        :param tx_data: Output of :func:`~bit.PrivateKey.prepare_transaction`.
+        :type tx_data: ``str``
+        :returns: The signed transaction as hex.
+        :rtype: ``str``
+        """
+        data = json.loads(tx_data)
+
+        unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
+        outputs = data['outputs']
+
+        return create_p2pkh_transaction(self, unspents, outputs)
+
     @classmethod
     def from_hex(cls, hexed):
         """
@@ -507,6 +577,73 @@ class PrivateKeyTestnet(BaseKey):
         NetworkAPI.broadcast_tx_testnet(tx_hex)
 
         return calc_txid(tx_hex)
+
+    def prepare_transaction(self, outputs, fee=None, leftover=None, combine=True,
+                            message=None, unspents=None):
+        """Prepares a P2PKH transaction for offline signing. This accepts the
+        same arguments as :func:`~bit.PrivateKeyTestnet.create_transaction`.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple``
+        :param fee: The number of satoshi per byte to pay to miners. By default
+                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    that will allow your transaction to be confirmed as soon as
+                    possible.
+        :type fee: ``int``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param combine: Whether or not Bit should use all available UTXOs to
+                        make future transactions smaller and therefore reduce
+                        fees. By default Bit will consolidate UTXOs.
+        :type combine: ``bool``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :returns: JSON storing data required to create an offline transaction.
+        :rtype: ``str``
+        """
+        data = {}
+
+        unspents, outputs = sanitize_tx_data(
+            unspents or self.unspents,
+            outputs,
+            fee or get_fee_cached(),
+            leftover or self.address,
+            combine=combine,
+            message=message,
+            compressed=self.is_compressed()
+        )
+
+        data['unspents'] = [unspent.to_dict() for unspent in unspents]
+        data['outputs'] = outputs
+
+        return json.dumps(data, separators=(',', ':'))
+
+    def sign_transaction(self, tx_data):
+        """Creates a signed P2PKH transaction using previously prepared
+        transaction data.
+
+        :param tx_data: Output of :func:`~bit.PrivateKeyTestnet.prepare_transaction`.
+        :type tx_data: ``str``
+        :returns: The signed transaction as hex.
+        :rtype: ``str``
+        """
+        data = json.loads(tx_data)
+
+        unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
+        outputs = data['outputs']
+
+        return create_p2pkh_transaction(self, unspents, outputs)
 
     @classmethod
     def from_hex(cls, hexed):
