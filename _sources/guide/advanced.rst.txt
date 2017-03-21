@@ -23,20 +23,24 @@ Offline Transactions
 
 Bit supports the signing of transactions for keys in cold storage. First you
 need to prepare a transaction while connected to the internet using the
-``prepare_transaction`` method of a private key. It accepts the same arguments
-as ``create_transaction`` and ``send``.
+:func:`~bit.PrivateKey.prepare_transaction` class method of a private key.
+You must know your address.
 
 .. code-block:: python
 
-    >>> key.get_balance('usd')
+    >>> from bit import PrivateKeyTestnet
+    >>> from bit.network import NetworkAPI, satoshi_to_currency
+    >>>
+    >>> satoshi_to_currency(NetworkAPI.get_balance_testnet(address), 'usd')
     '833.03'
-    >>> tx_data = key.prepare_transaction([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+    >>> tx_data = PrivateKeyTestnet.prepare_transaction(address, [('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
     >>> tx_data
     '{"unspents":[{"amount":80775726,"confirmations":1,"script":"76a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac","txid":"c47061643341aca8665ca7e447aff8c57bc0fd61a3ef731f44642b1d9fa46d5a","txindex":1}],"outputs":[["n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi",861],["muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz",80720625]]}'
 
 This performs validation and returns a JSON string containing all the required
 information to create a transaction. You should then take this to your offline
-machine and use ``sign_transaction``.
+machine and use the :func:`~bit.PrivateKey.sign_transaction` method of your
+private key.
 
 .. code-block:: python
 
@@ -49,7 +53,7 @@ Finally, bring this transaction back to your connected device and broadcast it.
 .. code-block:: python
 
     >>> from bit.network import NetworkAPI
-    >>> NetworkAPI.broadcast_tx(tx_hex)
+    >>> NetworkAPI.broadcast_tx_testnet(tx_hex)
 
 Blockchain Storage
 ------------------

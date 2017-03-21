@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Developer Interface &#8212; Bit 0.3.0 documentation</title>
+    <title>Developer Interface &#8212; Bit 0.3.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.3.0',
+        VERSION:     '0.3.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -254,21 +254,23 @@ public key.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="bit.PrivateKey.prepare_transaction">
-<code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepares a P2PKH transaction for offline signing. This accepts the
-same arguments as <a class="reference internal" href="#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>.</p>
+<em class="property">classmethod </em><code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>address</em>, <em>outputs</em>, <em>compressed=True</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; The address the funds will be sent from.</li>
 <li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) &#8211; A sequence of outputs you wish to send in the form
 <code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
 a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
+<li><strong>compressed</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; Whether or not the <code class="docutils literal"><span class="pre">address</span></code> corresponds to a
+compressed public key. This influences the fee.</li>
 <li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; <p>The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.21.co">https://bitcoinfees.21.co</a> and use a fee
 that will allow your transaction to be confirmed as soon as
@@ -677,21 +679,23 @@ public key.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="bit.PrivateKeyTestnet.prepare_transaction">
-<code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepares a P2PKH transaction for offline signing. This accepts the
-same arguments as <a class="reference internal" href="#bit.PrivateKeyTestnet.create_transaction" title="bit.PrivateKeyTestnet.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>.</p>
+<em class="property">classmethod </em><code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>address</em>, <em>outputs</em>, <em>compressed=True</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) &#8211; The address the funds will be sent from.</li>
 <li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) &#8211; A sequence of outputs you wish to send in the form
 <code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
 a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
+<li><strong>compressed</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; Whether or not the <code class="docutils literal"><span class="pre">address</span></code> corresponds to a
+compressed public key. This influences the fee.</li>
 <li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; <p>The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.21.co">https://bitcoinfees.21.co</a> and use a fee
 that will allow your transaction to be confirmed as soon as
