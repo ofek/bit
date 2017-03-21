@@ -4,13 +4,14 @@ from bit.exceptions import InvalidSignature
 from bit.format import (
     address_to_public_key_hash, coords_to_public_key, make_compliant_sig,
     point_to_public_key, hex_to_wif, public_key_to_coords,
-    public_key_to_address, verify_sig, wif_checksum_check, wif_to_hex
+    public_key_to_address, verify_sig, wif_checksum_check, wif_to_hex,
+    wif_to_int
 )
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_ADDRESS_TEST_COMPRESSED,
-    BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_HEX, PUBKEY_HASH,
-    PUBKEY_HASH_COMPRESSED, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
-    PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
+    BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_HEX, PRIVATE_KEY_NUM,
+    PUBKEY_HASH, PUBKEY_HASH_COMPRESSED, PUBLIC_KEY_COMPRESSED,
+    PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
     WALLET_FORMAT_COMPRESSED_TEST, WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
@@ -89,6 +90,21 @@ class TestWIFToHex:
     def test_wif_to_hex_invalid_network(self):
         with pytest.raises(ValueError):
             wif_to_hex(BITCOIN_ADDRESS)
+
+
+class TestWIFToInt:
+    def test_mainnet(self):
+        assert wif_to_int(WALLET_FORMAT_MAIN) == (PRIVATE_KEY_NUM, False, 'main')
+
+    def test_testnet(self):
+        assert wif_to_int(WALLET_FORMAT_TEST) == (PRIVATE_KEY_NUM, False, 'test')
+
+    def test_compressed(self):
+        assert wif_to_int(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_NUM, True, 'main')
+
+    def test_invalid_network(self):
+        with pytest.raises(ValueError):
+            wif_to_int(BITCOIN_ADDRESS)
 
 
 class TestWIFChecksumCheck:

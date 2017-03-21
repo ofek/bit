@@ -23,6 +23,28 @@ SECP256K1 = SECP256K1()
 ECDSA_SHA256 = ECDSA(SHA256())
 
 
+def get_ec_point(private_key):
+    backend = private_key._backend
+
+    get_func = backend._lib.EC_POINT_get_affine_coordinates_GFp
+    group = backend._lib.EC_KEY_get0_group(private_key._ec_key)
+
+    point = backend._lib.EC_KEY_get0_public_key(private_key._ec_key)
+    backend.openssl_assert(point != backend._ffi.NULL)
+
+    with backend._tmp_bn_ctx() as bn_ctx:
+        bn_x = backend._lib.BN_CTX_get(bn_ctx)
+        bn_y = backend._lib.BN_CTX_get(bn_ctx)
+
+        res = get_func(group, point, bn_x, bn_y, bn_ctx)
+        backend.openssl_assert(res == 1)
+
+        x = backend._bn_to_int(bn_x)
+        y = backend._bn_to_int(bn_y)
+
+    return x, y
+
+
 def verify_signature(signature, data, point):
     public_key = EllipticCurvePublicNumbers(
         *point, curve=SECP256K1

@@ -4,6 +4,8 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+- Improved performance of private key instantiation.
+
 0.3.0 (2017-03-20)
 ------------------
 

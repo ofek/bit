@@ -36,7 +36,7 @@ Instantiate a compressed private key and get its computed public key:
 .. code-block:: bash
 
     $ python -m timeit -s "from bit import Key" "Key('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key"
-    1000 loops, best of 3: 956 usec per loop
+    1000 loops, best of 3: 874 usec per loop
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey" "PrivateKey.from_b58check('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key.compressed_bytes"
     100 loops, best of 3: 11 msec per loop
     $ python -m timeit -s "from pycoin.key import Key" "Key.from_text('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').sec()"

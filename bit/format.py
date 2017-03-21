@@ -114,6 +114,29 @@ def wif_to_hex(wif):
     return bytes_to_hex(private_key), compressed, version
 
 
+def wif_to_int(wif):
+
+    private_key = b58decode_check(wif)
+
+    version = private_key[:1]
+
+    if version == MAIN_PRIVATE_KEY:
+        version = 'main'
+    elif version == TEST_PRIVATE_KEY:
+        version = 'test'
+    else:
+        raise ValueError('{} does not correspond to a mainnet nor '
+                         'testnet address.'.format(private_key[:1]))
+
+    # Remove version byte and, if present, compression flag.
+    if len(wif) == 52 and private_key[-1] == 1:
+        private_key, compressed = private_key[1:-1], True
+    else:
+        private_key, compressed = private_key[1:], False
+
+    return int.from_bytes(private_key, 'big'), compressed, version
+
+
 def wif_checksum_check(wif):
 
     try:

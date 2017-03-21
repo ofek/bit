@@ -2,13 +2,14 @@ import json
 
 from bit.crypto import (
     DEFAULT_BACKEND, ECDSA_SHA256, NOENCRYPTION, EllipticCurvePrivateKey,
-    Encoding, PrivateFormat, load_der_private_key, load_pem_private_key
+    Encoding, PrivateFormat, get_ec_point, load_der_private_key,
+    load_pem_private_key
 )
 from bit.curve import Point
 from bit.exceptions import InvalidSignature
 from bit.format import (
-    make_compliant_sig, point_to_public_key, hex_to_wif,
-    public_key_to_address, wif_to_hex
+    make_compliant_sig, coords_to_public_key, hex_to_wif,
+    public_key_to_address, wif_to_hex, wif_to_int
 )
 from bit.keygen import derive_private_key, generate_private_key
 from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
@@ -48,8 +49,8 @@ class BaseKey:
     def __init__(self, wif=None):
         if wif:
             if isinstance(wif, str):
-                private_key_hex, compressed, version = wif_to_hex(wif)
-                self._pk = derive_private_key(hex_to_int(private_key_hex))
+                private_key_int, compressed, version = wif_to_int(wif)
+                self._pk = derive_private_key(private_key_int)
             elif isinstance(wif, EllipticCurvePrivateKey):
                 self._pk = wif
                 compressed = True
@@ -60,8 +61,8 @@ class BaseKey:
             compressed = True
 
         self._public_point = None
-        self._public_key = point_to_public_key(
-            self._pk.public_key().public_numbers(), compressed=compressed
+        self._public_key = coords_to_public_key(
+            *get_ec_point(self._pk), compressed=compressed
         )
 
     @property
