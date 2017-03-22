@@ -62,6 +62,11 @@ Signing, which is the most used operation:
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()" "k.raw_sign(b'data')"
     100 loops, best of 3: 10.7 msec per loop
 
+.. note::
+
+    The author of pycoin `has informed me <https://github.com/ofek/bit/issues/4>`_
+    that a flag can be set on Linux to make some operations faster.
+
 License
 -------
 
