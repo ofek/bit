@@ -15,6 +15,7 @@ LOCK_TIME = 0x00.to_bytes(4, byteorder='little')
 HASH_TYPE = 0x01.to_bytes(4, byteorder='little')
 
 OP_0 = b'\x00'
+OP_CHECKLOCKTIMEVERIFY = b'\xb1'
 OP_CHECKSIG = b'\xac'
 OP_DUP = b'v'
 OP_EQUALVERIFY = b'\x88'
