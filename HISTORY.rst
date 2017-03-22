@@ -4,7 +4,7 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
-- Faster creation new unique private keys.
+- Faster creation of new unique private keys.
 
 0.3.1 (2017-03-21)
 ------------------
