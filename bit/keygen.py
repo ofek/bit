@@ -1,8 +1,10 @@
+import os
+
 from multiprocessing import Event, Process, Queue, cpu_count
 
 from bit.base58 import BASE58_ALPHABET
 from bit.crypto import (
-    DEFAULT_BACKEND, SECP256K1, gen_privkey, derive_privkey
+    DEFAULT_BACKEND, SECP256K1, derive_privkey
 )
 from bit.format import point_to_public_key, public_key_to_address
 from bit.utils import int_to_hex
@@ -13,7 +15,9 @@ def derive_private_key(num):
 
 
 def generate_private_key():
-    return gen_privkey(SECP256K1, DEFAULT_BACKEND)
+    return derive_privkey(
+        int.from_bytes(os.urandom(32), 'big'), SECP256K1, DEFAULT_BACKEND
+    )
 
 
 def generate_key_address_pair():
