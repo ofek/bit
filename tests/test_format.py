@@ -40,14 +40,14 @@ class TestGetVersion:
     def test_invalid(self):
         with pytest.raises(ValueError):
             get_version('dg2dNAjuezub6iJVPNML5pW5ZQvtA9ocL')
-
-
-class TestVerifySig:
-    def test_valid(self):
-        assert verify_sig(VALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED)
-
-    def test_invalid(self):
-        assert not verify_sig(INVALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED)
+#
+#
+# class TestVerifySig:
+#     def test_valid(self):
+#         assert verify_sig(VALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED)
+#
+#     def test_invalid(self):
+#         assert not verify_sig(INVALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED)
 
 
 class TestBytesToWIF:
