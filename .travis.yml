@@ -22,7 +22,7 @@ install:
   - "pip install codecov"
   - "pip install sphinx"
 
-script: "tox -vvv -- -rs"
+script: "tox -- -rs"
 
 after_success:
   - codecov
