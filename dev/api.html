@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Developer Interface &#8212; Bit 0.3.1 documentation</title>
+    <title>Developer Interface &#8212; Bit 0.4.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.3.1',
+        VERSION:     '0.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -128,6 +128,21 @@ communicate with the blockchain itself.</li>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.PrivateKey.from_bytes">
+<em class="property">classmethod </em><code class="descname">from_bytes</code><span class="sig-paren">(</span><em>bytestr</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.from_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bytestr</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; A private key previously encoded as hex.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -396,6 +411,19 @@ transaction data.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="bit.PrivateKey.to_bytes">
+<code class="descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.to_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="bit.PrivateKey.to_der">
 <code class="descname">to_der</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -553,6 +581,21 @@ communicate with the testnet blockchain itself.</li>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bit.PrivateKeyTestnet.from_bytes">
+<em class="property">classmethod </em><code class="descname">from_bytes</code><span class="sig-paren">(</span><em>bytestr</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.from_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bytestr</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; A private key previously encoded as hex.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -821,6 +864,19 @@ transaction data.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="bit.PrivateKeyTestnet.to_bytes">
+<code class="descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.to_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="bit.PrivateKeyTestnet.to_der">
 <code class="descname">to_der</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.to_der" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -959,6 +1015,19 @@ the public key.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A signature compliant with BIP-62.</td>
 </tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bit.wallet.BaseKey.to_bytes">
+<code class="descname">to_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.wallet.BaseKey.to_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
@@ -2234,7 +2303,7 @@ hour (with 90% probability)&#8221;.</td>
 <h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bit.verify_sig">
-<code class="descclassname">bit.</code><code class="descname">verify_sig</code><span class="sig-paren">(</span><em>signature</em>, <em>data</em>, <em>public_key</em>, <em>strict=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.verify_sig" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bit.</code><code class="descname">verify_sig</code><span class="sig-paren">(</span><em>signature</em>, <em>data</em>, <em>public_key</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.verify_sig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verifies some data was signed by the owner of a public key.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2244,14 +2313,10 @@ hour (with 90% probability)&#8221;.</td>
 <li><strong>signature</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; The signature to verify.</li>
 <li><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; The data that was supposedly signed.</li>
 <li><strong>public_key</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) &#8211; The public key.</li>
-<li><strong>strict</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) &#8211; Whether or not to check for BIP-62 compliance.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><a class="reference internal" href="#bit.exceptions.InvalidSignature" title="bit.exceptions.InvalidSignature"><strong>InvalidSignature</strong></a> &#8211; If any checks fail.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">True</span></code> if all checks pass.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">True</span></code> if all checks pass, <code class="docutils literal"><span class="pre">False</span></code> otherwise.</p>
 </td>
 </tr>
 </tbody>
@@ -2261,11 +2326,6 @@ hour (with 90% probability)&#8221;.</td>
 </div>
 <div class="section" id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
-<dl class="exception">
-<dt id="bit.exceptions.InvalidSignature">
-<em class="property">exception </em><code class="descclassname">bit.exceptions.</code><code class="descname">InvalidSignature</code><a class="headerlink" href="#bit.exceptions.InvalidSignature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="exception">
 <dt id="bit.exceptions.InsufficientFunds">
 <em class="property">exception </em><code class="descclassname">bit.exceptions.</code><code class="descname">InsufficientFunds</code><a class="headerlink" href="#bit.exceptions.InsufficientFunds" title="Permalink to this definition">¶</a></dt>
@@ -2322,12 +2382,11 @@ hour (with 90% probability)&#8221;.</td>
   <li><a href="https://github.com/ofek/bit">Bit @ GitHub</a></li>
   <li><a href="https://pypi.org/project/bit">Bit @ PyPI</a></li>
   <li><a href="https://github.com/ofek/bit/issues">Issue Tracker</a></li>
-  <!--<li><a href="http://docs.python-requests.org/en/latest/community/updates/#software-updates">Release History</a></li>-->
 </ul>
 
 <h3>Dependencies</h3>
 <ul>
-  <li><a href="https://github.com/pyca/cryptography">Cryptography</a></li>
+  <li><a href="https://github.com/ofek/coincurve">Coincurve</a></li>
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
 </ul>
   <h3><a href="../index.html">Table Of Contents</a></h3>

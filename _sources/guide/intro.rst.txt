@@ -9,7 +9,7 @@ Why Bit?
 --------
 
 - Robust API with sane defaults, making development a breeze
-- Python's fastest available implementation (thanks to OpenSSL :)
+- Python's fastest available implementation (100x faster than closest library)
 - Compliant to all presently implemented Bitcoin Improvement Protocols
 - All commits require 100% test coverage
 - Available on all major platforms
@@ -36,7 +36,7 @@ Instantiate a compressed private key and get its computed public key:
 .. code-block:: bash
 
     $ python -m timeit -s "from bit import Key" "Key('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key"
-    1000 loops, best of 3: 874 usec per loop
+    1000 loops, best of 3: 89 usec per loop
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey" "PrivateKey.from_b58check('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').public_key.compressed_bytes"
     100 loops, best of 3: 11 msec per loop
     $ python -m timeit -s "from pycoin.key import Key" "Key.from_text('L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv').sec()"
@@ -58,7 +58,7 @@ Signing, which is the most used operation:
 .. code-block:: bash
 
     $ python -m timeit -s "from bit import Key;k=Key()" "k.sign(b'data')"
-    1000 loops, best of 3: 742 usec per loop
+    1000 loops, best of 3: 91 usec per loop
     $ python -m timeit -s "from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()" "k.raw_sign(b'data')"
     100 loops, best of 3: 10.7 msec per loop
 
