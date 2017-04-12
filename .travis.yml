@@ -18,6 +18,7 @@ before_install:
   - cd $TRAVIS_BUILD_DIR
 
 install:
+  - "pip install --upgrade pip"
   - "pip install tox"
   - "pip install codecov"
   - "pip install sphinx"
