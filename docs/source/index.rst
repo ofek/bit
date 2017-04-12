@@ -56,10 +56,12 @@ Here is the transaction `<https://blockchain.info/tx/9f59f5c6757ec46fdc7440acbeb
 Features
 --------
 
+- Python's fastest available implementation (100x faster than closest library)
 - Seamless integration with existing server setups
 - Supports keys in cold storage
 - Fully supports 25 different currencies
 - First class support for storing data in the blockchain
+- Deterministic signatures via RFC 6979
 - Access to the blockchain (and testnet chain) through multiple APIs for redundancy
 - Exchange rate API, with optional caching
 - Optimal transaction fee API, with optional caching

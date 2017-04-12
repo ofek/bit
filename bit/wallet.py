@@ -1,34 +1,26 @@
 import json
 
-from bit.crypto import (
-    DEFAULT_BACKEND, ECDSA_SHA256, NOENCRYPTION, EllipticCurvePrivateKey,
-    Encoding, PrivateFormat, get_ec_point, load_der_private_key,
-    load_pem_private_key
-)
+from bit.crypto import ECPrivateKey
 from bit.curve import Point
-from bit.exceptions import InvalidSignature
 from bit.format import (
-    make_compliant_sig, coords_to_public_key, hex_to_wif,
-    public_key_to_address, wif_to_hex, wif_to_int
+    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes
 )
-from bit.keygen import derive_private_key, generate_private_key
 from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.network.meta import Unspent
 from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
-from bit.utils import hex_to_int, int_to_hex
 
 
 def wif_to_key(wif):
-    private_key_hex, compressed, version = wif_to_hex(wif)
+    private_key_bytes, compressed, version = wif_to_bytes(wif)
 
     if version == 'main':
         if compressed:
-            return PrivateKey.from_hex(private_key_hex)
+            return PrivateKey.from_bytes(private_key_bytes)
         else:
             return PrivateKey(wif)
     else:
         if compressed:
-            return PrivateKeyTestnet.from_hex(private_key_hex)
+            return PrivateKeyTestnet.from_bytes(private_key_bytes)
         else:
             return PrivateKeyTestnet(wif)
 
@@ -49,21 +41,19 @@ class BaseKey:
     def __init__(self, wif=None):
         if wif:
             if isinstance(wif, str):
-                private_key_int, compressed, version = wif_to_int(wif)
-                self._pk = derive_private_key(private_key_int)
-            elif isinstance(wif, EllipticCurvePrivateKey):
+                private_key_bytes, compressed, version = wif_to_bytes(wif)
+                self._pk = ECPrivateKey(private_key_bytes)
+            elif isinstance(wif, ECPrivateKey):
                 self._pk = wif
                 compressed = True
             else:
                 raise TypeError('Wallet Import Format must be a string.')
         else:
-            self._pk = generate_private_key()
+            self._pk = ECPrivateKey()
             compressed = True
 
         self._public_point = None
-        self._public_key = coords_to_public_key(
-            *get_ec_point(self._pk), compressed=compressed
-        )
+        self._public_key = self._pk.public_key.format(compressed=compressed)
 
     @property
     def public_key(self):
@@ -74,8 +64,7 @@ class BaseKey:
     def public_point(self):
         """The public point (x, y)."""
         if self._public_point is None:
-            point = self._pk.public_key().public_numbers()
-            self._public_point = Point(point.x, point.y)
+            self._public_point = Point(*public_key_to_coords(self._public_key))
         return self._public_point
 
     def sign(self, data):
@@ -87,7 +76,7 @@ class BaseKey:
         :returns: A signature compliant with BIP-62.
         :rtype: ``bytes``
         """
-        return make_compliant_sig(self._pk.sign(data, ECDSA_SHA256))
+        return self._pk.sign(data)
 
     def verify(self, signature, data):
         """Verifies some data was signed by this private key.
@@ -98,34 +87,27 @@ class BaseKey:
         :type data: ``bytes``
         :rtype: ``bool``
         """
-        try:
-            return self._pk.public_key().verify(signature, data, ECDSA_SHA256)
-        except InvalidSignature:
-            return False
+        return self._pk.public_key.verify(signature, data)
 
     def to_hex(self):
         """:rtype: ``str``"""
-        return int_to_hex(self._pk.private_numbers().private_value)
+        return self._pk.to_hex()
+
+    def to_bytes(self):
+        """:rtype: ``bytes``"""
+        return self._pk.secret
 
     def to_der(self):
         """:rtype: ``bytes``"""
-        return self._pk.private_bytes(
-            encoding=Encoding.DER,
-            format=PrivateFormat.PKCS8,
-            encryption_algorithm=NOENCRYPTION
-        )
+        return self._pk.to_der()
 
     def to_pem(self):
         """:rtype: ``bytes``"""
-        return self._pk.private_bytes(
-            encoding=Encoding.PEM,
-            format=PrivateFormat.PKCS8,
-            encryption_algorithm=NOENCRYPTION
-        )
+        return self._pk.to_pem()
 
     def to_int(self):
         """:rtype: ``int``"""
-        return self._pk.private_numbers().private_value
+        return self._pk.to_int()
 
     def is_compressed(self):
         """Returns whether or not this private key corresponds to a compressed
@@ -167,8 +149,8 @@ class PrivateKey(BaseKey):
         return self._address
 
     def to_wif(self):
-        return hex_to_wif(
-            self.to_hex(),
+        return bytes_to_wif(
+            self._pk.secret,
             version='main',
             compressed=self.is_compressed()
         )
@@ -380,7 +362,16 @@ class PrivateKey(BaseKey):
         :type hexed: ``str``
         :rtype: :class:`~bit.PrivateKey`
         """
-        return PrivateKey(derive_private_key(hex_to_int(hexed)))
+        return PrivateKey(ECPrivateKey.from_hex(hexed))
+
+    @classmethod
+    def from_bytes(cls, bytestr):
+        """
+        :param bytestr: A private key previously encoded as hex.
+        :type bytestr: ``bytes``
+        :rtype: :class:`~bit.PrivateKey`
+        """
+        return PrivateKey(ECPrivateKey(bytestr))
 
     @classmethod
     def from_der(cls, der):
@@ -389,11 +380,7 @@ class PrivateKey(BaseKey):
         :type der: ``bytes``
         :rtype: :class:`~bit.PrivateKey`
         """
-        return PrivateKey(load_der_private_key(
-            der,
-            password=None,
-            backend=DEFAULT_BACKEND
-        ))
+        return PrivateKey(ECPrivateKey.from_der(der))
 
     @classmethod
     def from_pem(cls, pem):
@@ -402,11 +389,7 @@ class PrivateKey(BaseKey):
         :type pem: ``bytes``
         :rtype: :class:`~bit.PrivateKey`
         """
-        return PrivateKey(load_pem_private_key(
-            pem,
-            password=None,
-            backend=DEFAULT_BACKEND
-        ))
+        return PrivateKey(ECPrivateKey.from_pem(pem))
 
     @classmethod
     def from_int(cls, num):
@@ -415,7 +398,7 @@ class PrivateKey(BaseKey):
         :type num: ``int``
         :rtype: :class:`~bit.PrivateKey`
         """
-        return PrivateKey(derive_private_key(num))
+        return PrivateKey(ECPrivateKey.from_int(num))
 
     def __repr__(self):
         return '<PrivateKey: {}>'.format(self.address)
@@ -450,8 +433,8 @@ class PrivateKeyTestnet(BaseKey):
         return self._address
 
     def to_wif(self):
-        return hex_to_wif(
-            self.to_hex(),
+        return bytes_to_wif(
+            self._pk.secret,
             version='test',
             compressed=self.is_compressed()
         )
@@ -663,7 +646,16 @@ class PrivateKeyTestnet(BaseKey):
         :type hexed: ``str``
         :rtype: :class:`~bit.PrivateKeyTestnet`
         """
-        return PrivateKeyTestnet(derive_private_key(hex_to_int(hexed)))
+        return PrivateKeyTestnet(ECPrivateKey.from_hex(hexed))
+
+    @classmethod
+    def from_bytes(cls, bytestr):
+        """
+        :param bytestr: A private key previously encoded as hex.
+        :type bytestr: ``bytes``
+        :rtype: :class:`~bit.PrivateKeyTestnet`
+        """
+        return PrivateKeyTestnet(ECPrivateKey(bytestr))
 
     @classmethod
     def from_der(cls, der):
@@ -672,11 +664,7 @@ class PrivateKeyTestnet(BaseKey):
         :type der: ``bytes``
         :rtype: :class:`~bit.PrivateKeyTestnet`
         """
-        return PrivateKeyTestnet(load_der_private_key(
-            der,
-            password=None,
-            backend=DEFAULT_BACKEND
-        ))
+        return PrivateKeyTestnet(ECPrivateKey.from_der(der))
 
     @classmethod
     def from_pem(cls, pem):
@@ -685,11 +673,7 @@ class PrivateKeyTestnet(BaseKey):
         :type pem: ``bytes``
         :rtype: :class:`~bit.PrivateKeyTestnet`
         """
-        return PrivateKeyTestnet(load_pem_private_key(
-            pem,
-            password=None,
-            backend=DEFAULT_BACKEND
-        ))
+        return PrivateKeyTestnet(ECPrivateKey.from_pem(pem))
 
     @classmethod
     def from_int(cls, num):
@@ -698,7 +682,7 @@ class PrivateKeyTestnet(BaseKey):
         :type num: ``int``
         :rtype: :class:`~bit.PrivateKeyTestnet`
         """
-        return PrivateKeyTestnet(derive_private_key(num))
+        return PrivateKeyTestnet(ECPrivateKey.from_int(num))
 
     def __repr__(self):
         return '<PrivateKeyTestnet: {}>'.format(self.address)

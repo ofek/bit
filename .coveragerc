@@ -4,8 +4,8 @@ source =
     tests/
 branch = True
 omit =
-    bit/__init__.py
     bit/cli.py
+    bit/keygen.py
 
 [report]
 exclude_lines =

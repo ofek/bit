@@ -11,9 +11,9 @@ Why Python 3 only?
 How so fast?
 ------------
 
-Bit uses `pyca/cryptography <https://github.com/pyca/cryptography>`_ for most
-cryptographic operations, which itself is a wrapper around
-`OpenSSL <https://github.com/openssl/openssl>`_.
+Bit uses `libsecp256k1 <https://github.com/bitcoin-core/secp256k1>`_ for all
+elliptic curve operations, which is the heavily optimized C library used by
+`Bitcoin Core <https://github.com/bitcoin/bitcoin>`_.
 
 Why GitHub Pages instead of ReadtheDocs?
 ----------------------------------------

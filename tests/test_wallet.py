@@ -4,13 +4,13 @@ import time
 
 import pytest
 
-from bit.crypto import ECDSA_SHA256, EllipticCurvePrivateKey
+from bit.crypto import ECPrivateKey
 from bit.curve import Point
-from bit.keygen import generate_private_key
+from bit.format import verify_sig
 from bit.network import NetworkAPI
 from bit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
 from .samples import (
-    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_DER,
+    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
     PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X,
     PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
@@ -46,11 +46,11 @@ class TestBaseKey:
     def test_init_default(self):
         base_key = BaseKey()
 
-        assert isinstance(base_key._pk, EllipticCurvePrivateKey)
+        assert isinstance(base_key._pk, ECPrivateKey)
         assert len(base_key.public_key) == 33
 
     def test_init_from_key(self):
-        pk = generate_private_key()
+        pk = ECPrivateKey()
         base_key = BaseKey(pk)
         assert base_key._pk == pk
 
@@ -73,23 +73,29 @@ class TestBaseKey:
 
     def test_sign(self):
         base_key = BaseKey()
-        signature = base_key.sign(PUBLIC_KEY_COMPRESSED)
-        public_key = base_key._pk.public_key()
-        assert public_key.verify(signature, PUBLIC_KEY_COMPRESSED, ECDSA_SHA256)
+        data = os.urandom(200)
+        signature = base_key.sign(data)
+        assert verify_sig(signature, data, base_key.public_key)
 
     def test_verify_success(self):
         base_key = BaseKey()
-        signature = base_key.sign(PUBLIC_KEY_COMPRESSED)
-        assert base_key.verify(signature, PUBLIC_KEY_COMPRESSED)
+        data = os.urandom(200)
+        signature = base_key.sign(data)
+        assert base_key.verify(signature, data)
 
     def test_verify_failure(self):
         base_key = BaseKey()
-        signature = base_key.sign(PUBLIC_KEY_COMPRESSED)
-        assert not base_key.verify(signature, PUBLIC_KEY_UNCOMPRESSED)
+        data = os.urandom(200)
+        signature = base_key.sign(data)
+        assert not base_key.verify(signature, data[::-1])
 
     def test_to_hex(self):
         base_key = BaseKey(WALLET_FORMAT_MAIN)
         assert base_key.to_hex() == PRIVATE_KEY_HEX
+
+    def test_to_bytes(self):
+        base_key = BaseKey(WALLET_FORMAT_MAIN)
+        assert base_key.to_bytes() == PRIVATE_KEY_BYTES
 
     def test_to_der(self):
         base_key = BaseKey(WALLET_FORMAT_MAIN)

@@ -1,21 +1,28 @@
+from collections import deque
+
 from bit.crypto import double_sha256_checksum
 from bit.utils import int_to_unknown_bytes
 
 BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+BASE58_ALPHABET_LIST = list(BASE58_ALPHABET)
+BASE58_ALPHABET_INDEX = {char: index for index, char in enumerate(BASE58_ALPHABET)}
 
 
 def b58encode(bytestr):
 
-    alphabet = BASE58_ALPHABET
+    alphabet = BASE58_ALPHABET_LIST
+
+    encoded = deque()
+    append = encoded.appendleft
+    _divmod = divmod
 
     num = int.from_bytes(bytestr, 'big')
-    encoded = []
 
     while num > 0:
-        num, rem = divmod(num, 58)
-        encoded.append(alphabet[rem])
+        num, rem = _divmod(num, 58)
+        append(alphabet[rem])
 
-    encoded = ''.join(reversed(encoded))
+    encoded = ''.join(encoded)
 
     pad = 0
     for byte in bytestr:
@@ -33,18 +40,17 @@ def b58encode_check(bytestr):
 
 def b58decode(string):
 
-    alphabet = BASE58_ALPHABET
+    alphabet_index = BASE58_ALPHABET_INDEX
 
     num = 0
-    for char in string:
-        num *= 58
 
-        try:
-            index = alphabet.index(char)
-        except ValueError:
-            raise ValueError('"{}" is an invalid base58 encoded '
-                             'character.'.format(char)) from None
-        num += index
+    try:
+        for char in string:
+            num *= 58
+            num += alphabet_index[char]
+    except KeyError:
+        raise ValueError('"{}" is an invalid base58 encoded '
+                         'character.'.format(char)) from None
 
     bytestr = int_to_unknown_bytes(num)
 

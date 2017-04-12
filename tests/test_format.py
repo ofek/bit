@@ -1,24 +1,26 @@
 import pytest
 
-from bit.exceptions import InvalidSignature
 from bit.format import (
-    address_to_public_key_hash, coords_to_public_key, get_version,
-    make_compliant_sig, point_to_public_key, hex_to_wif, public_key_to_coords,
-    public_key_to_address, verify_sig, wif_checksum_check, wif_to_hex,
-    wif_to_int
+    address_to_public_key_hash, bytes_to_wif, coords_to_public_key,
+    get_version, point_to_public_key, public_key_to_coords,
+    public_key_to_address, verify_sig, wif_checksum_check, wif_to_bytes
 )
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_ADDRESS_TEST_COMPRESSED,
-    BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_HEX, PRIVATE_KEY_NUM,
-    PUBKEY_HASH, PUBKEY_HASH_COMPRESSED, PUBLIC_KEY_COMPRESSED,
-    PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X, PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN,
-    WALLET_FORMAT_COMPRESSED_TEST, WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PUBKEY_HASH, PUBKEY_HASH_COMPRESSED,
+    PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X, PUBLIC_KEY_Y,
+    WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
 )
 
 VALID_SIGNATURE = (b'0E\x02!\x00\xd7y\xe0\xa4\xfc\xea\x88\x18sDit\x9d\x01\xf3'
                    b'\x03\xa0\xceO\xab\x80\xe8PY.*\xda\x11w|\x9fq\x02 u\xdaR'
                    b'\xd8\x84a\xad\xfamN\xae&\x91\xfd\xd6\xbd\xe1\xb0e\xfe\xf4'
                    b'\xc5S\xd9\x02D\x1d\x0b\xba\xe0=@')
+INVALID_SIGNATURE = (b'0D\x02 `\x03D^\xa7\xab\xdc\xa6_\xb6&\xcbN\xc8S\xa4\xcf'
+                     b'\x9a8\x02\x99\xc4\xe9\x02\xb3\x14k\xfa\x15J\xb9\x03\x02'
+                     b' !\xfd\xb2\xa0:\xb3\xba\xb1\xdc\x1a]ZWb\xa5\x9d\x8a5\x1c'
+                     b'\xaeQ.\xa7`\xf6V\x11\xf1\xe0iJ7')
 SIGNATURE_HIGH_S = (b'0E\x02 \x18NeS,"r\x1e\x01?\xa5\xa8C\xe4\xba\x07x \xc9\xf6'
                     b'\x8fe\x17\xa3\x03\'\xac\xd8\x97\x97\x1b\xd0\x02!\x00\xdc^'
                     b'\xf2M\xe7\x0e\xbaz\xd3\xa3\x94\xcc\xef\x17\x04\xb2\xfb0!'
@@ -45,80 +47,38 @@ class TestVerifySig:
         assert verify_sig(VALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED)
 
     def test_invalid(self):
-        with pytest.raises(InvalidSignature):
-            verify_sig(b'invalid', DATA, PUBLIC_KEY_COMPRESSED)
-
-    def test_strict_valid(self):
-        assert verify_sig(VALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED, strict=True)
-
-    def test_high_s(self):
-        with pytest.raises(InvalidSignature):
-            verify_sig(SIGNATURE_HIGH_S, DATA, PUBLIC_KEY_COMPRESSED, strict=True)
+        assert not verify_sig(INVALID_SIGNATURE, DATA, PUBLIC_KEY_COMPRESSED)
 
 
-class TestMakeCompliantDer:
-    def test_normal(self):
-        # (r = 32, s = 32)
-        signature = b'0\x06\x02\x01 \x02\x01 '
-        assert signature == make_compliant_sig(signature)
-
-    def test_r_greater_than_or_equal_to_128(self):
-        # (r = 128, s = 32)
-        signature = b'0\x07\x02\x02\x00\x80\x02\x01 '
-        assert b'0\x07\x02\x02\x00\x80\x02\x01 ' == make_compliant_sig(signature)
-
-    def test_s_greater_than_or_equal_to_128(self):
-        # (r = 32, s = 128)
-        signature = b'0\x07\x02\x01 \x02\x02\x00\x80'
-        assert b'0\x07\x02\x01 \x02\x02\x00\x80' == make_compliant_sig(signature)
-
-
-class TestHexToWIF:
-    def test_hex_to_wif_bytes(self):
-        assert hex_to_wif(PRIVATE_KEY_BYTES) == WALLET_FORMAT_MAIN
-
-    def test_hex_to_wif_hex(self):
-        assert hex_to_wif(PRIVATE_KEY_HEX) == WALLET_FORMAT_MAIN
-
-    def test_hex_to_wif_test(self):
-        assert hex_to_wif(PRIVATE_KEY_BYTES, version='test') == WALLET_FORMAT_TEST
-
-    def test_hex_to_wif_compressed(self):
-        assert hex_to_wif(PRIVATE_KEY_BYTES, compressed=True) == WALLET_FORMAT_COMPRESSED_MAIN
-
-    def test_hex_to_wif_compressed_test(self):
-        assert hex_to_wif(
-            PRIVATE_KEY_BYTES, version='test', compressed=True) == WALLET_FORMAT_COMPRESSED_TEST
-
-
-class TestWIFToHex:
-    def test_wif_to_hex_main(self):
-        assert wif_to_hex(WALLET_FORMAT_MAIN) == (PRIVATE_KEY_HEX, False, 'main')
-
-    def test_wif_to_hex_test(self):
-        assert wif_to_hex(WALLET_FORMAT_TEST) == (PRIVATE_KEY_HEX, False, 'test')
-
-    def test_wif_to_hex_compressed(self):
-        assert wif_to_hex(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_HEX, True, 'main')
-
-    def test_wif_to_hex_invalid_network(self):
-        with pytest.raises(ValueError):
-            wif_to_hex(BITCOIN_ADDRESS)
-
-
-class TestWIFToInt:
+class TestBytesToWIF:
     def test_mainnet(self):
-        assert wif_to_int(WALLET_FORMAT_MAIN) == (PRIVATE_KEY_NUM, False, 'main')
+        assert bytes_to_wif(PRIVATE_KEY_BYTES) == WALLET_FORMAT_MAIN
 
     def test_testnet(self):
-        assert wif_to_int(WALLET_FORMAT_TEST) == (PRIVATE_KEY_NUM, False, 'test')
+        assert bytes_to_wif(PRIVATE_KEY_BYTES, version='test') == WALLET_FORMAT_TEST
 
     def test_compressed(self):
-        assert wif_to_int(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_NUM, True, 'main')
+        assert bytes_to_wif(PRIVATE_KEY_BYTES, compressed=True) == WALLET_FORMAT_COMPRESSED_MAIN
+
+    def test_compressed_testnet(self):
+        assert bytes_to_wif(
+            PRIVATE_KEY_BYTES, version='test', compressed=True
+        ) == WALLET_FORMAT_COMPRESSED_TEST
+
+
+class TestWIFToBytes:
+    def test_mainnet(self):
+        assert wif_to_bytes(WALLET_FORMAT_MAIN) == (PRIVATE_KEY_BYTES, False, 'main')
+
+    def test_testnet(self):
+        assert wif_to_bytes(WALLET_FORMAT_TEST) == (PRIVATE_KEY_BYTES, False, 'test')
+
+    def test_compressed(self):
+        assert wif_to_bytes(WALLET_FORMAT_COMPRESSED_MAIN) == (PRIVATE_KEY_BYTES, True, 'main')
 
     def test_invalid_network(self):
         with pytest.raises(ValueError):
-            wif_to_int(BITCOIN_ADDRESS)
+            wif_to_bytes(BITCOIN_ADDRESS)
 
 
 class TestWIFChecksumCheck:

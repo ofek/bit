@@ -1,10 +1,8 @@
+from coincurve import verify_signature as _vs
+
 from bit.base58 import b58decode_check, b58encode_check
-from bit.crypto import (
-    decode_dss_signature, ripemd160_sha256, verify_signature
-)
-from bit.curve import GROUP_ORDER, x_to_y
-from bit.exceptions import InvalidSignature
-from bit.utils import bytes_to_hex, hex_to_bytes, int_to_unknown_bytes
+from bit.crypto import ripemd160_sha256
+from bit.curve import x_to_y
 
 MAIN_PUBKEY_HASH = b'\x00'
 MAIN_SCRIPT_HASH = b'\x05'
@@ -22,7 +20,7 @@ PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
 PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
 
 
-def verify_sig(signature, data, public_key, strict=False):
+def verify_sig(signature, data, public_key):
     """Verifies some data was signed by the owner of a public key.
 
     :param signature: The signature to verify.
@@ -31,40 +29,9 @@ def verify_sig(signature, data, public_key, strict=False):
     :type data: ``bytes``
     :param public_key: The public key.
     :type public_key: ``bytes``
-    :param strict: Whether or not to check for BIP-62 compliance.
-    :type strict: ``bool``
-    :raises InvalidSignature: If any checks fail.
-    :returns: ``True`` if all checks pass.
+    :returns: ``True`` if all checks pass, ``False`` otherwise.
     """
-    if strict:  # pragma: no cover
-        _, s = decode_dss_signature(signature)
-        if s > GROUP_ORDER // 2:
-            raise InvalidSignature('High S')
-
-    return verify_signature(signature, data, public_key_to_coords(public_key))
-
-
-def make_compliant_sig(signature):
-    """Adhere to BIP-62:
-    https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki
-    """
-
-    r, s = decode_dss_signature(signature)
-    s = GROUP_ORDER - s if s > GROUP_ORDER // 2 else s
-
-    r = int_to_unknown_bytes(r)
-    s = int_to_unknown_bytes(s)
-
-    if r[0] & 0x80:
-        r = b'\x00' + r
-
-    if s[0] & 0x80:
-        s = b'\x00' + s
-
-    r = b'\x02' + int_to_unknown_bytes(len(r)) + r
-    s = b'\x02' + int_to_unknown_bytes(len(s)) + s
-
-    return b'\x30' + int_to_unknown_bytes(len(r) + len(s)) + r + s
+    return _vs(signature, data, public_key)
 
 
 def address_to_public_key_hash(address):
@@ -83,7 +50,7 @@ def get_version(address):
                          'testnet address.'.format(version))
 
 
-def hex_to_wif(private_key, version='main', compressed=False):
+def bytes_to_wif(private_key, version='main', compressed=False):
 
     if version == 'test':
         prefix = TEST_PRIVATE_KEY
@@ -95,15 +62,12 @@ def hex_to_wif(private_key, version='main', compressed=False):
     else:
         suffix = b''
 
-    if not isinstance(private_key, bytes):
-        private_key = hex_to_bytes(private_key)
-
     private_key = prefix + private_key + suffix
 
     return b58encode_check(private_key)
 
 
-def wif_to_hex(wif):
+def wif_to_bytes(wif):
 
     private_key = b58decode_check(wif)
 
@@ -123,30 +87,7 @@ def wif_to_hex(wif):
     else:
         private_key, compressed = private_key[1:], False
 
-    return bytes_to_hex(private_key), compressed, version
-
-
-def wif_to_int(wif):
-
-    private_key = b58decode_check(wif)
-
-    version = private_key[:1]
-
-    if version == MAIN_PRIVATE_KEY:
-        version = 'main'
-    elif version == TEST_PRIVATE_KEY:
-        version = 'test'
-    else:
-        raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet address.'.format(private_key[:1]))
-
-    # Remove version byte and, if present, compression flag.
-    if len(wif) == 52 and private_key[-1] == 1:
-        private_key, compressed = private_key[1:-1], True
-    else:
-        private_key, compressed = private_key[1:], False
-
-    return int.from_bytes(private_key, 'big'), compressed, version
+    return private_key, compressed, version
 
 
 def wif_checksum_check(wif):
