@@ -1,20 +1,18 @@
-from multiprocessing import Event, Process, Queue, cpu_count
+import sys
+import time
+from multiprocessing import Event, Process, Queue, Value, cpu_count
 
 from coincurve import Context
 
-from bit.base58 import BASE58_ALPHABET
-from bit.crypto import ECPrivateKey
-from bit.format import public_key_to_address
-from bit.utils import bytes_to_hex
+from bit.base58 import BASE58_ALPHABET, b58encode_check
+from bit.crypto import ECPrivateKey, ripemd160_sha256
+from bit.format import bytes_to_wif, public_key_to_address
 
 
 def generate_key_address_pair():  # pragma: no cover
-
     private_key = ECPrivateKey()
-
     address = public_key_to_address(private_key.public_key.format())
-
-    return bytes_to_hex(private_key.secret), address
+    return bytes_to_wif(private_key.secret), address
 
 
 def generate_matching_address(prefix, cores='all'):  # pragma: no cover
@@ -38,44 +36,58 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
     else:
         cores = 1
 
-    queue = Queue()
+    counter = Value('i')
     match = Event()
-    workers = []
+    queue = Queue()
 
+    workers = []
     for _ in range(cores):
         workers.append(
-            Process(target=stream_key_address_pairs, args=(queue, match))
+            Process(
+                target=generate_key_address_pairs,
+                args=(prefix, counter, match, queue)
+            )
         )
 
     for worker in workers:
         worker.start()
 
     keys_generated = 0
-
     while True:
-        private_key, address = queue.get()
-        keys_generated += 1
-        if keys_generated % 10000 == 0:
-            print(keys_generated)
+        time.sleep(1)
+        current = counter.value
+        if current == keys_generated:
+            if current == 0:
+                continue
+            break
+        keys_generated = current
+        s = 'Keys generated: {}\r'.format(keys_generated)
+        sys.stdout.write(s)
+        sys.stdout.flush()
 
-        if address.startswith(prefix):
-            match.set()
-            for worker in workers:
-                worker.join()
-            return bytes_to_hex(private_key), address
+    private_key, address = queue.get()
+    print('\n\n'
+          'WIF: {}\n'
+          'Address: {}'.format(bytes_to_wif(private_key), address))
 
 
-def stream_key_address_pairs(queue, event):  # pragma: no cover
+def generate_key_address_pairs(prefix, counter, match, queue):  # pragma: no cover
 
     context = Context()
 
     while True:
+        if match.is_set():
+            return
+
+        with counter.get_lock():
+            counter.value += 1
 
         private_key = ECPrivateKey(context=context)
+        address = b58encode_check(
+            b'\x00' + ripemd160_sha256(private_key.public_key.format())
+        )
 
-        address = public_key_to_address(private_key.public_key.format())
-
-        queue.put_nowait((private_key.secret, address))
-
-        if event.is_set():
+        if address.startswith(prefix):
+            match.set()
+            queue.put_nowait((private_key.secret, address))
             return
