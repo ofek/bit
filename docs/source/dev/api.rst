@@ -88,5 +88,4 @@ Utilities
 Exceptions
 ----------
 
-.. autoexception:: bit.exceptions.InvalidSignature
 .. autoexception:: bit.exceptions.InsufficientFunds
