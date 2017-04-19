@@ -4,6 +4,9 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.4.0 (2017-04-19)
+------------------
+
 - Changed elliptic curve backend from OpenSSL to libsecp256k1. This results
   in an order of magnitude faster key creation and signing/verifying.
 - Improved performance of base58 encoding/decoding.
