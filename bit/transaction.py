@@ -6,7 +6,7 @@ from bit.exceptions import InsufficientFunds
 from bit.format import address_to_public_key_hash
 from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
-    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes
+    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint, script_push
 )
 
 VERSION_1 = 0x01.to_bytes(4, byteorder='little')
@@ -27,30 +27,82 @@ MESSAGE_LIMIT = 40
 
 
 class TxIn:
-    __slots__ = ('script', 'script_len', 'txid', 'txindex')
+    __slots__ = ('script', 'script_len', 'txid', 'txindex', 'sequence')
 
-    def __init__(self, script, script_len, txid, txindex):
+    def __init__(self, script, txid, txindex, sequence=SEQUENCE):
         self.script = script
-        self.script_len = script_len
+        self.script_len = int_to_varint(len(script))
         self.txid = txid
         self.txindex = txindex
+        self.sequence = sequence
 
     def __eq__(self, other):
         return (self.script == other.script and
                 self.script_len == other.script_len and
                 self.txid == other.txid and
-                self.txindex == other.txindex)
+                self.txindex == other.txindex and
+                self.sequence == other.sequence)
 
     def __repr__(self):
-        return 'TxIn({}, {}, {}, {})'.format(
+        return 'TxIn({}, {}, {}, {}, {})'.format(
             repr(self.script),
             repr(self.script_len),
             repr(self.txid),
-            repr(self.txindex)
+            repr(self.txindex),
+            repr(self.sequence)
         )
 
 
 Output = namedtuple('Output', ('address', 'amount', 'currency'))
+
+
+class TxOut:
+    __slots__ = ('value', 'script_len', 'script')
+
+    def __init__(self, value, script):
+        self.value = value
+        self.script = script
+        self.script_len = int_to_varint(len(script))
+
+    def __eq__(self, other):
+        return (self.value == other.value and
+                self.script == other.script and
+                self.script_len == other.script_len)
+
+    def __repr__(self):
+        return 'TxOut({}, {}, {})'.format(
+            repr(self.value),
+            repr(self.script),
+            repr(self.script_len)
+        )
+
+
+class TxObj:
+    __slots__ = ('version', 'TxIn', 'input_count', 'TxOut', 'output_count', 'locktime')
+
+    def __init__(self, version, TxIn, TxOut, locktime):
+        self.version = version
+        self.TxIn = TxIn
+        self.input_count = len(TxIn)
+        self.TxOut = TxOut
+        self.output_count = len(TxOut)
+        self.locktime = locktime
+
+    def __eq__(self, other):
+        return (self.version == other.version and
+                self.TxIn == other.TxIn and
+                self.input_count == other.input_count and
+                self.TxOut == other.TxOut and
+                self.output_count == other.output_count and
+                self.locktime == other.locktime)
+
+    def __repr__(self):
+        return 'TxObj({}, {}, {}, {})'.format(
+            repr(self.version),
+            repr(self.TxIn),
+            repr(self.TxOut),
+            repr(self.locktime)
+        )
 
 
 def calc_txid(tx_hex):
@@ -129,9 +181,9 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     return unspents, outputs
 
 
-def construct_output_block(outputs):
+def construct_outputs(outputs):
 
-    output_block = b''
+    outputs_obj = []
 
     for data in outputs:
         dest, amount = data
@@ -142,7 +194,7 @@ def construct_output_block(outputs):
                       address_to_public_key_hash(dest) +
                       OP_EQUALVERIFY + OP_CHECKSIG)
 
-            output_block += amount.to_bytes(8, byteorder='little')
+            amount = amount.to_bytes(8, byteorder='little')
 
         # Blockchain storage
         else:
@@ -150,12 +202,11 @@ def construct_output_block(outputs):
                       len(dest).to_bytes(1, byteorder='little') +
                       dest)
 
-            output_block += b'\x00\x00\x00\x00\x00\x00\x00\x00'
+            amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
-        output_block += int_to_unknown_bytes(len(script), byteorder='little')
-        output_block += script
+        outputs_obj.append(TxOut(amount, script))
 
-    return output_block
+    return outputs_obj
 
 
 def construct_input_block(inputs):
@@ -174,43 +225,42 @@ def construct_input_block(inputs):
 
     return input_block
 
+def sign_legacy_tx(private_key, tx):
 
-def create_p2pkh_transaction(private_key, unspents, outputs):
-
-    public_key = private_key.public_key
-    public_key_len = len(public_key).to_bytes(1, byteorder='little')
-
-    version = VERSION_1
-    lock_time = LOCK_TIME
-    sequence = SEQUENCE
+    version = tx.version
+    lock_time = tx.locktime
     hash_type = HASH_TYPE
-    input_count = int_to_unknown_bytes(len(unspents), byteorder='little')
-    output_count = int_to_unknown_bytes(len(outputs), byteorder='little')
-    output_block = construct_output_block(outputs)
 
-    # Optimize for speed, not memory, by pre-computing values.
-    inputs = []
-    for unspent in unspents:
-        script = hex_to_bytes(unspent.script)
-        script_len = int_to_unknown_bytes(len(script), byteorder='little')
-        txid = hex_to_bytes(unspent.txid)[::-1]
-        txindex = unspent.txindex.to_bytes(4, byteorder='little')
+    input_count = int_to_varint(tx.input_count)
+    output_count = int_to_varint(tx.output_count)
 
-        inputs.append(TxIn(script, script_len, txid, txindex))
+    output_block = b''
+    for i in range(tx.output_count):
+        output_block += tx.TxOut[i].value
+        output_block += tx.TxOut[i].script_len
+        output_block += tx.TxOut[i].script
 
-    for i, txin in enumerate(inputs):
+    inputs = tx.TxIn
+
+    for i in range(len(inputs)):
+
+        public_key = private_key.public_key
+        public_key_len = script_push(len(public_key))
+
+        scriptCode = private_key.scriptcode
+        scriptCode_len = int_to_varint(len(scriptCode))
 
         hashed = sha256(
             version +
             input_count +
-            b''.join(ti.txid + ti.txindex + OP_0 + sequence
+            b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
                      for ti in islice(inputs, i)) +
-            txin.txid +
-            txin.txindex +
-            txin.script_len +
-            txin.script +
-            sequence +
-            b''.join(ti.txid + ti.txindex + OP_0 + sequence
+            inputs[i].txid +
+            inputs[i].txindex +
+            scriptCode_len +
+            scriptCode +
+            inputs[i].sequence +
+            b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
                      for ti in islice(inputs, i + 1, None)) +
             output_count +
             output_block +
@@ -220,15 +270,15 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
 
         signature = private_key.sign(hashed) + b'\x01'
 
-        script_sig = (
-            len(signature).to_bytes(1, byteorder='little') +
-            signature +
-            public_key_len +
-            public_key
-        )
+        script_sig = (  # P2PKH
+                      len(signature).to_bytes(1, byteorder='little') +
+                      signature +
+                      public_key_len +
+                      public_key
+                     )
 
-        txin.script = script_sig
-        txin.script_len = int_to_unknown_bytes(len(script_sig), byteorder='little')
+        inputs[i].script = script_sig
+        inputs[i].script_len = int_to_varint(len(script_sig))
 
     return bytes_to_hex(
         version +
@@ -238,3 +288,24 @@ def create_p2pkh_transaction(private_key, unspents, outputs):
         output_block +
         lock_time
     )
+
+
+def create_new_transaction(private_key, unspents, outputs):
+
+    version = VERSION_1
+    lock_time = LOCK_TIME
+    outputs = construct_outputs(outputs)
+
+    # Optimize for speed, not memory, by pre-computing values.
+    inputs = []
+    for unspent in unspents:
+        script = b''  # empty scriptSig for new unsigned transaction.
+        txid = hex_to_bytes(unspent.txid)[::-1]
+        txindex = unspent.txindex.to_bytes(4, byteorder='little')
+
+        inputs.append(TxIn(script, txid, txindex))
+
+    tx_unsigned = TxObj(version, inputs, outputs, lock_time)
+
+    tx = sign_legacy_tx(private_key, tx_unsigned)
+    return tx

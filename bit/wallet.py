@@ -3,12 +3,14 @@ import json
 from bit.crypto import ECPrivateKey
 from bit.curve import Point
 from bit.format import (
-    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes
+    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes, address_to_public_key_hash
 )
 from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.network.meta import Unspent
-from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
-
+from bit.transaction import (
+    calc_txid, create_new_transaction, sanitize_tx_data,
+    OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20
+    )
 
 def wif_to_key(wif):
     private_key_bytes, compressed, version = wif_to_bytes(wif)
@@ -136,6 +138,7 @@ class PrivateKey(BaseKey):
         super().__init__(wif=wif)
 
         self._address = None
+        self._scriptcode = None
 
         self.balance = 0
         self.unspents = []
@@ -147,6 +150,13 @@ class PrivateKey(BaseKey):
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='main')
         return self._address
+
+    @property
+    def scriptcode(self):
+        self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
+                            address_to_public_key_hash(self.address) +
+                            OP_EQUALVERIFY + OP_CHECKSIG)
+        return self._scriptcode
 
     def to_wif(self):
         return bytes_to_wif(
@@ -237,7 +247,7 @@ class PrivateKey(BaseKey):
             compressed=self.is_compressed()
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
              message=None, unspents=None):  # pragma: no cover
@@ -353,7 +363,7 @@ class PrivateKey(BaseKey):
         unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
         outputs = data['outputs']
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs)
 
     @classmethod
     def from_hex(cls, hexed):
@@ -521,7 +531,7 @@ class PrivateKeyTestnet(BaseKey):
             compressed=self.is_compressed()
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, leftover=None, combine=True,
              message=None, unspents=None):
@@ -637,7 +647,7 @@ class PrivateKeyTestnet(BaseKey):
         unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
         outputs = data['outputs']
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs)
 
     @classmethod
     def from_hex(cls, hexed):
