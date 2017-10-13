@@ -64,3 +64,42 @@ def script_push(val):
         return b'\x4d'+val.to_bytes(2, 'little')
     else:
         return b'\x4e'+val.to_bytes(4, 'little')
+
+
+def get_signatures_from_script(script):
+# Expects a (partially)-signed multisig script in bytes and extracts the signatures from it.
+    script = script[1:]  # remove the first OP_0
+
+    pos = [0]
+    sigs = []
+
+    def read_bytes(bytez):
+        pos[0] += bytez
+        return script[pos[0]-bytez:pos[0]]
+
+    def read_var_string():
+        size = read_var_int()
+        return read_bytes(size)
+
+    def read_var_int():
+        pos[0] += 1
+
+        if pos[0] > len(script):
+            return 0
+
+        val = int(bytes_to_hex(script[pos[0]-1:pos[0]]), base=16)
+        if val < 253:
+            return val
+        return read_as_int(pow(2, val - 252))
+
+    def read_as_int(bytez):
+        pos[0] += bytez
+        return int(bytes_to_hex(script[pos[0]-bytez:pos[0]][::-1]), base=16)
+
+    val = read_var_int()
+    while val <= 72:  # TODO: Make a better check if the data is a signature (using DER rules: https://bitcoin.stackexchange.com/questions/12554/why-the-signature-is-always-65-13232-bytes-long)            
+        if val != 0:  # For partially-signed scriptSigs the missing signatures are indicated with 0s at the end.
+            sigs.append(read_bytes(val))
+        val = read_var_int()
+
+    return sigs

@@ -3,8 +3,8 @@ import pytest
 from bit.exceptions import InsufficientFunds
 from bit.network.meta import Unspent
 from bit.transaction import (
-    TxIn, calc_txid, create_p2pkh_transaction, construct_input_block,
-    construct_output_block, estimate_tx_fee, sanitize_tx_data
+    TxIn, calc_txid, create_new_transaction, construct_input_block,
+    construct_outputs, estimate_tx_fee, sanitize_tx_data
 )
 from bit.utils import hex_to_bytes
 from bit.wallet import PrivateKey
@@ -21,6 +21,7 @@ FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a3c
               'f1fd8f3f03b42f4a2b255bfc9aa9e3ffffffff0250c30000000000001976a914e7'
               'c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac0888fc04000000001976a914'
               '92461bde6283b461ece7ddf4dbf1e0a48bd113d888ac00000000')
+
 INPUTS = [
     TxIn(
         (b"G0D\x02 E\xb7C\xdb\xaa\xaa,\xd1\xef\x0b\x914oVD\xe3-\xc7\x0c\xde\x05\t"
@@ -29,7 +30,7 @@ INPUTS = [
          b"hu\xa7\x1a]\xb6L\xff\xcb\x139k\x16=\x03\x9b\x1d\x93'\x82H\x91\x80C4v"
          b"\xa45**\xdd\x00\xeb\xb0\xd5\xc9LQ[r\xeb\x10\xf1\xfd\x8f?\x03\xb4/J+%["
          b"\xfc\x9a\xa9\xe3"),
-        b'\x8a',
+#        b'\x8a',
         (b"\x88x9\x9d\x83\xec%\xc6'\xcf\xbfu?\xf9\xca6\x027>"
          b"\xacCz\xb2gaT\xa3\xc2\xda#\xad\xf3"),
         b'\x01\x00\x00\x00'
@@ -68,24 +69,25 @@ SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
 
 class TestTxIn:
     def test_init(self):
-        txin = TxIn(b'script', b'\x06', b'txid', b'\x04')
+        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
         assert txin.script == b'script'
         assert txin.script_len == b'\x06'
         assert txin.txid == b'txid'
         assert txin.txindex == b'\x04'
+        assert txin.sequence == b'\xff\xff\xff\xff'
 
     def test_equality(self):
-        txin1 = TxIn(b'script', b'\x06', b'txid', b'\x04')
-        txin2 = TxIn(b'script', b'\x06', b'txid', b'\x04')
-        txin3 = TxIn(b'script', b'\x06', b'txi', b'\x03')
+        txin1 = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
+        txin2 = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
+        txin3 = TxIn(b'script', b'txi', b'\x03', b'\xff\xff\xff\xff')
         assert txin1 == txin2
         assert txin1 != txin3
 
     def test_repr(self):
-        txin = TxIn(b'script', b'\x06', b'txid', b'\x04')
+        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
 
-        assert repr(txin) == "TxIn(b'script', {}, b'txid', {})" \
-                             "".format(repr(b'\x06'), repr(b'\x04'))
+        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, {})" \
+                             "".format(repr(b'\x06'), repr(b'\x04'), repr(b'\xff\xff\xff\xff'))
 
 
 class TestSanitizeTxData:
@@ -187,7 +189,7 @@ class TestSanitizeTxData:
 class TestCreateSignedTransaction:
     def test_matching(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
-        tx = create_p2pkh_transaction(private_key, UNSPENTS, OUTPUTS)
+        tx = create_new_transaction(private_key, UNSPENTS, OUTPUTS)
         assert tx[-288:] == FINAL_TX_1[-288:]
 
 
@@ -204,17 +206,26 @@ class TestEstimateTxFee:
 
 class TestConstructOutputBlock:
     def test_no_message(self):
-        assert construct_output_block(OUTPUTS) == hex_to_bytes(OUTPUT_BLOCK)
+        outs = construct_outputs(OUTPUTS)
+        assert outs[0].value == hex_to_bytes(OUTPUT_BLOCK[:16])
+        assert outs[0].script == hex_to_bytes(OUTPUT_BLOCK[18:68])
+        assert outs[1].value == hex_to_bytes(OUTPUT_BLOCK[68:84])
+        assert outs[1].script == hex_to_bytes(OUTPUT_BLOCK[86:])
 
     def test_message(self):
-        assert construct_output_block(OUTPUTS + MESSAGES) == hex_to_bytes(OUTPUT_BLOCK_MESSAGES)
+        outs = construct_outputs(OUTPUTS + MESSAGES)
+        assert outs[2].value == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[136:152])
+        assert outs[2].script == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[154:168])
+        assert outs[3].value == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[168:184])
+        assert outs[3].script == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[186:])
 
     def test_long_message(self):
         amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
         _, outputs = sanitize_tx_data(
             UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS, message='hello'*9
         )
-        assert construct_output_block(outputs).count(amount) == 2
+        outs = construct_outputs(outputs)
+        assert len(outs) == 5 and outs[3].value == amount and outs[4].value == amount
 
 
 def test_construct_input_block():

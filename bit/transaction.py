@@ -1,13 +1,17 @@
 from collections import namedtuple
 from itertools import islice
+import re
 
 from bit.crypto import double_sha256, sha256
 from bit.exceptions import InsufficientFunds
-from bit.format import address_to_public_key_hash
+from bit.format import address_to_public_key_hash, TEST_SCRIPT_HASH, MAIN_SCRIPT_HASH
 from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
-    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint, script_push
+    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint, script_push, get_signatures_from_script
 )
+
+from bit.format import verify_sig
+from bit.base58 import b58decode_check
 
 VERSION_1 = 0x01.to_bytes(4, byteorder='little')
 SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
@@ -22,6 +26,7 @@ OP_EQUALVERIFY = b'\x88'
 OP_HASH160 = b'\xa9'
 OP_PUSH_20 = b'\x14'
 OP_RETURN = b'\x6a'
+OP_EQUAL = b'\x87'
 
 MESSAGE_LIMIT = 40
 
@@ -125,6 +130,58 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     return estimated_size * satoshis
 
 
+def deserialize(txhex):
+    if isinstance(txhex, str) and re.match('^[0-9a-fA-F]*$', txhex):
+        #return deserialize(binascii.unhexlify(txhex))
+        return deserialize(hex_to_bytes(txhex))
+
+    pos = [0]
+
+    def read_as_int(bytez):
+        pos[0] += bytez
+        return int(bytes_to_hex(txhex[pos[0]-bytez:pos[0]][::-1]), base=16)
+
+    def read_var_int():
+        pos[0] += 1
+
+        val = int(bytes_to_hex(txhex[pos[0]-1:pos[0]]), base=16)
+        if val < 253:
+            return val
+        return read_as_int(pow(2, val - 252))
+
+    def read_bytes(bytez):
+        pos[0] += bytez
+        return txhex[pos[0]-bytez:pos[0]]
+
+    def read_var_string():
+        size = read_var_int()
+        return read_bytes(size)
+
+    version = read_as_int(4).to_bytes(4, byteorder='little')
+
+    ins = read_var_int()
+    inputs = []
+    for _ in range(ins):
+        txid = read_bytes(32)
+        txindex = read_as_int(4).to_bytes(4, byteorder='little')
+        script = read_var_string()
+        sequence = read_as_int(4).to_bytes(4, byteorder='little')
+        inputs.append(TxIn(script, txid, txindex, sequence))
+
+    outs = read_var_int()
+    outputs = []
+    for _ in range(outs):
+        value = read_as_int(8).to_bytes(8, byteorder='little')
+        script = read_var_string()
+        outputs.append(TxOut(value, script))
+
+    locktime = read_as_int(4).to_bytes(4, byteorder='little')
+
+    txobj = TxObj(version, inputs, outputs, locktime)
+
+    return txobj
+
+
 def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
 
     outputs = outputs.copy()
@@ -182,14 +239,22 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
 
 def construct_outputs(outputs):
-
     outputs_obj = []
 
     for data in outputs:
         dest, amount = data
 
-        # Real recipient
-        if amount:
+        # P2SH
+        if amount and (b58decode_check(dest)[0] == MAIN_SCRIPT_HASH or 
+                       b58decode_check(dest)[0] == TEST_SCRIPT_HASH):
+            script = (OP_HASH160 + OP_PUSH_20 +
+                      address_to_public_key_hash(dest) +
+                      OP_EQUAL)
+
+            amount = amount.to_bytes(8, byteorder='little')
+
+        # P2PKH
+        elif amount:
             script = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
                       address_to_public_key_hash(dest) +
                       OP_EQUALVERIFY + OP_CHECKSIG)
@@ -225,7 +290,11 @@ def construct_input_block(inputs):
 
     return input_block
 
-def sign_legacy_tx(private_key, tx):
+def sign_legacy_tx(private_key, tx, j=-1):
+# j is the input to be signed and can be a single index, a list of indices, or denote all inputs (-1)
+
+    if not isinstance(tx, TxObj):
+        tx = deserialize(tx)
 
     version = tx.version
     lock_time = tx.locktime
@@ -242,7 +311,12 @@ def sign_legacy_tx(private_key, tx):
 
     inputs = tx.TxIn
 
-    for i in range(len(inputs)):
+    if j<0:
+        j = range(len(inputs))
+    elif not isinstance(j, list):
+        j = [j]
+
+    for i in j:
 
         public_key = private_key.public_key
         public_key_len = script_push(len(public_key))
@@ -270,7 +344,36 @@ def sign_legacy_tx(private_key, tx):
 
         signature = private_key.sign(hashed) + b'\x01'
 
-        script_sig = (  # P2PKH
+        # ------------------------------------------------------------------
+        if private_key.instance == 'MultiSig' or private_key.instance == 'MultiSigTestnet':
+
+            script_blob = b''
+            sigs = {}
+            if tx.TxIn[i].script:  # If tx is already partially signed: Make a dictionary of the provided signatures with public-keys as key-values
+                sig_list = get_signatures_from_script(tx.TxIn[i].script)
+                if len(sig_list) > private_key.m:
+                    raise TypeError('Transaction is already signed with {} of {} needed signatures.').format(len(sig_list), private_key.m)
+                for sig in sig_list:
+                    for pub in private_key.public_keys:
+                        if verify_sig(sig[:-1], hashed, hex_to_bytes(pub)):
+                            sigs[pub] = sig
+                script_blob += b'\x00' * (private_key.m - len(sig_list)-1)  # Bitcoin Core convention: Every missing signature is denoted by 0x00. Only used for already partially-signed scriptSigs.
+
+            sigs[bytes_to_hex(public_key)] = signature
+
+            script_sig = b''  # P2SH -  Multisig
+            for pub in private_key.public_keys:  # Sort the signatures according to the public-key list:
+                if pub in sigs:
+                    sig = sigs[pub]
+                    length = script_push(len(sig))
+                    script_sig += length + sig
+
+            script_sig = b'\x00' + script_sig + script_blob
+            script_sig += script_push(len(private_key.redeemscript)) + private_key.redeemscript
+
+        # ------------------------------------------------------------------
+        else:
+            script_sig = (  # P2PKH
                       len(signature).to_bytes(1, byteorder='little') +
                       signature +
                       public_key_len +
