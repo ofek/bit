@@ -1,16 +1,13 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Fees &#8212; Bit 0.4.0 documentation</title>
-    
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -35,7 +32,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -51,11 +48,11 @@ the latter of which will cache results for 10 minutes
 <a class="reference internal" href="advanced.html#cache-times"><span class="std std-ref">by default</span></a>. Currently, the only service in
 use is <a class="reference external" href="https://bitcoinfees.21.co">https://bitcoinfees.21.co</a>.</p>
 <p>Each function takes an optional argument <code class="docutils literal"><span class="pre">fast</span></code> that is <code class="docutils literal"><span class="pre">True</span></code> by default.
-If <code class="docutils literal"><span class="pre">True</span></code>, the fee returned will be &#8220;The lowest fee (in satoshis per byte)
+If <code class="docutils literal"><span class="pre">True</span></code>, the fee returned will be “The lowest fee (in satoshis per byte)
 that will currently result in the fastest transaction confirmations (usually
-0 to 1 block delay)&#8221;. Otherwise, the number returned will be &#8220;The lowest fee
+0 to 1 block delay)”. Otherwise, the number returned will be “The lowest fee
 (in satoshis per byte) that will confirm transactions within an hour (with 90%
-probability)&#8221;.</p>
+probability)”.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">get_fee</span><span class="p">,</span> <span class="n">get_fee_cached</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_fee</span><span class="p">(</span><span class="n">fast</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>

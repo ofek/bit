@@ -1,16 +1,13 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Introduction &#8212; Bit 0.4.0 documentation</title>
-    
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -35,7 +32,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -50,13 +47,13 @@
 <h2>Why Bit?<a class="headerlink" href="#why-bit" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Robust API with sane defaults, making development a breeze</li>
-<li>Python&#8217;s fastest available implementation (100x faster than closest library)</li>
+<li>Python’s fastest available implementation (100x faster than closest library)</li>
 <li>Compliant to all presently implemented Bitcoin Improvement Protocols</li>
 <li>All commits require 100% test coverage</li>
 <li>Available on all major platforms</li>
 <li>Extensive documentation</li>
 </ul>
-<p>Python&#8217;s Bitcoin story was pretty bleak. All libraries in use prior to Bit were
+<p>Python’s Bitcoin story was pretty bleak. All libraries in use prior to Bit were
 marred by unfriendly APIs, lack of testing, lack of documentation, lack of
 cross-platform support, and/or slow implementations.</p>
 <p>When I originally went to experiment with sending Bitcoin there were really no
@@ -68,7 +65,7 @@ decent documentation but had an incorrect implementation of the standardized
 compressed public keys (meaning such keys could literally not spend money), and
 <a class="reference external" href="https://github.com/blockstack/pybitcoin">pybitcoin</a> from <a class="reference external" href="https://angel.co/blockstack">Blockstack</a> which did not support Python 3 and had limited
 docs.</p>
-<p>All of these libraries are also slow. Let&#8217;s take a look at some common operations.</p>
+<p>All of these libraries are also slow. Let’s take a look at some common operations.</p>
 <p>Instantiate a compressed private key and get its computed public key:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key&quot;</span> <span class="s2">&quot;Key(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key&quot;</span>
 <span class="m">1000</span> loops, best of <span class="m">3</span>: <span class="m">89</span> usec per loop
@@ -80,7 +77,7 @@ $ python -m timeit -s <span class="s2">&quot;from pycoin.key import Key&quot;</s
 <span class="m">10</span> loops, best of <span class="m">3</span>: <span class="m">190</span> msec per loop
 </pre></div>
 </div>
-<p>We&#8217;ll use two1 only as that was the closest to Bit. Getting the address:</p>
+<p>We’ll use two1 only as that was the closest to Bit. Getting the address:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key;k=Key()&quot;</span> <span class="s2">&quot;k.address&quot;</span>
 <span class="m">1000000</span> loops, best of <span class="m">3</span>: <span class="m">0</span>.249 usec per loop
 $ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()&quot;</span> <span class="s2">&quot;k.public_key.address()&quot;</span>

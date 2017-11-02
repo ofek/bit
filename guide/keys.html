@@ -1,16 +1,13 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Keys &#8212; Bit 0.4.0 documentation</title>
-    
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -35,7 +32,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -47,7 +44,7 @@
 <span id="id1"></span><h1>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h1>
 <p>Bit assumes the easiest way to reason about Bitcoin is in the basic unit of a
 <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key">private key</a> and, therefore, all functionality (viewing balance, making
-transactions, etc.) is wrapped up in this class for convenience. You shouldn&#8217;t
+transactions, etc.) is wrapped up in this class for convenience. You shouldn’t
 have to use anything else.</p>
 <div class="section" id="what-is-a-private-key">
 <h2>What is a private key?<a class="headerlink" href="#what-is-a-private-key" title="Permalink to this headline">¶</a></h2>
@@ -74,7 +71,7 @@ have the exact same functionality.</p>
 </pre></div>
 </div>
 <p>The only difference is the network operations for <a class="reference internal" href="../dev/api.html#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a>
-will use Bitcoin&#8217;s test network where coins have no value. As such, the derived
+will use Bitcoin’s test network where coins have no value. As such, the derived
 address will also be different.</p>
 </div>
 <div class="section" id="creation">
@@ -139,7 +136,7 @@ the initializer:</p>
 <span class="go">&#39;KxVhypbvS3hEYPAP3pYuH1LtcfbdEUcugiqg7fNFUUnmEfWVXJV4&#39;</span>
 </pre></div>
 </div>
-<p>If you don&#8217;t know what kind of private key your WIF represents, and you don&#8217;t
+<p>If you don’t know what kind of private key your WIF represents, and you don’t
 want to force the use of a particular class, you can do this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
 <span class="go">&gt;&gt;&gt;</span>
