@@ -2,8 +2,7 @@ import pytest
 
 import bit
 from bit.network.services import (
-    BitpayAPI, BlockchainAPI, BlockrAPI, NetworkAPI, SmartbitAPI,
-    set_service_timeout
+    BitpayAPI, BlockchainAPI, NetworkAPI, SmartbitAPI, set_service_timeout
 )
 from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
@@ -146,56 +145,6 @@ class TestBitpayAPI:
 
     def test_get_unspent_test_unused(self):
         assert len(BitpayAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
-
-
-@decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
-class TestBlockrAPI:
-    def test_get_balance_return_type(self):
-        assert isinstance(BlockrAPI.get_balance(MAIN_ADDRESS_USED1), int)
-        assert isinstance(BlockrAPI.get_balance_testnet(TEST_ADDRESS_USED1), int)
-
-    def test_get_balance_main_used(self):
-        assert BlockrAPI.get_balance(MAIN_ADDRESS_USED1) > 0
-
-    def test_get_balance_main_unused(self):
-        assert BlockrAPI.get_balance(MAIN_ADDRESS_UNUSED) == 0
-
-    def test_get_balance_test_used(self):
-        assert BlockrAPI.get_balance_testnet(TEST_ADDRESS_USED2) > 0
-
-    def test_get_balance_test_unused(self):
-        assert BlockrAPI.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
-
-    def test_get_transactions_return_type(self):
-        assert iter(BlockrAPI.get_transactions(MAIN_ADDRESS_USED1))
-        assert iter(BlockrAPI.get_transactions_testnet(TEST_ADDRESS_USED1))
-
-    def test_get_transactions_main_used(self):
-        assert len(BlockrAPI.get_transactions(MAIN_ADDRESS_USED1)) >= 200
-
-    def test_get_transactions_main_unused(self):
-        assert len(BlockrAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
-
-    def test_get_transactions_test_used(self):
-        assert len(BlockrAPI.get_transactions_testnet(TEST_ADDRESS_USED1)) >= 200
-
-    def test_get_transactions_test_unused(self):
-        assert len(BlockrAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
-
-    def test_get_unspent_return_type(self):
-        assert iter(BlockrAPI.get_unspent(MAIN_ADDRESS_USED1))
-
-    def test_get_unspent_main_used(self):
-        assert len(BlockrAPI.get_unspent(MAIN_ADDRESS_USED2)) >= 1
-
-    def test_get_unspent_main_unused(self):
-        assert len(BlockrAPI.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
-
-    def test_get_unspent_test_used(self):
-        assert len(BlockrAPI.get_unspent_testnet(TEST_ADDRESS_USED2)) >= 194
-
-    def test_get_unspent_test_unused(self):
-        assert len(BlockrAPI.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
