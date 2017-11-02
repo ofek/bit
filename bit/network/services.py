@@ -100,90 +100,6 @@ class BitpayAPI(InsightAPI):
         return True if r.status_code == 200 else False
 
 
-class BlockrAPI:
-    MAIN_ENDPOINT = 'http://btc.blockr.io/api/v1/'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
-    MAIN_BALANCE_API = MAIN_ADDRESS_API + 'balance/'
-    MAIN_TRANSACTION_API = MAIN_ADDRESS_API + 'txs/'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + 'unspent/'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/push'
-    TEST_ENDPOINT = 'http://tbtc.blockr.io/api/v1/'
-    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
-    TEST_BALANCE_API = TEST_ADDRESS_API + 'balance/'
-    TEST_TRANSACTION_API = TEST_ADDRESS_API + 'txs/'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + 'unspent/'
-    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/push'
-    TX_PUSH_PARAM = 'hex'
-
-    @classmethod
-    def get_balance(cls, address):
-        r = requests.get(cls.MAIN_BALANCE_API + address, timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return currency_to_satoshi(r.json()['data']['balance'], 'btc')
-
-    @classmethod
-    def get_balance_testnet(cls, address):
-        r = requests.get(cls.TEST_BALANCE_API + address, timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return currency_to_satoshi(r.json()['data']['balance'], 'btc')
-
-    @classmethod
-    def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_TRANSACTION_API + address, timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        tx_data = r.json()['data']['txs']
-        return [d['tx'] for d in tx_data]
-
-    @classmethod
-    def get_transactions_testnet(cls, address):
-        r = requests.get(cls.TEST_TRANSACTION_API + address, timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        tx_data = r.json()['data']['txs']
-        return [d['tx'] for d in tx_data]
-
-    @classmethod
-    def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
-                    tx['confirmations'],
-                    tx['script'],
-                    tx['tx'],
-                    tx['n'])
-            for tx in r.json()['data']['unspent']
-        ]
-
-    @classmethod
-    def get_unspent_testnet(cls, address):
-        r = requests.get(cls.TEST_UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
-                    tx['confirmations'],
-                    tx['script'],
-                    tx['tx'],
-                    tx['n'])
-            for tx in r.json()['data']['unspent']
-        ]
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        return True if r.status_code == 200 else False
-
-    @classmethod
-    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
-        return True if r.status_code == 200 else False
-
-
 class BlockchainAPI:
     ENDPOINT = 'https://blockchain.info/'
     ADDRESS_API = ENDPOINT + 'address/{}?format=json'
@@ -348,33 +264,25 @@ class NetworkAPI:
 
     GET_BALANCE_MAIN = [BitpayAPI.get_balance,
                         BlockchainAPI.get_balance,
-                        BlockrAPI.get_balance,
                         SmartbitAPI.get_balance]
     GET_TRANSACTIONS_MAIN = [BlockchainAPI.get_transactions,  # No limit, requires multiple requests
                              BitpayAPI.get_transactions,  # Limit 1000
-                             SmartbitAPI.get_transactions,  # Limit 1000
-                             BlockrAPI.get_transactions]  # Limit 200
+                             SmartbitAPI.get_transactions]  # Limit 1000
     GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,  # No limit
-                        BlockrAPI.get_unspent,  # No limit
                         SmartbitAPI.get_unspent,  # Limit 1000
                         BlockchainAPI.get_unspent]  # Limit 250
     BROADCAST_TX_MAIN = [BlockchainAPI.broadcast_tx,
                          BitpayAPI.broadcast_tx,
-                         SmartbitAPI.broadcast_tx,
-                         BlockrAPI.broadcast_tx]  # Limit 5/minute
+                         SmartbitAPI.broadcast_tx]  # Limit 5/minute
 
     GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
-                        BlockrAPI.get_balance_testnet,
                         SmartbitAPI.get_balance_testnet]
     GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,  # Limit 1000
-                             SmartbitAPI.get_transactions_testnet,  # Limit 1000
-                             BlockrAPI.get_transactions_testnet]  # Limit 200
+                             SmartbitAPI.get_transactions_testnet]  # Limit 1000
     GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,  # No limit
-                        BlockrAPI.get_unspent_testnet,  # No limit
                         SmartbitAPI.get_unspent_testnet]  # Limit 1000
     BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
-                         SmartbitAPI.broadcast_tx_testnet,
-                         BlockrAPI.broadcast_tx_testnet]  # Limit 5/minute
+                         SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
 
     @classmethod
     def get_balance(cls, address):

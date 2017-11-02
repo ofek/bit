@@ -4,6 +4,11 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.4.1 (2017-11-01)
+------------------
+
+- Removed ``blockr.io`` network backend as `Coinbase <https://www.coinbase.com>`_ has shut it down.
+
 0.4.0 (2017-04-19)
 ------------------
 
