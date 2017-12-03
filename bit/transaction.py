@@ -245,8 +245,8 @@ def construct_outputs(outputs):
         dest, amount = data
 
         # P2SH
-        if amount and (b58decode_check(dest)[0] == MAIN_SCRIPT_HASH or 
-                       b58decode_check(dest)[0] == TEST_SCRIPT_HASH):
+        if amount and (b58decode_check(dest)[0:1] == MAIN_SCRIPT_HASH or 
+                       b58decode_check(dest)[0:1] == TEST_SCRIPT_HASH):
             script = (OP_HASH160 + OP_PUSH_20 +
                       address_to_public_key_hash(dest) +
                       OP_EQUAL)
