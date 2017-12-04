@@ -70,7 +70,7 @@ def get_fee_local_cache(f):
                     # Otherwise, try to parse json as normal.
                     cached_fee_hour = request.json()['hourFee']
                     hour_last_update = now
-                except (ConnectionError, Timeout):  # pragma: no cover
+                except (ConnectionError, HTTPError, Timeout):  # pragma: no cover
                     return cached_fee_hour or DEFAULT_FEE_HOUR
 
             return cached_fee_hour
