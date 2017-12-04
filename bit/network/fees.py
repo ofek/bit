@@ -64,7 +64,11 @@ def get_fee_local_cache(f):
 
             if not cached_fee_hour or now - hour_last_update > DEFAULT_CACHE_TIME:
                 try:
-                    cached_fee_hour = requests.get(URL).json()['hourFee']
+                    request = requests.get(URL)
+                    # If we have a non 2XX status code, raise HTTPError.
+                    request.raise_for_status()
+                    # Otherwise, try to parse json as normal.
+                    cached_fee_hour = request.json()['hourFee']
                     hour_last_update = now
                 except (ConnectionError, Timeout):  # pragma: no cover
                     return cached_fee_hour or DEFAULT_FEE_HOUR
