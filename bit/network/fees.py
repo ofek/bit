@@ -2,7 +2,7 @@ from functools import wraps
 from time import time
 
 import requests
-from requests.exceptions import ConnectionError, Timeout, HTTPError
+from requests.exceptions import ConnectionError, HTTPError, Timeout
 
 DEFAULT_FEE_FAST = 220
 DEFAULT_FEE_HOUR = 160
@@ -53,7 +53,7 @@ def get_fee_local_cache(f):
                     # Otherwise, try to parse json as normal.
                     cached_fee_fast = request.json()['fastestFee']
                     fast_last_update = now
-                except (ConnectionError, Timeout, HTTPError):  # pragma: no cover
+                except (ConnectionError, HTTPError, Timeout):  # pragma: no cover
                     return cached_fee_fast or DEFAULT_FEE_FAST
 
             return cached_fee_fast
