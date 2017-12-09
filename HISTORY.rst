@@ -4,6 +4,13 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.4.2 (2017-12-09)
+------------------
+
+- Optimized network API priorities
+- Fixed Smartbit pushtx usage
+- Updated `21.co <https://www.21.co>`_ to `earn.com <https://www.earn.com>`_
+
 0.4.1 (2017-11-01)
 ------------------
 
