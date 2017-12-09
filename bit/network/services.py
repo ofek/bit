@@ -247,12 +247,12 @@ class SmartbitAPI:
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.MAIN_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.TEST_TX_PUSH_API, json={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -263,17 +263,17 @@ class NetworkAPI:
                       requests.exceptions.ReadTimeout)
 
     GET_BALANCE_MAIN = [BitpayAPI.get_balance,
-                        BlockchainAPI.get_balance,
-                        SmartbitAPI.get_balance]
-    GET_TRANSACTIONS_MAIN = [BlockchainAPI.get_transactions,  # No limit, requires multiple requests
-                             BitpayAPI.get_transactions,  # Limit 1000
-                             SmartbitAPI.get_transactions]  # Limit 1000
+                        SmartbitAPI.get_balance,
+                        BlockchainAPI.get_balance]
+    GET_TRANSACTIONS_MAIN = [BitpayAPI.get_transactions,  # Limit 1000
+                             SmartbitAPI.get_transactions,  # Limit 1000
+                             BlockchainAPI.get_transactions]  # No limit, requires multiple requests
     GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,  # No limit
                         SmartbitAPI.get_unspent,  # Limit 1000
                         BlockchainAPI.get_unspent]  # Limit 250
-    BROADCAST_TX_MAIN = [BlockchainAPI.broadcast_tx,
-                         BitpayAPI.broadcast_tx,
-                         SmartbitAPI.broadcast_tx]  # Limit 5/minute
+    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx,
+                         SmartbitAPI.broadcast_tx,  # Limit 5/minute
+                         BlockchainAPI.broadcast_tx]
 
     GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
                         SmartbitAPI.get_balance_testnet]
