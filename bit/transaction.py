@@ -119,7 +119,8 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         unspents[:] = unspents[:index + 1]
 
         # Don't include unused unspents in fee estimate.
-        fee -= estimate_tx_fee(len(unused_unspents), len(outputs) + len(messages) + 1, satoshi_fee, compressed)
+        if unused_unspents:
+            fee -= estimate_tx_fee(len(unused_unspents), len(outputs) + len(messages) + 1, satoshi_fee, compressed)
 
     remaining = total_in - total_out
 
