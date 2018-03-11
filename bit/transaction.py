@@ -97,6 +97,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     # Include return address in fee estimate.
     fee = estimate_tx_fee(len(unspents), len(outputs) + len(messages) + 1, satoshi_fee, compressed)
     total_out = sum(out[1] for out in outputs) + fee
+
     total_in = 0
 
     if combine:
