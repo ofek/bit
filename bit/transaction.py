@@ -76,6 +76,7 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
 def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
 
     outputs = outputs.copy()
+    satoshi_fee = fee
 
     for i, output in enumerate(outputs):
         dest, amount, currency = output
@@ -94,7 +95,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
             messages.append((message, 0))
 
     # Include return address in fee estimate.
-    fee = estimate_tx_fee(len(unspents), len(outputs) + len(messages) + 1, fee, compressed)
+    fee = estimate_tx_fee(len(unspents), len(outputs) + len(messages) + 1, satoshi_fee, compressed)
     total_out = sum(out[1] for out in outputs) + fee
 
     total_in = 0
@@ -114,7 +115,12 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
             if total_in >= total_out:
                 break
 
+        unused_unspents = unspents[index + 1:]
         unspents[:] = unspents[:index + 1]
+
+        # Don't include unused unspents in fee estimate.
+        if unused_unspents:
+            fee -= estimate_tx_fee(len(unused_unspents), len(outputs) + len(messages) + 1, satoshi_fee, compressed)
 
     remaining = total_in - total_out
 
