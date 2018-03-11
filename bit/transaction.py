@@ -93,10 +93,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         for message in message_chunks:
             messages.append((message, 0))
 
-    # Include return address in fee estimate.
-    fee = estimate_tx_fee(len(unspents), len(outputs) + len(messages) + 1, fee, compressed)
     total_out = sum(out[1] for out in outputs) + fee
-
     total_in = 0
 
     if combine:
@@ -116,6 +113,8 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
         unspents[:] = unspents[:index + 1]
 
+    # Include return address in fee estimate.
+    fee = estimate_tx_fee(len(unspents), len(outputs) + len(messages) + 1, fee, compressed)
     remaining = total_in - total_out
 
     if remaining > 0:
