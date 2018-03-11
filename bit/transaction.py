@@ -103,11 +103,11 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
         for message in message_chunks:
             messages.append((message, 0))
 
-    # Include return address in fee estimate.
-
-    total_in = 0
+    # Include return address in output count.
     num_outputs = len(outputs) + len(messages) + 1
     sum_outputs = sum(out[1] for out in outputs)
+
+    total_in = 0
 
     if combine:
         # calculated_fee is in total satoshis.
