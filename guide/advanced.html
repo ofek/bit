@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Advanced &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -47,8 +38,8 @@
 <p>If you only want to use Bit for its raw speed to lessen the load on your
 servers, you don’t have to use any of our network capabilities.</p>
 <ul class="simple">
-<li>Use <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a> instead of
-<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal"><span class="pre">send()</span></code></a></li>
+<li>Use <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a> instead of
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a></li>
 <li>Supply <a class="reference internal" href="transactions.html#unspentparam"><span class="std std-ref">your own UTXOs</span></a></li>
 <li>Set <a class="reference internal" href="transactions.html#feeparam"><span class="std std-ref">your own fee</span></a></li>
 <li>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Outputs</span></a> only use these currencies: satoshi, ubtc,
@@ -59,9 +50,9 @@ mbtc, or btc.</li>
 <span id="coldstorage"></span><h2>Offline Transactions<a class="headerlink" href="#offline-transactions" title="Permalink to this headline">¶</a></h2>
 <p>Bit supports the signing of transactions for keys in cold storage. First you
 need to prepare a transaction while connected to the internet using the
-<a class="reference internal" href="../dev/api.html#bit.PrivateKey.prepare_transaction" title="bit.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal"><span class="pre">prepare_transaction()</span></code></a> class method of a private key.
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.prepare_transaction" title="bit.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a> class method of a private key.
 You must know your address.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">PrivateKeyTestnet</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">PrivateKeyTestnet</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">NetworkAPI</span><span class="p">,</span> <span class="n">satoshi_to_currency</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">satoshi_to_currency</span><span class="p">(</span><span class="n">NetworkAPI</span><span class="o">.</span><span class="n">get_balance_testnet</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="s1">&#39;usd&#39;</span><span class="p">)</span>
@@ -73,15 +64,15 @@ You must know your address.</p>
 </div>
 <p>This performs validation and returns a JSON string containing all the required
 information to create a transaction. You should then take this to your offline
-machine and use the <a class="reference internal" href="../dev/api.html#bit.PrivateKey.sign_transaction" title="bit.PrivateKey.sign_transaction"><code class="xref py py-func docutils literal"><span class="pre">sign_transaction()</span></code></a> method of your
+machine and use the <a class="reference internal" href="../dev/api.html#bit.PrivateKey.sign_transaction" title="bit.PrivateKey.sign_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">sign_transaction()</span></code></a> method of your
 private key.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_hex</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">sign_transaction</span><span class="p">(</span><span class="n">tx_data</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_hex</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">sign_transaction</span><span class="p">(</span><span class="n">tx_data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tx_hex</span>
 <span class="go">&#39;01000000015a6da49f1d2b64441f73efa361fdc07bc5f8af47e4a75c66a8ac4133646170c4010000006a4730440220266c56a2592fbd6948f3e5d17720ad2dad57ce23a5cc0d2d4fd2315cbe5a798802203372b9b0d10e920462f9553392333e84cd8fa1d92953d0b4598888370dc187140121033d5c2875c9bd116875a71a5db64cffcb13396b163d039b1d9327824891804334ffffffff025d030000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88acf1b2cf04000000001976a914990ef60d63b5b5964a1c2282061af45123e93fcb88ac00000000&#39;</span>
 </pre></div>
 </div>
 <p>Finally, bring this transaction back to your connected device and broadcast it.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">NetworkAPI</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.network</span> <span class="kn">import</span> <span class="n">NetworkAPI</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkAPI</span><span class="o">.</span><span class="n">broadcast_tx_testnet</span><span class="p">(</span><span class="n">tx_hex</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -89,9 +80,9 @@ private key.</p>
 <div class="section" id="blockchain-storage">
 <h2>Blockchain Storage<a class="headerlink" href="#blockchain-storage" title="Permalink to this headline">¶</a></h2>
 <p>Bit allows you to easily <a class="reference external" href="https://en.bitcoin.it/wiki/OP_RETURN">store messages or data</a> in the blockchain itself
-using the <code class="docutils literal"><span class="pre">message</span></code> parameter of <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>
-or <a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal"><span class="pre">send()</span></code></a>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Simplicity level is over 9000!!!&#39;</span><span class="p">)</span>
+using the <code class="docutils literal notranslate"><span class="pre">message</span></code> parameter of <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>
+or <a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Simplicity level is over 9000!!!&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Messages will be encoded as UTF-8 when stored. Also, do note that the length
@@ -101,7 +92,7 @@ will be stored in chunks to adhere to this property if it is too long.</p>
 <div class="section" id="services-timeout">
 <h2>Services Timeout<a class="headerlink" href="#services-timeout" title="Permalink to this headline">¶</a></h2>
 <p>If you want to change the default timeout of 5 seconds for service API calls:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">set_service_timeout</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">set_service_timeout</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_service_timeout</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -110,7 +101,7 @@ will be stored in chunks to adhere to this property if it is too long.</p>
 <span id="id2"></span><h2>Cache Times<a class="headerlink" href="#cache-times" title="Permalink to this headline">¶</a></h2>
 <p>If you want to change the default cache time of exchange rates (60 seconds)
 or recommended fees (10 minutes):</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">set_fee_cache_time</span><span class="p">,</span> <span class="n">set_rate_cache_time</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">set_fee_cache_time</span><span class="p">,</span> <span class="n">set_rate_cache_time</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_rate_cache_time</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_fee_cache_time</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
 </pre></div>
@@ -120,7 +111,7 @@ or recommended fees (10 minutes):</p>
 <span id="hextowif"></span><h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
 <p>If you store your keys as hex instead of WIF you lose the ability to retain
 metadata. To convert your hex keys to WIF to use certain properties, do this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">hex_to_wif</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compressed by default</span>
@@ -250,12 +241,14 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:</p
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 

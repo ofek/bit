@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Keys &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -58,10 +49,10 @@ on the curve from that value.</p>
 </div>
 <div class="section" id="types">
 <h2>Types<a class="headerlink" href="#types" title="Permalink to this headline">¶</a></h2>
-<p>Bit defines 2 kinds of private keys: <a class="reference internal" href="../dev/api.html#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a>, aliased as
-simply <a class="reference internal" href="../dev/api.html#bit.Key" title="bit.Key"><code class="xref py py-class docutils literal"><span class="pre">Key</span></code></a>, and <a class="reference internal" href="../dev/api.html#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a>. Both classes
+<p>Bit defines 2 kinds of private keys: <a class="reference internal" href="../dev/api.html#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a>, aliased as
+simply <a class="reference internal" href="../dev/api.html#bit.Key" title="bit.Key"><code class="xref py py-class docutils literal notranslate"><span class="pre">Key</span></code></a>, and <a class="reference internal" href="../dev/api.html#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>. Both classes
 have the exact same functionality.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">PrivateKey</span><span class="p">,</span> <span class="n">PrivateKeyTestnet</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">PrivateKey</span><span class="p">,</span> <span class="n">PrivateKeyTestnet</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Key</span> <span class="o">==</span> <span class="n">PrivateKey</span>
 <span class="go">True</span>
@@ -70,14 +61,14 @@ have the exact same functionality.</p>
 <span class="go">True</span>
 </pre></div>
 </div>
-<p>The only difference is the network operations for <a class="reference internal" href="../dev/api.html#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a>
+<p>The only difference is the network operations for <a class="reference internal" href="../dev/api.html#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>
 will use Bitcoin’s test network where coins have no value. As such, the derived
 address will also be different.</p>
 </div>
 <div class="section" id="creation">
 <h2>Creation<a class="headerlink" href="#creation" title="Permalink to this headline">¶</a></h2>
 <p>Creation of a new private key is as simple as:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -88,7 +79,7 @@ address will also be different.</p>
 is a one-way function, there is no known way to derive the private value
 from the point.</p>
 <p>You can see it like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_point</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_point</span>
 <span class="go">Point(x=97142194878787224003202190607135598251247304976930950188466413219499502457410, y=43606604972619611673144670688496329906728122067438546662512577612023859619611)</span>
 </pre></div>
 </div>
@@ -100,7 +91,7 @@ from the point.</p>
 use the compressed version unless <a class="reference internal" href="advanced.html#hextowif"><span class="std std-ref">you explicitly need otherwise</span></a>.
 This reduces the size of each transaction and thus fees.</p>
 <p>Access it like so:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
 <span class="go">b&#39;\x03\xd6\xc4\x88\xab[S\x1d_\xb1H\x12\xbe\x19C\x08\x16\x90~@\x9fv-\x95\xf0w\x87\xfdB\x81\xa3\xd2B&#39;</span>
 </pre></div>
 </div>
@@ -109,8 +100,8 @@ derive your address and is needed in the construction of every transaction.</p>
 </div>
 <div class="section" id="address">
 <h2>Address<a class="headerlink" href="#address" title="Permalink to this headline">¶</a></h2>
-<p>All keys possess an <a class="reference internal" href="../dev/api.html#bit.PrivateKey.address" title="bit.PrivateKey.address"><code class="xref py py-func docutils literal"><span class="pre">address()</span></code></a> property which is derived from your public key:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
+<p>All keys possess an <a class="reference internal" href="../dev/api.html#bit.PrivateKey.address" title="bit.PrivateKey.address"><code class="xref py py-func docutils literal notranslate"><span class="pre">address()</span></code></a> property which is derived from your public key:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1KF3Vas28f5tnt3rj2fWyR89V9MPw51xhX&#39;</span>
 </pre></div>
 </div>
@@ -125,20 +116,20 @@ format stores the secret value as well as some metadata such as whether or not t
 public key should be compressed.</p>
 <p>To import a private key you can pass a key in wallet import format directly to
 the initializer:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="s1">&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="s1">&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1ExJJsNLQDNVVM1s1sdyt1o5P3GC5r32UG&#39;</span>
 </pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_wif</span><span class="p">()</span>
 <span class="go">&#39;KxVhypbvS3hEYPAP3pYuH1LtcfbdEUcugiqg7fNFUUnmEfWVXJV4&#39;</span>
 </pre></div>
 </div>
 <p>If you don’t know what kind of private key your WIF represents, and you don’t
 want to force the use of a particular class, you can do this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">wif_to_key</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -149,13 +140,13 @@ want to force the use of a particular class, you can do this:</p>
 <div class="section" id="hex">
 <h3>Hex<a class="headerlink" href="#hex" title="Permalink to this headline">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_hex</span><span class="p">(</span><span class="s1">&#39;c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_hex</span><span class="p">(</span><span class="s1">&#39;c28a9f80738f770d527803a566cf6fc3edf6cea586c4fc4a5223a5ad797e1ac3&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1ExJJsNLQDNVVM1s1sdyt1o5P3GC5r32UG&#39;</span>
 </pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_hex</span><span class="p">()</span>
 <span class="go">&#39;738fc299281ba8d29f54cbc6b064f9b468e064a02fe6807af8367cbb25b20673&#39;</span>
 </pre></div>
@@ -164,13 +155,13 @@ want to force the use of a particular class, you can do this:</p>
 <div class="section" id="integer">
 <h3>Integer<a class="headerlink" href="#integer" title="Permalink to this headline">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_int</span><span class="p">(</span><span class="mi">87993618360805341115891506172036624893404292644470266399436498750715784469187</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_int</span><span class="p">(</span><span class="mi">87993618360805341115891506172036624893404292644470266399436498750715784469187</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1ExJJsNLQDNVVM1s1sdyt1o5P3GC5r32UG&#39;</span>
 </pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_int</span><span class="p">()</span>
 <span class="go">100038680087491563809217308525458351872289809954309021777847614847412668376286</span>
 </pre></div>
@@ -179,13 +170,13 @@ want to force the use of a particular class, you can do this:</p>
 <div class="section" id="pem">
 <h3>PEM<a class="headerlink" href="#pem" title="Permalink to this headline">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_pem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_pem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1ExJJsNLQDNVVM1s1sdyt1o5P3GC5r32UG&#39;</span>
 </pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_pem</span><span class="p">()</span>
 <span class="go">b&#39;-----BEGIN PRIVATE KEY-----\nMIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQg93tloWnF8UvDLeK2n0OE\nyf/Si6O73rm33ctZHVhTIBGhRANCAARG3vtgCf5SGfIkwcvuAxNvO/tdy8HnWqS3\nUM+KrWUPpPnHeysZbO6zrG4tN/VBeV2p3whYU6dUhSueOXUPB2Oo\n-----END PRIVATE KEY-----\n&#39;</span>
 </pre></div>
@@ -194,13 +185,13 @@ want to force the use of a particular class, you can do this:</p>
 <div class="section" id="der">
 <h3>DER<a class="headerlink" href="#der" title="Permalink to this headline">¶</a></h3>
 <p>Import:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_der</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="o">.</span><span class="n">from_der</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1ExJJsNLQDNVVM1s1sdyt1o5P3GC5r32UG&#39;</span>
 </pre></div>
 </div>
 <p>Export:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">to_der</span><span class="p">()</span>
 <span class="go">b&#39;0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 ld\x8f\xd4\xc0\x19\xbd^\xa1\xf7f\xee\x8b9j\x1c\xd3ZX\x89\x1b\x04\x13|e\xe7|g\x84:\xcf\xab\xa1D\x03B\x00\x04\xb6\x1a\x9bQ\x0c?\xe3\xb7\x80\x05,\xcf7\x01{\xf9,&quot;\xb6\xdf\xe5\xbb\x0b+\x9b\xc5\x07@2\xa1\x8a\x01R&lt;\x86\t\x1c\x02\x0fd\x8d\x90\xb5\x99w\xc5\x84(#\xfdr&gt;^\xd3\xb5|\x9d1\xa1\x9c/\x04\xf5\xdd&#39;</span>
 </pre></div>
@@ -325,12 +316,14 @@ want to force the use of a particular class, you can do this:</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 

@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Network &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -44,9 +35,9 @@
 <span id="id1"></span><h1>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="balance">
 <h2>Balance<a class="headerlink" href="#balance" title="Permalink to this headline">¶</a></h2>
-<p>Every private key has a <code class="docutils literal"><span class="pre">balance</span></code> property which is initially set to 0. This
+<p>Every private key has a <code class="docutils literal notranslate"><span class="pre">balance</span></code> property which is initially set to 0. This
 internal balance will always be in <a class="reference external" href="https://en.bitcoin.it/wiki/Satoshi_(unit)">satoshi</a>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">PrivateKeyTestnet</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">PrivateKeyTestnet</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance</span>
@@ -54,19 +45,19 @@ internal balance will always be in <a class="reference external" href="https://e
 </pre></div>
 </div>
 <p>You can query the <a class="reference external" href="https://en.bitcoin.it/wiki/Block_chain">blockchain</a> for the current balance by calling
-<a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_balance" title="bit.PrivateKey.get_balance"><code class="xref py py-func docutils literal"><span class="pre">get_balance()</span></code></a>. It takes an optional argument <code class="docutils literal"><span class="pre">currency</span></code>
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_balance" title="bit.PrivateKey.get_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_balance()</span></code></a>. It takes an optional argument <code class="docutils literal notranslate"><span class="pre">currency</span></code>
 (see <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>) and returns a formatted string rounded down
 to the proper number of decimal places. By default it will return the balance
 in satoshi.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;btc&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="s1">&#39;btc&#39;</span><span class="p">)</span>
 <span class="go">&#39;0.82721202&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance</span>
 <span class="go">82721202</span>
 </pre></div>
 </div>
 <p>After you communicate with the network, you can view the internal balance in
-terms of other currencies using <a class="reference internal" href="../dev/api.html#bit.PrivateKey.balance_as" title="bit.PrivateKey.balance_as"><code class="xref py py-func docutils literal"><span class="pre">balance_as()</span></code></a>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;mbtc&#39;</span><span class="p">)</span>
+terms of other currencies using <a class="reference internal" href="../dev/api.html#bit.PrivateKey.balance_as" title="bit.PrivateKey.balance_as"><code class="xref py py-func docutils literal notranslate"><span class="pre">balance_as()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;mbtc&#39;</span><span class="p">)</span>
 <span class="go">&#39;827.21202&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">balance_as</span><span class="p">(</span><span class="s1">&#39;usd&#39;</span><span class="p">)</span>
 <span class="go">&#39;944.06&#39;</span>
@@ -81,8 +72,8 @@ terms of other currencies using <a class="reference internal" href="../dev/api.h
 <div class="section" id="unspent">
 <h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
 <p>You can see what <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction outputs</a> (commonly referred to as UTXO)
-you have available to spend by calling <a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_unspents" title="bit.PrivateKey.get_unspents"><code class="xref py py-func docutils literal"><span class="pre">get_unspents()</span></code></a>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
+you have available to spend by calling <a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_unspents" title="bit.PrivateKey.get_unspents"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unspents()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span>
 <span class="go">[]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_unspents</span><span class="p">()</span>
@@ -92,14 +83,14 @@ you have available to spend by calling <a class="reference internal" href="../de
 </pre></div>
 </div>
 <p>As you can see, this address has 1 available UTXO to spend worth 82721202
-satoshi. <a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_balance" title="bit.PrivateKey.get_balance"><code class="xref py py-func docutils literal"><span class="pre">get_balance()</span></code></a> uses this method by totalling the
+satoshi. <a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_balance" title="bit.PrivateKey.get_balance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_balance()</span></code></a> uses this method by totalling the
 amount of all UTXO. You will never have to use this directly.</p>
 </div>
 <div class="section" id="transaction-history">
 <h2>Transaction History<a class="headerlink" href="#transaction-history" title="Permalink to this headline">¶</a></h2>
 <p>Get a list of all transactions from newest to oldest by calling
-<a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_transactions" title="bit.PrivateKey.get_transactions"><code class="xref py py-func docutils literal"><span class="pre">get_transactions()</span></code></a>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.get_transactions" title="bit.PrivateKey.get_transactions"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_transactions()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">PrivateKeyTestnet</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">transactions</span>
 <span class="go">[]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">get_transactions</span><span class="p">()</span>
@@ -136,13 +127,13 @@ a future release they will become proper objects.</p>
 <p>Bit communicates with the blockchain using trusted third-party APIs.
 Specifically, it can access:</p>
 <ul class="simple">
-<li><a class="reference external" href="https://insight.bitpay.com">https://insight.bitpay.com</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.BitpayAPI" title="bit.network.services.BitpayAPI"><code class="xref py py-class docutils literal"><span class="pre">BitpayAPI</span></code></a></li>
-<li><a class="reference external" href="https://blockchain.info">https://blockchain.info</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.BlockchainAPI" title="bit.network.services.BlockchainAPI"><code class="xref py py-class docutils literal"><span class="pre">BlockchainAPI</span></code></a></li>
-<li><a class="reference external" href="https://smartbit.com.au">https://smartbit.com.au</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.SmartbitAPI" title="bit.network.services.SmartbitAPI"><code class="xref py py-class docutils literal"><span class="pre">SmartbitAPI</span></code></a></li>
+<li><a class="reference external" href="https://insight.bitpay.com">https://insight.bitpay.com</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.BitpayAPI" title="bit.network.services.BitpayAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">BitpayAPI</span></code></a></li>
+<li><a class="reference external" href="https://blockchain.info">https://blockchain.info</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.BlockchainAPI" title="bit.network.services.BlockchainAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockchainAPI</span></code></a></li>
+<li><a class="reference external" href="https://smartbit.com.au">https://smartbit.com.au</a> via <a class="reference internal" href="../dev/api.html#bit.network.services.SmartbitAPI" title="bit.network.services.SmartbitAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmartbitAPI</span></code></a></li>
 </ul>
 <div class="section" id="networkapi">
 <h3>NetworkAPI<a class="headerlink" href="#networkapi" title="Permalink to this headline">¶</a></h3>
-<p>Private key network operations use <a class="reference internal" href="../dev/api.html#bit.network.NetworkAPI" title="bit.network.NetworkAPI"><code class="xref py py-class docutils literal"><span class="pre">NetworkAPI</span></code></a>. For each method,
+<p>Private key network operations use <a class="reference internal" href="../dev/api.html#bit.network.NetworkAPI" title="bit.network.NetworkAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkAPI</span></code></a>. For each method,
 it polls a service and if an error occurs it tries another.</p>
 </div>
 </div>
@@ -257,12 +248,14 @@ it polls a service and if an error occurs it tries another.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 

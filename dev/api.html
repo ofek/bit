@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Developer Interface &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -30,8 +22,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -46,23 +37,23 @@
 <dl class="attribute">
 <dt id="bit.Key">
 <code class="descclassname">bit.</code><code class="descname">Key</code><a class="headerlink" href="#bit.Key" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">bit.wallet.PrivateKey</span></code></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="bit.PrivateKey">
 <em class="property">class </em><code class="descclassname">bit.</code><code class="descname">PrivateKey</code><span class="sig-paren">(</span><em>wif=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class represents a Bitcoin private key. <code class="docutils literal"><span class="pre">Key</span></code> is an alias.</p>
+<dd><p>This class represents a Bitcoin private key. <code class="docutils literal notranslate"><span class="pre">Key</span></code> is an alias.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wif</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wif</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
 argument is not supplied, a new private key will be created.
 The WIF compression flag will be adhered to, but the version
 byte is disregarded. Compression will be used by all new keys.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> – If <code class="docutils literal"><span class="pre">wif</span></code> is not a <code class="docutils literal"><span class="pre">str</span></code>.</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -80,9 +71,9 @@ byte is disregarded. Compression will be used by all new keys.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -97,25 +88,25 @@ byte is disregarded. Compression will be used by all new keys.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
-<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+<li><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
+<code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
-a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+a valid input to <code class="docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
-<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – The number of satoshi per byte to pay to miners. By default
+<li><strong>fee</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.earn.com">https://bitcoinfees.earn.com</a> and use a fee
 that will allow your transaction to be confirmed as soon as
 possible.</li>
-<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The destination that will receive any change from the
+<li><strong>leftover</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The destination that will receive any change from the
 transaction. By default Bit will send any change to
 the same address you sent from.</li>
-<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
+<li><strong>combine</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
 make future transactions smaller and therefore reduce
 fees. By default Bit will consolidate UTXOs.</li>
-<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
+<li><strong>message</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
 stored in the blockchain forever. Due to size limits,
 each message will be stored in chunks of 40 bytes.</li>
-<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
 communicate with the blockchain itself.</li>
 </ul>
 </td>
@@ -123,7 +114,7 @@ communicate with the blockchain itself.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The signed transaction as hex.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -137,9 +128,9 @@ communicate with the blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bytestr</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bytestr</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -152,9 +143,9 @@ communicate with the blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>der</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>der</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -167,9 +158,9 @@ communicate with the blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hexed</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A private key previously encoded as hex.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hexed</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key previously encoded as hex.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -182,9 +173,9 @@ communicate with the blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – A private key in raw integer form.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – A private key in raw integer form.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -197,9 +188,9 @@ communicate with the blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pem</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pem</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal"><span class="pre">PrivateKey</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -209,15 +200,15 @@ communicate with the blockchain itself.</li>
 <dt id="bit.PrivateKey.get_balance">
 <code class="descname">get_balance</code><span class="sig-paren">(</span><em>currency='satoshi'</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.get_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches the current balance by calling
-<a class="reference internal" href="#bit.PrivateKey.get_unspents" title="bit.PrivateKey.get_unspents"><code class="xref py py-func docutils literal"><span class="pre">get_unspents()</span></code></a> and returns it using
-<a class="reference internal" href="#bit.PrivateKey.balance_as" title="bit.PrivateKey.balance_as"><code class="xref py py-func docutils literal"><span class="pre">balance_as()</span></code></a>.</p>
+<a class="reference internal" href="#bit.PrivateKey.get_unspents" title="bit.PrivateKey.get_unspents"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unspents()</span></code></a> and returns it using
+<a class="reference internal" href="#bit.PrivateKey.balance_as" title="bit.PrivateKey.balance_as"><code class="xref py py-func docutils literal notranslate"><span class="pre">balance_as()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -231,7 +222,7 @@ communicate with the blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">str</span></code> transaction IDs</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code> transaction IDs</td>
 </tr>
 </tbody>
 </table>
@@ -245,7 +236,7 @@ communicate with the blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -260,7 +251,7 @@ public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bool</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bool</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -275,29 +266,29 @@ public key.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address the funds will be sent from.</li>
-<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
-<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+<li><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address the funds will be sent from.</li>
+<li><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
+<code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
-a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+a valid input to <code class="docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
-<li><strong>compressed</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not the <code class="docutils literal"><span class="pre">address</span></code> corresponds to a
+<li><strong>compressed</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not the <code class="docutils literal notranslate"><span class="pre">address</span></code> corresponds to a
 compressed public key. This influences the fee.</li>
-<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
+<li><strong>fee</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.earn.com">https://bitcoinfees.earn.com</a> and use a fee
 that will allow your transaction to be confirmed as soon as
 possible.</p>
 </li>
-<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The destination that will receive any change from the
+<li><strong>leftover</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The destination that will receive any change from the
 transaction. By default Bit will send any change to
 the same address you sent from.</li>
-<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
+<li><strong>combine</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
 make future transactions smaller and therefore reduce
 fees. By default Bit will consolidate UTXOs.</li>
-<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
+<li><strong>message</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
 stored in the blockchain forever. Due to size limits,
 each message will be stored in chunks of 40 bytes.</li>
-<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
 communicate with the blockchain itself.</li>
 </ul>
 </td>
@@ -305,7 +296,7 @@ communicate with the blockchain itself.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">JSON storing data required to create an offline transaction.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -329,32 +320,32 @@ communicate with the blockchain itself.</li>
 <code class="descname">send</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction and attempts to broadcast it on
 the blockchain. This accepts the same arguments as
-<a class="reference internal" href="#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>.</p>
+<a class="reference internal" href="#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
-<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+<li><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
+<code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
-a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+a valid input to <code class="docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
-<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
+<li><strong>fee</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.earn.com">https://bitcoinfees.earn.com</a> and use a fee
 that will allow your transaction to be confirmed as soon as
 possible.</p>
 </li>
-<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The destination that will receive any change from the
+<li><strong>leftover</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The destination that will receive any change from the
 transaction. By default Bit will send any change to
 the same address you sent from.</li>
-<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
+<li><strong>combine</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
 make future transactions smaller and therefore reduce
 fees. By default Bit will consolidate UTXOs.</li>
-<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
+<li><strong>message</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
 stored in the blockchain forever. Due to size limits,
 each message will be stored in chunks of 40 bytes.</li>
-<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
 communicate with the blockchain itself.</li>
 </ul>
 </td>
@@ -362,7 +353,7 @@ communicate with the blockchain itself.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The transaction ID.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -378,11 +369,11 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The message to sign.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The message to sign.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A signature compliant with BIP-62.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -397,11 +388,11 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bit.PrivateKey.prepare_transaction" title="bit.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal"><span class="pre">prepare_transaction()</span></code></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bit.PrivateKey.prepare_transaction" title="bit.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a>.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The signed transaction as hex.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -414,7 +405,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -427,7 +418,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -440,7 +431,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -453,7 +444,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -466,7 +457,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -486,12 +477,12 @@ transaction data.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>signature</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The signature to verify.</li>
-<li><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
+<li><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</li>
+<li><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">bool</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -509,12 +500,12 @@ on the test network have no monetary value!</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wif</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wif</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
 argument is not supplied, a new private key will be created.
 The WIF compression flag will be adhered to, but the version
 byte is disregarded. Compression will be used by all new keys.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> – If <code class="docutils literal"><span class="pre">wif</span></code> is not a <code class="docutils literal"><span class="pre">str</span></code>.</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -532,9 +523,9 @@ byte is disregarded. Compression will be used by all new keys.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -549,26 +540,26 @@ byte is disregarded. Compression will be used by all new keys.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
-<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+<li><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
+<code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
-a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+a valid input to <code class="docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
-<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
+<li><strong>fee</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.earn.com">https://bitcoinfees.earn.com</a> and use a fee
 that will allow your transaction to be confirmed as soon as
 possible.</p>
 </li>
-<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The destination that will receive any change from the
+<li><strong>leftover</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The destination that will receive any change from the
 transaction. By default Bit will send any change to
 the same address you sent from.</li>
-<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
+<li><strong>combine</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
 make future transactions smaller and therefore reduce
 fees. By default Bit will consolidate UTXOs.</li>
-<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
+<li><strong>message</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
 stored in the blockchain forever. Due to size limits,
 each message will be stored in chunks of 40 bytes.</li>
-<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
 communicate with the testnet blockchain itself.</li>
 </ul>
 </td>
@@ -576,7 +567,7 @@ communicate with the testnet blockchain itself.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The signed transaction as hex.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -590,9 +581,9 @@ communicate with the testnet blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bytestr</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bytestr</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as hex.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -605,9 +596,9 @@ communicate with the testnet blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>der</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>der</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as DER.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -620,9 +611,9 @@ communicate with the testnet blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hexed</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A private key previously encoded as hex.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hexed</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key previously encoded as hex.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -635,9 +626,9 @@ communicate with the testnet blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – A private key in raw integer form.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – A private key in raw integer form.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -650,9 +641,9 @@ communicate with the testnet blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pem</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pem</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – A private key previously encoded as PEM.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal"><span class="pre">PrivateKeyTestnet</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -662,15 +653,15 @@ communicate with the testnet blockchain itself.</li>
 <dt id="bit.PrivateKeyTestnet.get_balance">
 <code class="descname">get_balance</code><span class="sig-paren">(</span><em>currency='satoshi'</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.get_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches the current balance by calling
-<a class="reference internal" href="#bit.PrivateKeyTestnet.get_unspents" title="bit.PrivateKeyTestnet.get_unspents"><code class="xref py py-func docutils literal"><span class="pre">get_unspents()</span></code></a> and returns it using
-<a class="reference internal" href="#bit.PrivateKeyTestnet.balance_as" title="bit.PrivateKeyTestnet.balance_as"><code class="xref py py-func docutils literal"><span class="pre">balance_as()</span></code></a>.</p>
+<a class="reference internal" href="#bit.PrivateKeyTestnet.get_unspents" title="bit.PrivateKeyTestnet.get_unspents"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_unspents()</span></code></a> and returns it using
+<a class="reference internal" href="#bit.PrivateKeyTestnet.balance_as" title="bit.PrivateKeyTestnet.balance_as"><code class="xref py py-func docutils literal notranslate"><span class="pre">balance_as()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -684,7 +675,7 @@ communicate with the testnet blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">str</span></code> transaction IDs</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code> transaction IDs</td>
 </tr>
 </tbody>
 </table>
@@ -698,7 +689,7 @@ communicate with the testnet blockchain itself.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -713,7 +704,7 @@ public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bool</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bool</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -728,29 +719,29 @@ public key.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address the funds will be sent from.</li>
-<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
-<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+<li><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address the funds will be sent from.</li>
+<li><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
+<code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
-a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+a valid input to <code class="docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
-<li><strong>compressed</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not the <code class="docutils literal"><span class="pre">address</span></code> corresponds to a
+<li><strong>compressed</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not the <code class="docutils literal notranslate"><span class="pre">address</span></code> corresponds to a
 compressed public key. This influences the fee.</li>
-<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
+<li><strong>fee</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.earn.com">https://bitcoinfees.earn.com</a> and use a fee
 that will allow your transaction to be confirmed as soon as
 possible.</p>
 </li>
-<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The destination that will receive any change from the
+<li><strong>leftover</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The destination that will receive any change from the
 transaction. By default Bit will send any change to
 the same address you sent from.</li>
-<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
+<li><strong>combine</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
 make future transactions smaller and therefore reduce
 fees. By default Bit will consolidate UTXOs.</li>
-<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
+<li><strong>message</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
 stored in the blockchain forever. Due to size limits,
 each message will be stored in chunks of 40 bytes.</li>
-<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
 communicate with the blockchain itself.</li>
 </ul>
 </td>
@@ -758,7 +749,7 @@ communicate with the blockchain itself.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">JSON storing data required to create an offline transaction.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -782,32 +773,32 @@ communicate with the blockchain itself.</li>
 <code class="descname">send</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction and attempts to broadcast it on
 the testnet blockchain. This accepts the same arguments as
-<a class="reference internal" href="#bit.PrivateKeyTestnet.create_transaction" title="bit.PrivateKeyTestnet.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a>.</p>
+<a class="reference internal" href="#bit.PrivateKeyTestnet.create_transaction" title="bit.PrivateKeyTestnet.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
-<code class="docutils literal"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
+<li><strong>outputs</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A sequence of outputs you wish to send in the form
+<code class="docutils literal notranslate"><span class="pre">(destination,</span> <span class="pre">amount,</span> <span class="pre">currency)</span></code>. The amount can
 be either an int, float, or string as long as it is
-a valid input to <code class="docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency
+a valid input to <code class="docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency
 must be <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</li>
-<li><strong>fee</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
+<li><strong>fee</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – <p>The number of satoshi per byte to pay to miners. By default
 Bit will poll <a class="reference external" href="https://bitcoinfees.earn.com">https://bitcoinfees.earn.com</a> and use a fee
 that will allow your transaction to be confirmed as soon as
 possible.</p>
 </li>
-<li><strong>leftover</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The destination that will receive any change from the
+<li><strong>leftover</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The destination that will receive any change from the
 transaction. By default Bit will send any change to
 the same address you sent from.</li>
-<li><strong>combine</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
+<li><strong>combine</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not Bit should use all available UTXOs to
 make future transactions smaller and therefore reduce
 fees. By default Bit will consolidate UTXOs.</li>
-<li><strong>message</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
+<li><strong>message</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A message to include in the transaction. This will be
 stored in the blockchain forever. Due to size limits,
 each message will be stored in chunks of 40 bytes.</li>
-<li><strong>unspents</strong> (<code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
 communicate with the testnet blockchain itself.</li>
 </ul>
 </td>
@@ -815,7 +806,7 @@ communicate with the testnet blockchain itself.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The transaction ID.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -831,11 +822,11 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The message to sign.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The message to sign.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A signature compliant with BIP-62.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -850,11 +841,11 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bit.PrivateKeyTestnet.prepare_transaction" title="bit.PrivateKeyTestnet.prepare_transaction"><code class="xref py py-func docutils literal"><span class="pre">prepare_transaction()</span></code></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bit.PrivateKeyTestnet.prepare_transaction" title="bit.PrivateKeyTestnet.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a>.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The signed transaction as hex.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -867,7 +858,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -880,7 +871,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -893,7 +884,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -906,7 +897,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -919,7 +910,7 @@ transaction data.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -939,12 +930,12 @@ transaction data.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>signature</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The signature to verify.</li>
-<li><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
+<li><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</li>
+<li><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">bool</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -963,12 +954,12 @@ this class directly.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wif</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wif</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A private key serialized to the Wallet Import Format. If the
 argument is not supplied, a new private key will be created.
 The WIF compression flag will be adhered to, but the version
 byte is disregarded. Compression will be used by all new keys.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> – If <code class="docutils literal"><span class="pre">wif</span></code> is not a <code class="docutils literal"><span class="pre">str</span></code>.</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">wif</span></code> is not a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -981,7 +972,7 @@ public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bool</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bool</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1008,11 +999,11 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The message to sign.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The message to sign.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A signature compliant with BIP-62.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1025,7 +1016,7 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1038,7 +1029,7 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1051,7 +1042,7 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1064,7 +1055,7 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1077,7 +1068,7 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">bytes</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1092,12 +1083,12 @@ the public key.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>signature</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The signature to verify.</li>
-<li><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
+<li><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</li>
+<li><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">bool</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -1165,7 +1156,7 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_hex</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A signed transaction in hex form.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_hex</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A signed transaction in hex form.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
@@ -1181,7 +1172,7 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_hex</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – A signed transaction in hex form.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_hex</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – A signed transaction in hex form.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
@@ -1197,11 +1188,11 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address in question.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1215,11 +1206,11 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address in question.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1233,11 +1224,11 @@ the public key.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address in question.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1252,11 +1243,11 @@ network.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address in question.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <code class="docutils literal"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">str</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -1270,11 +1261,11 @@ network.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address in question.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -1289,11 +1280,11 @@ test network.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – The address in question.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>address</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – The address in question.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ConnectionError</strong> – If all API services fail.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -1359,9 +1350,9 @@ test network.</p>
 <code class="descname">TX_PUSH_PARAM</code><em class="property"> = 'rawtx'</em><a class="headerlink" href="#bit.network.services.BitpayAPI.TX_PUSH_PARAM" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="bit.network.services.BitpayAPI.broadcast_tx">
-<code class="descname">broadcast_tx</code><span class="sig-paren">(</span><em>tx_hex</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.broadcast_tx" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">broadcast_tx</code><span class="sig-paren">(</span><em>tx_hex</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.broadcast_tx" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
@@ -1369,9 +1360,9 @@ test network.</p>
 <em class="property">classmethod </em><code class="descname">broadcast_tx_testnet</code><span class="sig-paren">(</span><em>tx_hex</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.broadcast_tx_testnet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="bit.network.services.BitpayAPI.get_balance">
-<code class="descname">get_balance</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_balance" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">get_balance</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_balance" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
@@ -1379,9 +1370,9 @@ test network.</p>
 <em class="property">classmethod </em><code class="descname">get_balance_testnet</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_balance_testnet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="bit.network.services.BitpayAPI.get_transactions">
-<code class="descname">get_transactions</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_transactions" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">get_transactions</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
@@ -1389,9 +1380,9 @@ test network.</p>
 <em class="property">classmethod </em><code class="descname">get_transactions_testnet</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_transactions_testnet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="classmethod">
 <dt id="bit.network.services.BitpayAPI.get_unspent">
-<code class="descname">get_unspent</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_unspent" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">get_unspent</code><span class="sig-paren">(</span><em>address</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.services.BitpayAPI.get_unspent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
@@ -1590,18 +1581,18 @@ test network.</p>
 <code class="descclassname">bit.network.</code><code class="descname">currency_to_satoshi</code><span class="sig-paren">(</span><em>amount</em>, <em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.currency_to_satoshi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a given amount of currency to the equivalent number of
 satoshi. The amount can be either an int, float, or string as long as
-it is a valid input to <code class="xref py py-class docutils literal"><span class="pre">decimal.Decimal</span></code>.</p>
+it is a valid input to <code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>amount</strong> – The quantity of currency.</li>
-<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+<li><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">int</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -1613,7 +1604,7 @@ it is a valid input to <code class="xref py py-class docutils literal"><span cla
 <code class="descclassname">bit.network.</code><code class="descname">currency_to_satoshi_cached</code><span class="sig-paren">(</span><em>amount</em>, <em>currency</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.currency_to_satoshi_cached" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a given amount of currency to the equivalent number of
 satoshi. The amount can be either an int, float, or string as long as
-it is a valid input to <code class="xref py py-class docutils literal"><span class="pre">decimal.Decimal</span></code>. Results are cached
+it is a valid input to <code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. Results are cached
 using a decorator for 60 seconds by default. See <a class="reference internal" href="../guide/advanced.html#cache-times"><span class="std std-ref">Cache Times</span></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1621,11 +1612,11 @@ using a decorator for 60 seconds by default. See <a class="reference internal" h
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>amount</strong> – The quantity of currency.</li>
-<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+<li><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">int</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -1642,12 +1633,12 @@ string rounded down to the proper number of decimal places.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>num</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – The number of satoshi.</li>
-<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+<li><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The number of satoshi.</li>
+<li><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -1665,12 +1656,12 @@ cached using a decorator for 60 seconds by default. See <a class="reference inte
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>num</strong> (<code class="docutils literal"><span class="pre">int</span></code>) – The number of satoshi.</li>
-<li><strong>currency</strong> (<code class="docutils literal"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
+<li><strong>num</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – The number of satoshi.</li>
+<li><strong>currency</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – One of the <a class="reference internal" href="../guide/rates.html#supported-currencies"><span class="std std-ref">Supported Currencies</span></a>.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">str</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -2150,14 +2141,14 @@ number of satoshi.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fast</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – If <code class="docutils literal"><span class="pre">True</span></code>, the fee returned will be “The lowest fee (in
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fast</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the fee returned will be “The lowest fee (in
 satoshis per byte) that will currently result in the fastest
 transaction confirmations (usually 0 to 1 block delay)”.
 Otherwise, the number returned will be “The lowest fee (in
 satoshis per byte) that will confirm transactions within an
 hour (with 90% probability)”.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -2172,14 +2163,14 @@ decorator for 10 minutes by default. See <a class="reference internal" href="../
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fast</strong> (<code class="docutils literal"><span class="pre">bool</span></code>) – If <code class="docutils literal"><span class="pre">True</span></code>, the fee returned will be “The lowest fee (in
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fast</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the fee returned will be “The lowest fee (in
 satoshis per byte) that will currently result in the fastest
 transaction confirmations (usually 0 to 1 block delay)”.
 Otherwise, the number returned will be “The lowest fee (in
 satoshis per byte) that will confirm transactions within an
 hour (with 90% probability)”.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">int</span></code></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -2197,13 +2188,13 @@ hour (with 90% probability)”.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>signature</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The signature to verify.</li>
-<li><strong>data</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
-<li><strong>public_key</strong> (<code class="docutils literal"><span class="pre">bytes</span></code>) – The public key.</li>
+<li><strong>signature</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The signature to verify.</li>
+<li><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The data that was supposedly signed.</li>
+<li><strong>public_key</strong> (<code class="docutils literal notranslate"><span class="pre">bytes</span></code>) – The public key.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">True</span></code> if all checks pass, <code class="docutils literal"><span class="pre">False</span></code> otherwise.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">True</span></code> if all checks pass, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
 </td>
 </tr>
 </tbody>
@@ -2325,12 +2316,14 @@ hour (with 90% probability)”.</td>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 

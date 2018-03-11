@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Introduction &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -67,7 +58,7 @@ compressed public keys (meaning such keys could literally not spend money), and
 docs.</p>
 <p>All of these libraries are also slow. Let’s take a look at some common operations.</p>
 <p>Instantiate a compressed private key and get its computed public key:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key&quot;</span> <span class="s2">&quot;Key(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key&quot;</span> <span class="s2">&quot;Key(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key&quot;</span>
 <span class="m">1000</span> loops, best of <span class="m">3</span>: <span class="m">89</span> usec per loop
 $ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey&quot;</span> <span class="s2">&quot;PrivateKey.from_b58check(&#39;L3jsepcttyuJK3HKezD4qqRKGtwc8d2d1Nw6vsoPDX9cMcUxqqMv&#39;).public_key.compressed_bytes&quot;</span>
 <span class="m">100</span> loops, best of <span class="m">3</span>: <span class="m">11</span> msec per loop
@@ -78,14 +69,14 @@ $ python -m timeit -s <span class="s2">&quot;from pycoin.key import Key&quot;</s
 </pre></div>
 </div>
 <p>We’ll use two1 only as that was the closest to Bit. Getting the address:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key;k=Key()&quot;</span> <span class="s2">&quot;k.address&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key;k=Key()&quot;</span> <span class="s2">&quot;k.address&quot;</span>
 <span class="m">1000000</span> loops, best of <span class="m">3</span>: <span class="m">0</span>.249 usec per loop
 $ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()&quot;</span> <span class="s2">&quot;k.public_key.address()&quot;</span>
 <span class="m">10000</span> loops, best of <span class="m">3</span>: <span class="m">31</span>.1 usec per loop
 </pre></div>
 </div>
 <p>Signing, which is the most used operation:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key;k=Key()&quot;</span> <span class="s2">&quot;k.sign(b&#39;data&#39;)&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m timeit -s <span class="s2">&quot;from bit import Key;k=Key()&quot;</span> <span class="s2">&quot;k.sign(b&#39;data&#39;)&quot;</span>
 <span class="m">1000</span> loops, best of <span class="m">3</span>: <span class="m">91</span> usec per loop
 $ python -m timeit -s <span class="s2">&quot;from two1.bitcoin.crypto import PrivateKey;k=PrivateKey.from_random()&quot;</span> <span class="s2">&quot;k.raw_sign(b&#39;data&#39;)&quot;</span>
 <span class="m">100</span> loops, best of <span class="m">3</span>: <span class="m">10</span>.7 msec per loop
@@ -217,12 +208,14 @@ that a flag can be set on Linux to make some operations faster.</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 

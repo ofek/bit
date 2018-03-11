@@ -5,20 +5,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Index &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -30,8 +22,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -128,7 +119,7 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.broadcast_tx">broadcast_tx() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.broadcast_tx">(bit.network.services.BitpayAPI method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitpayAPI.broadcast_tx">(bit.network.services.BitpayAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.broadcast_tx">(bit.network.services.BlockchainAPI class method)</a>
 </li>
@@ -312,7 +303,7 @@
 </li>
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.get_balance">(bit.PrivateKeyTestnet method)</a>
 </li>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_balance">(bit.network.services.BitpayAPI method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_balance">(bit.network.services.BitpayAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_balance">(bit.network.services.BlockchainAPI class method)</a>
 </li>
@@ -342,7 +333,7 @@
 </li>
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.get_transactions">(bit.PrivateKeyTestnet method)</a>
 </li>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transactions">(bit.network.services.BitpayAPI method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transactions">(bit.network.services.BitpayAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_transactions">(bit.network.services.BlockchainAPI class method)</a>
 </li>
@@ -366,7 +357,7 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.get_unspent">get_unspent() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_unspent">(bit.network.services.BitpayAPI method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_unspent">(bit.network.services.BitpayAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_unspent">(bit.network.services.BlockchainAPI class method)</a>
 </li>
@@ -902,12 +893,14 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 

@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Transactions &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -43,15 +34,15 @@
   <div class="section" id="transactions">
 <span id="id1"></span><h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this headline">¶</a></h1>
 <p>Keys in Bit allow 2 ways of handling transactions: a
-<a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal"><span class="pre">create_transaction()</span></code></a> method that creates a signed
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a> method that creates a signed
 transaction and returns the aforementioned transaction in hex, and a
-<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal"><span class="pre">send()</span></code></a> method that does the same thing but will
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a> method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.</p>
 <div class="section" id="outputs">
 <span id="outputsparam"></span><h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
 <p>The only required argument is a list of outputs.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([(</span><span class="s1">&#39;1Archive1n2C579dMsAu3iC6tWzuQJz8dN&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([(</span><span class="s1">&#39;1Archive1n2C579dMsAu3iC6tWzuQJz8dN&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
@@ -59,14 +50,14 @@ for future lookup. Both methods take the exact same arguments.</p>
 <h2>Output Format<a class="headerlink" href="#output-format" title="Permalink to this headline">¶</a></h2>
 <p>Each output should be a tuple of arity 3 in the form <cite>(destination, amount, currency)</cite>.
 The amount can be either an int, float, or string as long as it is a valid input to
-<code class="xref py py-class docutils literal"><span class="pre">decimal.Decimal</span></code>. The currency must be <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code>. The currency must be <a class="reference internal" href="rates.html#supported-currencies"><span class="std std-ref">supported</span></a>.</p>
 </div>
 <div class="section" id="change-address">
 <h2>Change Address<a class="headerlink" href="#change-address" title="Permalink to this headline">¶</a></h2>
 <p>Whenever you spend an <a class="reference external" href="https://en.bitcoin.it/wiki/Transaction#Input">unspent transaction output</a>, it must be used in its
 entirety.</p>
 <p>Say for example you had this UTXO:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">55000</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">55000</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If you wanted to use 35000 satoshi to buy ice cream, you need to use all 55000
@@ -74,7 +65,7 @@ satoshi in the transaction. How this works is whatever is left over you send
 back to yourself as change.</p>
 <p>By default Bit will send any change to the same address you sent from. You
 can specify where leftover funds go like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Whatever funds remain at this point (<cite>remaining = unspent - (sending + leftover)</cite>)
@@ -92,7 +83,7 @@ transactions to be verified quickly.”</p>
 <p>By default, Bit will poll <a class="reference external" href="https://bitcoinfees.earn.com">https://bitcoinfees.earn.com</a> and use a fee that
 will allow your transaction to be confirmed as soon as possible.</p>
 <p>You can change the satoshi per byte fee like so:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For more information about transaction fees <a class="reference external" href="https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care">read this</a>.</p>
@@ -102,22 +93,22 @@ will allow your transaction to be confirmed as soon as possible.</p>
 <p>By default Bit will use all of your available UTXOs to make future transactions
 smaller and therefore reduce fees.</p>
 <p>If you don’t desire this behavior and only wish to use what is needed, do this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For example, if your had the following UTXOs available:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 <span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 <span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Forgetting about fees for the moment, assume you want to spend 150 satoshi. If
 you combine all funds, you’d be left with:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If you don’t, you’d be left with:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 <span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -126,7 +117,7 @@ you combine all funds, you’d be left with:</p>
 <h2>Transfer Funds<a class="headerlink" href="#transfer-funds" title="Permalink to this headline">¶</a></h2>
 <p>If you want to send all available funds to another address or wish to simply
 move your coins, you can specify a leftover address and zero outputs like so:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([],</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([],</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -134,16 +125,16 @@ move your coins, you can specify a leftover address and zero outputs like so:</p
 <span id="unspentparam"></span><h2>Unspent<a class="headerlink" href="#unspent" title="Permalink to this headline">¶</a></h2>
 <p>If you already have a means of communicating with the blockchain, you can
 supply your own list of unspent transaction outputs by doing either:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unspents</span> <span class="o">=</span> <span class="p">[</span><span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Unspent</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="o">...</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">unspents</span><span class="o">=</span><span class="n">unspents</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Each item must be an instance of <a class="reference internal" href="../dev/api.html#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal"><span class="pre">Unspent</span></code></a>.</p>
+<p>Each item must be an instance of <a class="reference internal" href="../dev/api.html#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>.</p>
 </div>
 </div>
 
@@ -256,12 +247,14 @@ supply your own list of unspent transaction outputs by doing either:</p>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 

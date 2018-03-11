@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Stay Informed &#8212; Bit 0.4.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.4.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
@@ -31,8 +23,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
@@ -70,7 +61,7 @@ Twitter for occasional updates.</p>
 <div class="section" id="id2">
 <h2>0.4.1 (2017-11-01)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Removed <code class="docutils literal"><span class="pre">blockr.io</span></code> network backend as <a class="reference external" href="https://www.coinbase.com">Coinbase</a> has shut it down.</li>
+<li>Removed <code class="docutils literal notranslate"><span class="pre">blockr.io</span></code> network backend as <a class="reference external" href="https://www.coinbase.com">Coinbase</a> has shut it down.</li>
 </ul>
 </div>
 <div class="section" id="id3">
@@ -80,8 +71,8 @@ Twitter for occasional updates.</p>
 in an order of magnitude faster key creation and signing/verifying.</li>
 <li>Improved performance of base58 encoding/decoding.</li>
 <li><strong>Breaking:</strong> Dropped support for Python 3.3 &amp; 3.4.</li>
-<li><strong>Breaking:</strong> <a class="reference internal" href="../dev/api.html#bit.verify_sig" title="bit.verify_sig"><code class="xref py py-func docutils literal"><span class="pre">verify_sig()</span></code></a> now returns <code class="docutils literal"><span class="pre">False</span></code> for invalid
-signatures instead of raising an exception. Also, <code class="docutils literal"><span class="pre">strict</span></code> is no longer
+<li><strong>Breaking:</strong> <a class="reference internal" href="../dev/api.html#bit.verify_sig" title="bit.verify_sig"><code class="xref py py-func docutils literal notranslate"><span class="pre">verify_sig()</span></code></a> now returns <code class="docutils literal notranslate"><span class="pre">False</span></code> for invalid
+signatures instead of raising an exception. Also, <code class="docutils literal notranslate"><span class="pre">strict</span></code> is no longer
 a parameter as BIP-62 compliance is now required.</li>
 </ul>
 </div>
@@ -104,7 +95,7 @@ a parameter as BIP-62 compliance is now required.</li>
 <h2>0.2.0 (2017-03-17)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Improved stability of network tests.</li>
-<li>Added <a class="reference internal" href="../dev/api.html#bit.verify_sig" title="bit.verify_sig"><code class="xref py py-func docutils literal"><span class="pre">verify_sig()</span></code></a>.</li>
+<li>Added <a class="reference internal" href="../dev/api.html#bit.verify_sig" title="bit.verify_sig"><code class="xref py py-func docutils literal notranslate"><span class="pre">verify_sig()</span></code></a>.</li>
 <li>Refactored crypto to yield over an order of magnitude faster hashing.</li>
 </ul>
 </div>
@@ -230,12 +221,14 @@ a parameter as BIP-62 compliance is now required.</li>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 
