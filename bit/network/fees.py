@@ -1,3 +1,4 @@
+import logging
 from functools import wraps
 from time import time
 
@@ -54,7 +55,12 @@ def get_fee_local_cache(f):
                     cached_fee_fast = request.json()['fastestFee']
                     fast_last_update = now
                 except (ConnectionError, HTTPError, Timeout):  # pragma: no cover
-                    return cached_fee_fast or DEFAULT_FEE_FAST
+                    if cached_fee_fast is None:
+                        logging.warning('Connection to fee API failed, returning default fee (fast) of {}'.format(DEFAULT_FEE_FAST))
+                        return DEFAULT_FEE_FAST
+                    else:
+                        logging.warning('Connection to fee API failed, returning cached fee (fast).')
+                        return cached_fee_fast
 
             return cached_fee_fast
 
@@ -71,7 +77,12 @@ def get_fee_local_cache(f):
                     cached_fee_hour = request.json()['hourFee']
                     hour_last_update = now
                 except (ConnectionError, HTTPError, Timeout):  # pragma: no cover
-                    return cached_fee_hour or DEFAULT_FEE_HOUR
+                    if cached_fee_hour is None:
+                        logging.warning('Connection to fee API failed, returning default fee (hour) of {}'.format(DEFAULT_FEE_HOUR))
+                        return DEFAULT_FEE_HOUR
+                    else:
+                        logging.warning('Connection to fee API failed, returning cached fee (hour).')
+                        return cached_fee_hour
 
             return cached_fee_hour
 
