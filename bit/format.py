@@ -35,6 +35,8 @@ def verify_sig(signature, data, public_key):
 
 
 def address_to_public_key_hash(address):
+    # Raise ValueError if we cannot identify the address.
+    get_version(address)
     return b58decode_check(address)[1:]
 
 

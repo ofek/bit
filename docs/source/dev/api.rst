@@ -46,10 +46,6 @@ Network
     :members:
     :undoc-members:
 
-.. autoclass:: bit.network.services.BlockrAPI
-    :members:
-    :undoc-members:
-
 .. autoclass:: bit.network.meta.Unspent
     :members:
     :undoc-members:

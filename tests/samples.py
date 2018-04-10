@@ -1,8 +1,10 @@
 BINARY_ADDRESS = b'\x00\x92F\x1b\xdeb\x83\xb4a\xec\xe7\xdd\xf4\xdb\xf1\xe0\xa4\x8b\xd1\x13\xd8&E\xb4\xbf'
 BITCOIN_ADDRESS = '1ELReFsTCUY2mfaDTy32qxYiT49z786eFg'
 BITCOIN_ADDRESS_COMPRESSED = '1ExJJsNLQDNVVM1s1sdyt1o5P3GC5r32UG'
+BITCOIN_ADDRESS_PAY2SH = '39SrGQEfFXcTYJhBvjZeQja66Cpz82EEUn'
 BITCOIN_ADDRESS_TEST = 'mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS'
 BITCOIN_ADDRESS_TEST_COMPRESSED = 'muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz'
+BITCOIN_ADDRESS_TEST_PAY2SH = '2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk'
 PRIVATE_KEY_BYTES = b'\xc2\x8a\x9f\x80s\x8fw\rRx\x03\xa5f\xcfo\xc3\xed\xf6\xce\xa5\x86\xc4\xfcJR#\xa5\xady~\x1a\xc3'
 PRIVATE_KEY_DER = (b"0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06"
                    b"\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 \xc2\x8a\x9f"

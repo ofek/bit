@@ -172,6 +172,48 @@ class TestSanitizeTxData:
         assert outputs[1][0] == RETURN_ADDRESS
         assert outputs[1][1] == 1000
 
+    def test_no_combine_remaining_small_inputs(self):
+        unspents_original = [Unspent(1500, 0, '', '', 0),
+                             Unspent(1600, 0, '', '', 0),
+                             Unspent(1700, 0, '', '', 0)]
+        outputs_original = [(RETURN_ADDRESS, 2000, 'satoshi')]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
+            combine=False, message=None
+        )
+        assert unspents == [Unspent(1500, 0, '', '', 0), Unspent(1600, 0, '', '', 0)]
+        assert len(outputs) == 2
+        assert outputs[1][0] == RETURN_ADDRESS
+        assert outputs[1][1] == 1100
+
+    def test_no_combine_with_fee(self):
+        """
+        Verify that unused unspents do not increase fee.
+        """
+        unspents_single = [Unspent(5000, 0, '', '', 0)]
+        unspents_original = [Unspent(5000, 0, '', '', 0),
+                             Unspent(5000, 0, '', '', 0)]
+        outputs_original = [(RETURN_ADDRESS, 1000, 'satoshi')]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original, outputs_original, fee=1, leftover=RETURN_ADDRESS,
+            combine=False, message=None
+        )
+
+        unspents_single, outputs_single = sanitize_tx_data(
+            unspents_single, outputs_original, fee=1, leftover=RETURN_ADDRESS,
+            combine=False, message=None
+        )
+
+        assert unspents == [Unspent(5000, 0, '', '', 0)]
+        assert unspents_single == [Unspent(5000, 0, '', '', 0)]
+        assert len(outputs) == 2
+        assert len(outputs_single) == 2
+        assert outputs[1][0] == RETURN_ADDRESS
+        assert outputs_single[1][0] == RETURN_ADDRESS
+        assert outputs[1][1] == outputs_single[1][1]
+
     def test_no_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]

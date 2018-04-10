@@ -4,6 +4,24 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.4.3 (2018-03-11)
+------------------
+
+- Fixed fee calculation when ``combine=False`
+- **Breaking:** Exceptions will now be raised when using pay2sh addresses (until implemented)
+
+0.4.2 (2017-12-09)
+------------------
+
+- Optimized network API priorities
+- Fixed Smartbit pushtx usage
+- Updated `21.co <https://www.21.co>`_ to `earn.com <https://www.earn.com>`_
+
+0.4.1 (2017-11-01)
+------------------
+
+- Removed ``blockr.io`` network backend as `Coinbase <https://www.coinbase.com>`_ has shut it down.
+
 0.4.0 (2017-04-19)
 ------------------
 

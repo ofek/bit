@@ -114,7 +114,6 @@ Specifically, it can access:
 - `<https://insight.bitpay.com>`_ via :class:`~bit.network.services.BitpayAPI`
 - `<https://blockchain.info>`_ via :class:`~bit.network.services.BlockchainAPI`
 - `<https://smartbit.com.au>`_ via :class:`~bit.network.services.SmartbitAPI`
-- `<http://blockr.io>`_ via :class:`~bit.network.services.BlockrAPI`
 
 NetworkAPI
 ^^^^^^^^^^

@@ -21,8 +21,8 @@ Bit: Bitcoin made easy.
 Bit is Python's `fastest <https://ofek.github.io/bit/guide/intro.html#why-bit>`_
 Bitcoin library and was designed from the beginning to feel intuitive, be
 effortless to use, and have readable source code. It is heavily inspired by
-`Requests <https://github.com/kennethreitz/requests>`_ and
-`Keras <https://github.com/fchollet/keras>`_.
+`Requests <https://github.com/requests/requests>`_ and
+`Keras <https://github.com/keras-team/keras>`_.
 
 **Bit is so easy to use, in fact, you can do this:**
 

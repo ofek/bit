@@ -64,7 +64,7 @@ Fee
 
     -- Coinbase
 
-By default, Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee that
+By default, Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee that
 will allow your transaction to be confirmed as soon as possible.
 
 You can change the satoshi per byte fee like so:
