@@ -4,6 +4,8 @@ from bit.base58 import b58decode_check, b58encode_check
 from bit.crypto import ripemd160_sha256
 from bit.curve import x_to_y
 
+from bit.utils import int_to_unknown_bytes
+
 MAIN_PUBKEY_HASH = b'\x00'
 MAIN_SCRIPT_HASH = b'\x05'
 MAIN_PRIVATE_KEY = b'\x80'
@@ -118,6 +120,41 @@ def public_key_to_address(public_key, version='main'):
         raise ValueError('{} is an invalid length for a public key.'.format(length))
 
     return b58encode_check(version + ripemd160_sha256(public_key))
+
+
+def multisig_to_redeemscript(public_keys, m):
+# public_keys must be provided as a list
+    from bit.utils import hex_to_bytes, script_push
+
+    if m > 16:
+        raise ValueError('More than the allowed maximum of 16 public keys cannot be used.')
+
+    redeemscript = int_to_unknown_bytes(m + 80)
+
+    for key in public_keys:
+        key_byte = hex_to_bytes(key)
+        length = len(key_byte)
+
+        if length not in (33, 65):
+            raise ValueError('At least one of the provided public keys is of invalid length {}.'.format(length))
+
+        redeemscript += script_push(length) + key_byte
+
+    redeemscript += int_to_unknown_bytes(len(public_keys) + 80) + b'\xae'  # Only works for n = len(public_keys) < 17. OK due to P2SH script-length limitation.
+
+    if len(redeemscript) > 520:
+        raise ValueError('The redeemScript exceeds the allowed 520-byte limitation with the number of public keys.')
+
+    return redeemscript
+
+
+def multisig_to_address(public_keys, m, version='main'):
+    if version == 'test':
+        version = TEST_SCRIPT_HASH
+    else:
+        version = MAIN_SCRIPT_HASH
+
+    return b58encode_check(version + ripemd160_sha256(multisig_to_redeemscript(public_keys, m)))
 
 
 def public_key_to_coords(public_key):
