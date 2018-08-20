@@ -100,8 +100,8 @@ def get_signatures_from_script(script):
     while val <= 72:  # TODO: Make a better check if the data is a signature (using DER rules: https://bitcoin.stackexchange.com/questions/12554/why-the-signature-is-always-65-13232-bytes-long)
         if val != 0:  # For partially-signed scriptSigs the missing signatures are indicated with 0s at the end.
             potential_sig = read_bytes(val)
-            if bytes_to_hex(potential_sig[0:1] == '30'):
-                sigs.append(read_bytes(val))
+            if bytes_to_hex(potential_sig[0:1]) == '30':
+                sigs.append(potential_sig)
         val = read_var_int()
         if pos[0] > len(script):  # escape if we have run out of the script
             break
