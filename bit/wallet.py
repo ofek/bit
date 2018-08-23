@@ -9,7 +9,8 @@ from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.network.meta import Unspent
 from bit.transaction import (
     calc_txid, create_new_transaction, sanitize_tx_data, sign_legacy_tx,
-    OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20
+    OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20,
+    deserialize, address_to_scriptpubkey
     )
 
 from bit.utils import bytes_to_hex
@@ -165,6 +166,9 @@ class PrivateKey(BaseKey):
                             address_to_public_key_hash(self.address) +
                             OP_EQUALVERIFY + OP_CHECKSIG)
         return self._scriptcode
+
+    def can_sign_unspent(self, unspent):
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def to_wif(self):
         return bytes_to_wif(
@@ -359,21 +363,34 @@ class PrivateKey(BaseKey):
 
         return json.dumps(data, separators=(',', ':'))
 
-    def sign_transaction(self, tx_data):  # pragma: no cover
+    def sign_transaction(self, tx_data, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction using previously prepared
         transaction data.
 
-        :param tx_data: Output of :func:`~bit.PrivateKey.prepare_transaction`.
+        :param tx_data: Hex-encoded transaction or output of :func:`~bit.Key.prepare_transaction`.
         :type tx_data: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-        data = json.loads(tx_data)
+        try:  # Json-tx-data from :func:`~bit.Key.prepare_transaction`
+            data = json.loads(tx_data)
+            assert(unspents is None)
 
-        unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
-        outputs = data['outputs']
+            unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
+            outputs = data['outputs']
 
-        return create_new_transaction(self, unspents, outputs)
+            return create_new_transaction(self, unspents, outputs)
+        except:  # May be hex-encoded transaction using batching:
+            try:
+                unspents = unspents or self.get_unspents()
+            except ConnectionError:
+                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+
+            tx_data = deserialize(tx_data)
+            return sign_legacy_tx(self, tx_data, unspents=unspents)
 
     @classmethod
     def from_hex(cls, hexed):
@@ -460,6 +477,9 @@ class PrivateKeyTestnet(BaseKey):
                             address_to_public_key_hash(self.address) +
                             OP_EQUALVERIFY + OP_CHECKSIG)
         return self._scriptcode
+
+    def can_sign_unspent(self, unspent):
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def to_wif(self):
         return bytes_to_wif(
@@ -654,21 +674,34 @@ class PrivateKeyTestnet(BaseKey):
 
         return json.dumps(data, separators=(',', ':'))
 
-    def sign_transaction(self, tx_data):
+    def sign_transaction(self, tx_data, unspents=None):
         """Creates a signed P2PKH transaction using previously prepared
         transaction data.
 
-        :param tx_data: Output of :func:`~bit.PrivateKeyTestnet.prepare_transaction`.
+        :param tx_data: Hex-encoded transaction or output of :func:`~bit.Key.prepare_transaction`.
         :type tx_data: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-        data = json.loads(tx_data)
+        try:  # Json-tx-data from :func:`~bit.Key.prepare_transaction`
+            data = json.loads(tx_data)
+            assert(unspents is None)
 
-        unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
-        outputs = data['outputs']
+            unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
+            outputs = data['outputs']
 
-        return create_new_transaction(self, unspents, outputs)
+            return create_new_transaction(self, unspents, outputs)
+        except:  # May be hex-encoded transaction using batching:
+            try:
+                unspents = unspents or self.get_unspents()
+            except ConnectionError:
+                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+
+            tx_data = deserialize(tx_data)
+            return sign_legacy_tx(self, tx_data, unspents=unspents)
 
     @classmethod
     def from_hex(cls, hexed):
@@ -775,6 +808,9 @@ class MultiSig:
         self._scriptcode = self.redeemscript
         return self._scriptcode
 
+    def can_sign_unspent(self, unspent):
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+
     def sign(self, data):
         """Signs some data which can be verified later by others using
         the public key.
@@ -978,24 +1014,34 @@ class MultiSig:
 
         return json.dumps(data, separators=(',', ':'))
 
-    def sign_transaction(self, tx_data):  # pragma: no cover
+    def sign_transaction(self, tx_data, unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction using previously prepared
         transaction data.
 
-        :param tx_data: Hex-encoded transaction or output of :func:`~bit.PrivateKey.prepare_transaction`.
+        :param tx_data: Hex-encoded transaction or output of :func:`~bit.Key.prepare_transaction`.
         :type tx_data: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-        if isinstance(tx_data, str) and tx_data[0] == '{':  # Json-tx-data
+        try:  # Json-tx-data from :func:`~bit.Key.prepare_transaction`
             data = json.loads(tx_data)
+            assert(unspents is None)
 
             unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
             outputs = data['outputs']
 
             return create_new_transaction(self, unspents, outputs)
-        else:  # May be partially-signed multisig transaction:
-            return sign_legacy_tx(self, tx_data)
+        except:  # May be hex-encoded partially-signed transaction or using batching:
+            try:
+                unspents = unspents or self.get_unspents()
+            except ConnectionError:
+                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+
+            tx_data = deserialize(tx_data)
+            return sign_legacy_tx(self, tx_data, unspents=unspents)
 
 
 class MultiSigTestnet:
@@ -1052,6 +1098,9 @@ class MultiSigTestnet:
         self._scriptcode = self.redeemscript
         return self._scriptcode
 
+    def can_sign_unspent(self, unspent):
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+
     def sign(self, data):
         """Signs some data which can be verified later by others using
         the public key.
@@ -1255,21 +1304,31 @@ class MultiSigTestnet:
 
         return json.dumps(data, separators=(',', ':'))
 
-    def sign_transaction(self, tx_data):  # pragma: no cover
+    def sign_transaction(self, tx_data, unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction using previously prepared
         transaction data.
 
-        :param tx_data: Hex-encoded transaction or output of :func:`~bit.PrivateKey.prepare_transaction`.
+        :param tx_data: Hex-encoded transaction or output of :func:`~bit.Key.prepare_transaction`.
         :type tx_data: ``str``
+        :param unspents: The UTXOs to use as the inputs. By default Bit will
+                         communicate with the blockchain itself.
+        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
-        if isinstance(tx_data, str) and tx_data[0] == '{':  # Json-tx-data
+        try:  # Json-tx-data from :func:`~bit.Key.prepare_transaction`
             data = json.loads(tx_data)
+            assert(unspents is None)
 
             unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
             outputs = data['outputs']
 
             return create_new_transaction(self, unspents, outputs)
-        else:  # May be partially-signed multisig tx:
-            return sign_legacy_tx(self, tx_data)
+        except:  # May be hex-encoded partially-signed transaction or using batching:
+            try:
+                unspents = unspents or self.get_unspents()
+            except ConnectionError:
+                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+
+            tx_data = deserialize(tx_data)
+            return sign_legacy_tx(self, tx_data, unspents=unspents)

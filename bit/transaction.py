@@ -311,11 +311,34 @@ def construct_outputs(outputs):
     return outputs_obj
 
 
-def sign_legacy_tx(private_key, tx, j=-1):
-# j is the input to be signed and can be a single index, a list of indices, or denote all inputs (-1)
+def sign_legacy_tx(private_key, tx, *, unspents):
+    """Signs inputs in provided transaction object for which unspents
+    are provided and can be signed by the private key.
 
-    if not isinstance(tx, TxObj):
-        tx = deserialize(tx)
+    :param private_key: Private key
+    :type private_key: ``PrivateKey`` or ``MultiSig``
+    :param tx: Transaction object
+    :type tx: ``TxObj``
+    :param unspents: For inputs to be signed their corresponding Unspent objects
+                     must be provided.
+    :returns: The signed transaction as hex.
+    :rtype: ``str``
+    """
+
+    # input_dict contains those unspents that can be signed by private_key,
+    # providing additional information for segwit-inputs (the amount to spend)
+    input_dict = {}
+    try:
+        for unspent in unspents:
+            if not private_key.can_sign_unspent(unspent):
+                continue
+            tx_input = hex_to_bytes(unspent.txid)[::-1] + unspent.txindex.to_bytes(4, byteorder='little')
+            input_dict[tx_input] = unspent.to_dict()
+    except TypeError:
+        raise ValueError('Please provide as unspents at least all inputs to be signed with the function call.')
+
+    # Determine input indices to sign from input_dict (allows for transaction batching)
+    sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid+i.txindex in input_dict]
 
     version = tx.version
     lock_time = tx.locktime
@@ -324,18 +347,9 @@ def sign_legacy_tx(private_key, tx, j=-1):
     input_count = int_to_varint(len(tx.TxIn))
     output_count = int_to_varint(len(tx.TxOut))
 
-    output_block = b''
-    for i in range(len(tx.TxOut)):
-        output_block += tx.TxOut[i].amount
-        output_block += tx.TxOut[i].script_pubkey_len
-        output_block += tx.TxOut[i].script_pubkey
+    output_block = b''.join([bytes(o) for o in tx.TxOut])
 
-    if j<0:
-        j = range(len(tx.TxIn))
-    elif not isinstance(j, list):
-        j = [j]
-
-    for i in j:
+    for i in sign_inputs:
 
         public_key = private_key.public_key
         public_key_push = script_push(len(public_key))
@@ -403,14 +417,6 @@ def sign_legacy_tx(private_key, tx, j=-1):
         tx.TxIn[i].script_sig = script_sig
         tx.TxIn[i].script_sig_len = int_to_varint(len(script_sig))
 
-    # return bytes_to_hex(
-    #     version +
-    #     input_count +
-    #     construct_input_block(inputs) +
-    #     output_count +
-    #     output_block +
-    #     lock_time
-    # )
     return tx.to_hex()
 
 
@@ -431,5 +437,5 @@ def create_new_transaction(private_key, unspents, outputs):
 
     tx_unsigned = TxObj(version, inputs, outputs, lock_time)
 
-    tx = sign_legacy_tx(private_key, tx_unsigned)
+    tx = sign_legacy_tx(private_key, tx_unsigned, unspents=unspents)
     return tx
