@@ -190,7 +190,7 @@ def deserialize(txhex):
     return txobj
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, version='main'):
     """
     sanitize_tx_data()
 
@@ -250,6 +250,14 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     elif remaining < 0:
         raise InsufficientFunds('Balance {} is less than {} (including '
                                 'fee).'.format(total_in, total_out))
+
+    # Sanity check: If spending from main-/testnet, then all output addresses must also be for main-/testnet.
+    for output in outputs:
+        dest, amount = output
+        if amount:  # ``dest`` could be a text to be stored in the blockchain; but only if ``amount`` is exactly zero.
+            vs = get_version(dest)
+            if vs and vs != version:
+                raise ValueError('Cannot send to ' + vs + 'net address when spending from a ' + version + 'net address.')
 
     outputs.extend(messages)
 

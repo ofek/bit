@@ -8,7 +8,7 @@ from bit.transaction import (
 )
 from bit.utils import hex_to_bytes
 from bit.wallet import PrivateKey
-from .samples import WALLET_FORMAT_MAIN
+from .samples import WALLET_FORMAT_MAIN, BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST
 
 
 RETURN_ADDRESS = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
@@ -98,11 +98,11 @@ class TestSanitizeTxData:
     def test_message(self):
         unspents_original = [Unspent(10000, 0, '', '', 0),
                              Unspent(10000, 0, '', '', 0)]
-        outputs_original = [('test', 1000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 1000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=5, leftover=RETURN_ADDRESS,
-            combine=True, message='hello'
+            combine=True, message='hello', version='test'
         )
 
         assert len(outputs) == 3
@@ -112,7 +112,7 @@ class TestSanitizeTxData:
     def test_fee_applied(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS, 2000, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -123,24 +123,24 @@ class TestSanitizeTxData:
     def test_zero_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=True, message=None
+            combine=True, message=None, version='test'
         )
 
         assert unspents == unspents_original
-        assert outputs == [('test', 2000)]
+        assert outputs == [(BITCOIN_ADDRESS_TEST, 2000)]
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 500, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 500, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=True, message=None
+            combine=True, message=None, version='test'
         )
 
         assert unspents == unspents_original
@@ -151,22 +151,22 @@ class TestSanitizeTxData:
     def test_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2500, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
                 unspents_original, outputs_original, fee=50, leftover=RETURN_ADDRESS,
-                combine=True, message=None
+                combine=True, message=None, version='test'
             )
 
     def test_no_combine_remaining(self):
         unspents_original = [Unspent(7000, 0, '', '', 0),
                              Unspent(3000, 0, '', '', 0)]
-        outputs_original = [('test', 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=False, message=None
+            combine=False, message=None, version='test'
         )
 
         assert unspents == [Unspent(3000, 0, '', '', 0)]
@@ -182,7 +182,7 @@ class TestSanitizeTxData:
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=False, message=None
+            combine=False, message=None, version='test'
         )
         assert unspents == [Unspent(1500, 0, '', '', 0), Unspent(1600, 0, '', '', 0)]
         assert len(outputs) == 2
@@ -200,12 +200,12 @@ class TestSanitizeTxData:
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=1, leftover=RETURN_ADDRESS,
-            combine=False, message=None
+            combine=False, message=None, version='test'
         )
 
         unspents_single, outputs_single = sanitize_tx_data(
             unspents_single, outputs_original, fee=1, leftover=RETURN_ADDRESS,
-            combine=False, message=None
+            combine=False, message=None, version='test'
         )
 
         assert unspents == [Unspent(5000, 0, '', '', 0)]
@@ -225,6 +225,23 @@ class TestSanitizeTxData:
             sanitize_tx_data(
                 unspents_original, outputs_original, fee=50, leftover=RETURN_ADDRESS,
                 combine=False, message=None
+            )
+
+    def test_no_combine_mainnet_with_testnet(self):
+        unspents = [Unspent(20000, 0, '', '', 0)]
+        outputs = [(BITCOIN_ADDRESS, 500, 'satoshi'),
+                   (BITCOIN_ADDRESS_TEST, 500, 'satoshi')]
+
+        with pytest.raises(ValueError):
+            sanitize_tx_data(
+                unspents, outputs, fee=50, leftover=RETURN_ADDRESS,  # leftover is a testnet-address
+                combine=False, message=None, version='main'
+            )
+
+        with pytest.raises(ValueError):
+            sanitize_tx_data(
+                unspents, outputs, fee=50, leftover=BITCOIN_ADDRESS,  # leftover is a mainnet-address
+                combine=False, message=None, version='main'
             )
 
 
@@ -264,7 +281,8 @@ class TestConstructOutputBlock:
     def test_long_message(self):
         amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
         _, outputs = sanitize_tx_data(
-            UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS, message='hello'*9
+            UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS,
+            message='hello'*9, version='test'
         )
         outs = construct_outputs(outputs)
         assert len(outs) == 5 and outs[3].value == amount and outs[4].value == amount
