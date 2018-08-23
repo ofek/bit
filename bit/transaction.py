@@ -62,6 +62,15 @@ class TxIn:
             repr(self.sequence)
         )
 
+    def __bytes__(self):
+        return b''.join([
+            self.txid,
+            self.txindex,
+            self.script_sig_len,
+            self.script_sig,
+            self.sequence
+        ])
+
 
 Output = namedtuple('Output', ('address', 'amount', 'currency'))
 
@@ -86,6 +95,13 @@ class TxOut:
             repr(self.script_pubkey_len)
         )
 
+    def __bytes__(self):
+        return b''.join([
+            self.amount,
+            self.script_pubkey_len,
+            self.script_pubkey
+        ])
+
 
 class TxObj:
     __slots__ = ('version', 'TxIn', 'TxOut', 'locktime')
@@ -109,6 +125,19 @@ class TxObj:
             repr(self.TxOut),
             repr(self.locktime)
         )
+
+    def __bytes__(self):
+        inp = int_to_varint(len(self.TxIn)) + b''.join(map(bytes, self.TxIn))
+        out = int_to_varint(len(self.TxOut)) + b''.join(map(bytes, self.TxOut))
+        return b''.join([
+            self.version,
+            inp,
+            out,
+            self.locktime
+        ])
+
+    def to_hex(self):
+        return bytes_to_hex(bytes(self))
 
 
 def calc_txid(tx_hex):
@@ -282,22 +311,6 @@ def construct_outputs(outputs):
     return outputs_obj
 
 
-def construct_input_block(inputs):
-
-    input_block = b''
-    sequence = SEQUENCE
-
-    for txin in inputs:
-        input_block += (
-            txin.txid +
-            txin.txindex +
-            txin.script_sig_len +
-            txin.script_sig +
-            sequence
-        )
-
-    return input_block
-
 def sign_legacy_tx(private_key, tx, j=-1):
 # j is the input to be signed and can be a single index, a list of indices, or denote all inputs (-1)
 
@@ -317,10 +330,8 @@ def sign_legacy_tx(private_key, tx, j=-1):
         output_block += tx.TxOut[i].script_pubkey_len
         output_block += tx.TxOut[i].script_pubkey
 
-    inputs = tx.TxIn
-
     if j<0:
-        j = range(len(inputs))
+        j = range(len(tx.TxIn))
     elif not isinstance(j, list):
         j = [j]
 
@@ -329,21 +340,21 @@ def sign_legacy_tx(private_key, tx, j=-1):
         public_key = private_key.public_key
         public_key_push = script_push(len(public_key))
 
-        scriptCode = private_key.scriptcode
-        scriptCode_len = int_to_varint(len(scriptCode))
+        script_code = private_key.scriptcode
+        script_code_len = int_to_varint(len(script_code))
 
         hashed = sha256(
             version +
             input_count +
             b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
-                     for ti in islice(inputs, i)) +
-            inputs[i].txid +
-            inputs[i].txindex +
-            scriptCode_len +
-            scriptCode +
-            inputs[i].sequence +
+                     for ti in islice(tx.TxIn, i)) +
+            tx.TxIn[i].txid +
+            tx.TxIn[i].txindex +
+            script_code_len +
+            script_code +
+            tx.TxIn[i].sequence +
             b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
-                     for ti in islice(inputs, i + 1, None)) +
+                     for ti in islice(tx.TxIn, i + 1, None)) +
             output_count +
             output_block +
             lock_time +
@@ -388,17 +399,19 @@ def sign_legacy_tx(private_key, tx, j=-1):
                       public_key
                      )
 
-        inputs[i].script_sig = script_sig
-        inputs[i].script_sig_len = int_to_varint(len(script_sig))
+        # Providing the signature(s) to the input
+        tx.TxIn[i].script_sig = script_sig
+        tx.TxIn[i].script_sig_len = int_to_varint(len(script_sig))
 
-    return bytes_to_hex(
-        version +
-        input_count +
-        construct_input_block(inputs) +
-        output_count +
-        output_block +
-        lock_time
-    )
+    # return bytes_to_hex(
+    #     version +
+    #     input_count +
+    #     construct_input_block(inputs) +
+    #     output_count +
+    #     output_block +
+    #     lock_time
+    # )
+    return tx.to_hex()
 
 
 def create_new_transaction(private_key, unspents, outputs):

@@ -3,7 +3,7 @@ import pytest
 from bit.exceptions import InsufficientFunds
 from bit.network.meta import Unspent
 from bit.transaction import (
-    TxIn, TxOut, calc_txid, create_new_transaction, construct_input_block,
+    TxIn, TxOut, TxObj, calc_txid, create_new_transaction,
     construct_outputs, estimate_tx_fee, sanitize_tx_data
 )
 from bit.utils import hex_to_bytes
@@ -89,6 +89,11 @@ class TestTxIn:
         assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, {})" \
                              "".format(repr(b'\x06'), repr(b'\x04'), repr(b'\xff\xff\xff\xff'))
 
+    def test_bytes_repr(self):
+        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
+
+        assert bytes(txin) == b''.join([b'txid', b'\x04', b'\x06', b'script', b'\xff\xff\xff\xff'])
+
 
 class TestTxOut:
     def test_init(self):
@@ -111,6 +116,62 @@ class TestTxOut:
 
         assert repr(txout) == "TxOut({}, b'script_pubkey', {})" \
                               "".format(repr(b'\x88\x13\x00\x00\x00\x00\x00\x00'), repr(b'\r'))
+
+    def test_bytes_repr(self):
+        txout = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+
+        assert bytes(txout) == b''.join([b'\x88\x13\x00\x00\x00\x00\x00\x00', b'\r', b'script_pubkey'])
+
+
+class TestTxObj:
+    def test_init(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        assert txobj.version == b'\x01\x00\x00\x00'
+        assert txobj.TxIn == txin
+        assert txobj.TxOut == txout
+        assert txobj.locktime == b'\x00\x00\x00\x00'
+
+    def test_equality(self):
+        txin1 = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txin2 = [TxIn(b'scrip2', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txout1 = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txout2 = [TxOut(b'\x88\x14\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+
+        txobj1 = TxObj(b'\x01\x00\x00\x00', txin1, txout1, b'\x00\x00\x00\x00')
+        txobj2 = TxObj(b'\x01\x00\x00\x00', txin1, txout1, b'\x00\x00\x00\x00')
+        txobj3 = TxObj(b'\x01\x00\x00\x00', txin1, txout2, b'\x00\x00\x00\x00')
+        txobj4 = TxObj(b'\x01\x00\x00\x00', txin2, txout1, b'\x00\x00\x00\x00')
+        txobj5 = TxObj(b'\x02\x00\x00\x00', txin1, txout1, b'\x00\x00\x00\x00')
+        txobj6 = TxObj(b'\x01\x00\x00\x00', txin1, txout1, b'\x01\x00\x00\x00')
+
+        assert txobj1 == txobj2
+        assert txobj1 != txobj3
+        assert txobj1 != txobj4
+        assert txobj1 != txobj5
+        assert txobj1 != txobj6
+
+    def test_repr(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        assert repr(txobj) == "TxObj({}, {}, {}, {})" \
+                              "".format(repr(b'\x01\x00\x00\x00'),
+                                        repr(txin),
+                                        repr(txout),
+                                        repr(b'\x00\x00\x00\x00'))
+
+    def test_bytes_repr(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        assert bytes(txobj) == b''.join([b'\x01\x00\x00\x00',
+                                         b'\x01txid\x04\x06script\xff\xff\xff\xff',
+                                         b'\x01\x88\x13\x00\x00\x00\x00\x00\x00\rscript_pubkey',
+                                         b'\x00\x00\x00\x00'])
 
 
 class TestSanitizeTxData:
@@ -309,10 +370,6 @@ class TestConstructOutputBlock:
         )
         outs = construct_outputs(outputs)
         assert len(outs) == 5 and outs[3].amount == amount and outs[4].amount == amount
-
-
-def test_construct_input_block():
-    assert construct_input_block(INPUTS) == hex_to_bytes(INPUT_BLOCK)
 
 
 def test_calc_txid():
