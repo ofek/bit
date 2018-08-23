@@ -10,7 +10,8 @@ from bit.format import (address_to_public_key_hash, segwit_scriptpubkey,
                         MAIN_PUBKEY_HASH)
 from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
-    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint, script_push, get_signatures_from_script
+    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint,
+    script_push, get_signatures_from_script, read_bytes, read_var_int, read_var_string
 )
 
 from bit.format import verify_sig, get_version
@@ -36,26 +37,26 @@ MESSAGE_LIMIT = 40
 
 
 class TxIn:
-    __slots__ = ('script', 'script_len', 'txid', 'txindex', 'sequence')
+    __slots__ = ('script_sig', 'script_sig_len', 'txid', 'txindex', 'sequence')
 
-    def __init__(self, script, txid, txindex, sequence=SEQUENCE):
-        self.script = script
-        self.script_len = int_to_varint(len(script))
+    def __init__(self, script_sig, txid, txindex, sequence=SEQUENCE):
+        self.script_sig = script_sig
+        self.script_sig_len = int_to_varint(len(script_sig))
         self.txid = txid
         self.txindex = txindex
         self.sequence = sequence
 
     def __eq__(self, other):
-        return (self.script == other.script and
-                self.script_len == other.script_len and
+        return (self.script_sig == other.script_sig and
+                self.script_sig_len == other.script_sig_len and
                 self.txid == other.txid and
                 self.txindex == other.txindex and
                 self.sequence == other.sequence)
 
     def __repr__(self):
         return 'TxIn({}, {}, {}, {}, {})'.format(
-            repr(self.script),
-            repr(self.script_len),
+            repr(self.script_sig),
+            repr(self.script_sig_len),
             repr(self.txid),
             repr(self.txindex),
             repr(self.sequence)
@@ -66,43 +67,39 @@ Output = namedtuple('Output', ('address', 'amount', 'currency'))
 
 
 class TxOut:
-    __slots__ = ('value', 'script_len', 'script')
+    __slots__ = ('amount', 'script_pubkey_len', 'script_pubkey')
 
-    def __init__(self, value, script):
-        self.value = value
-        self.script = script
-        self.script_len = int_to_varint(len(script))
+    def __init__(self, amount, script_pubkey):
+        self.amount = amount
+        self.script_pubkey = script_pubkey
+        self.script_pubkey_len = int_to_varint(len(script_pubkey))
 
     def __eq__(self, other):
-        return (self.value == other.value and
-                self.script == other.script and
-                self.script_len == other.script_len)
+        return (self.amount == other.amount and
+                self.script_pubkey == other.script_pubkey and
+                self.script_pubkey_len == other.script_pubkey_len)
 
     def __repr__(self):
         return 'TxOut({}, {}, {})'.format(
-            repr(self.value),
-            repr(self.script),
-            repr(self.script_len)
+            repr(self.amount),
+            repr(self.script_pubkey),
+            repr(self.script_pubkey_len)
         )
 
 
 class TxObj:
-    __slots__ = ('version', 'TxIn', 'input_count', 'TxOut', 'output_count', 'locktime')
+    __slots__ = ('version', 'TxIn', 'TxOut', 'locktime')
 
     def __init__(self, version, TxIn, TxOut, locktime):
         self.version = version
         self.TxIn = TxIn
-        self.input_count = len(TxIn)
         self.TxOut = TxOut
-        self.output_count = len(TxOut)
         self.locktime = locktime
 
     def __eq__(self, other):
         return (self.version == other.version and
                 self.TxIn == other.TxIn and
-                self.input_count == other.input_count and
                 self.TxOut == other.TxOut and
-                self.output_count == other.output_count and
                 self.locktime == other.locktime)
 
     def __repr__(self):
@@ -138,52 +135,29 @@ def estimate_tx_fee(n_in, n_out, satoshis, compressed):
     return estimated_fee
 
 
-def deserialize(txhex):
-    if isinstance(txhex, str) and re.match('^[0-9a-fA-F]*$', txhex):
-        #return deserialize(binascii.unhexlify(txhex))
-        return deserialize(hex_to_bytes(txhex))
+def deserialize(tx):
+    if isinstance(tx, str) and re.match('^[0-9a-fA-F]*$', tx):
+        return deserialize(hex_to_bytes(tx))
 
-    pos = [0]
+    version, tx = read_bytes(tx, 4)
 
-    def read_as_int(bytez):
-        pos[0] += bytez
-        return int(bytes_to_hex(txhex[pos[0]-bytez:pos[0]][::-1]), base=16)
-
-    def read_var_int():
-        pos[0] += 1
-
-        val = int(bytes_to_hex(txhex[pos[0]-1:pos[0]]), base=16)
-        if val < 253:
-            return val
-        return read_as_int(pow(2, val - 252))
-
-    def read_bytes(bytez):
-        pos[0] += bytez
-        return txhex[pos[0]-bytez:pos[0]]
-
-    def read_var_string():
-        size = read_var_int()
-        return read_bytes(size)
-
-    version = read_as_int(4).to_bytes(4, byteorder='little')
-
-    ins = read_var_int()
+    ins, tx = read_var_int(tx)
     inputs = []
-    for _ in range(ins):
-        txid = read_bytes(32)
-        txindex = read_as_int(4).to_bytes(4, byteorder='little')
-        script = read_var_string()
-        sequence = read_as_int(4).to_bytes(4, byteorder='little')
-        inputs.append(TxIn(script, txid, txindex, sequence))
+    for i in range(ins):
+        txid, tx = read_bytes(tx, 32)
+        txindex, tx = read_bytes(tx, 4)
+        script_sig, tx = read_var_string(tx)
+        sequence, tx = read_bytes(tx, 4)
+        inputs.append(TxIn(script_sig, txid, txindex, b'', sequence=sequence))
 
-    outs = read_var_int()
+    outs, tx = read_var_int(tx)
     outputs = []
     for _ in range(outs):
-        value = read_as_int(8).to_bytes(8, byteorder='little')
-        script = read_var_string()
-        outputs.append(TxOut(value, script))
+        amount, tx = read_bytes(tx, 8)
+        script_pubkey, tx = read_var_string(tx)
+        outputs.append(TxOut(amount, script_pubkey))
 
-    locktime = read_as_int(4).to_bytes(4, byteorder='little')
+    locktime, _ = read_bytes(tx, 4)
 
     txobj = TxObj(version, inputs, outputs, locktime)
 
@@ -317,8 +291,8 @@ def construct_input_block(inputs):
         input_block += (
             txin.txid +
             txin.txindex +
-            txin.script_len +
-            txin.script +
+            txin.script_sig_len +
+            txin.script_sig +
             sequence
         )
 
@@ -334,14 +308,14 @@ def sign_legacy_tx(private_key, tx, j=-1):
     lock_time = tx.locktime
     hash_type = HASH_TYPE
 
-    input_count = int_to_varint(tx.input_count)
-    output_count = int_to_varint(tx.output_count)
+    input_count = int_to_varint(len(tx.TxIn))
+    output_count = int_to_varint(len(tx.TxOut))
 
     output_block = b''
-    for i in range(tx.output_count):
-        output_block += tx.TxOut[i].value
-        output_block += tx.TxOut[i].script_len
-        output_block += tx.TxOut[i].script
+    for i in range(len(tx.TxOut)):
+        output_block += tx.TxOut[i].amount
+        output_block += tx.TxOut[i].script_pubkey_len
+        output_block += tx.TxOut[i].script_pubkey
 
     inputs = tx.TxIn
 
@@ -353,7 +327,7 @@ def sign_legacy_tx(private_key, tx, j=-1):
     for i in j:
 
         public_key = private_key.public_key
-        public_key_len = script_push(len(public_key))
+        public_key_push = script_push(len(public_key))
 
         scriptCode = private_key.scriptcode
         scriptCode_len = int_to_varint(len(scriptCode))
@@ -383,8 +357,8 @@ def sign_legacy_tx(private_key, tx, j=-1):
 
             script_blob = b''
             sigs = {}
-            if tx.TxIn[i].script:  # If tx is already partially signed: Make a dictionary of the provided signatures with public-keys as key-values
-                sig_list = get_signatures_from_script(tx.TxIn[i].script)
+            if tx.TxIn[i].script_sig:  # If tx is already partially signed: Make a dictionary of the provided signatures with public-keys as key-values
+                sig_list = get_signatures_from_script(tx.TxIn[i].script_sig)
                 if len(sig_list) > private_key.m:
                     raise TypeError('Transaction is already signed with {} of {} needed signatures.').format(len(sig_list), private_key.m)
                 for sig in sig_list:
@@ -410,12 +384,12 @@ def sign_legacy_tx(private_key, tx, j=-1):
             script_sig = (  # P2PKH
                       len(signature).to_bytes(1, byteorder='little') +
                       signature +
-                      public_key_len +
+                      public_key_push +
                       public_key
                      )
 
-        inputs[i].script = script_sig
-        inputs[i].script_len = int_to_varint(len(script_sig))
+        inputs[i].script_sig = script_sig
+        inputs[i].script_sig_len = int_to_varint(len(script_sig))
 
     return bytes_to_hex(
         version +
@@ -436,11 +410,11 @@ def create_new_transaction(private_key, unspents, outputs):
     # Optimize for speed, not memory, by pre-computing values.
     inputs = []
     for unspent in unspents:
-        script = b''  # empty scriptSig for new unsigned transaction.
+        script_sig = b''  # empty scriptSig for new unsigned transaction.
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder='little')
 
-        inputs.append(TxIn(script, txid, txindex))
+        inputs.append(TxIn(script_sig, txid, txindex))
 
     tx_unsigned = TxObj(version, inputs, outputs, lock_time)
 

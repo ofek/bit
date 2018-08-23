@@ -3,7 +3,7 @@ import pytest
 from bit.exceptions import InsufficientFunds
 from bit.network.meta import Unspent
 from bit.transaction import (
-    TxIn, calc_txid, create_new_transaction, construct_input_block,
+    TxIn, TxOut, calc_txid, create_new_transaction, construct_input_block,
     construct_outputs, estimate_tx_fee, sanitize_tx_data
 )
 from bit.utils import hex_to_bytes
@@ -70,8 +70,8 @@ SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
 class TestTxIn:
     def test_init(self):
         txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
-        assert txin.script == b'script'
-        assert txin.script_len == b'\x06'
+        assert txin.script_sig == b'script'
+        assert txin.script_sig_len == b'\x06'
         assert txin.txid == b'txid'
         assert txin.txindex == b'\x04'
         assert txin.sequence == b'\xff\xff\xff\xff'
@@ -88,6 +88,29 @@ class TestTxIn:
 
         assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, {})" \
                              "".format(repr(b'\x06'), repr(b'\x04'), repr(b'\xff\xff\xff\xff'))
+
+
+class TestTxOut:
+    def test_init(self):
+        txout = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        assert txout.amount == b'\x88\x13\x00\x00\x00\x00\x00\x00'
+        assert txout.script_pubkey_len == b'\r'
+        assert txout.script_pubkey == b'script_pubkey'
+
+    def test_equality(self):
+        txout1 = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        txout2 = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        txout3 = TxOut(b'\x88\x14\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        txout4 = TxOut(b'\x88\x14\x00\x00\x00\x00\x00\x00', b'script_pub')
+        assert txout1 == txout2
+        assert txout1 != txout3
+        assert txout3 != txout4
+
+    def test_repr(self):
+        txout = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+
+        assert repr(txout) == "TxOut({}, b'script_pubkey', {})" \
+                              "".format(repr(b'\x88\x13\x00\x00\x00\x00\x00\x00'), repr(b'\r'))
 
 
 class TestSanitizeTxData:
@@ -266,17 +289,17 @@ class TestEstimateTxFee:
 class TestConstructOutputBlock:
     def test_no_message(self):
         outs = construct_outputs(OUTPUTS)
-        assert outs[0].value == hex_to_bytes(OUTPUT_BLOCK[:16])
-        assert outs[0].script == hex_to_bytes(OUTPUT_BLOCK[18:68])
-        assert outs[1].value == hex_to_bytes(OUTPUT_BLOCK[68:84])
-        assert outs[1].script == hex_to_bytes(OUTPUT_BLOCK[86:])
+        assert outs[0].amount == hex_to_bytes(OUTPUT_BLOCK[:16])
+        assert outs[0].script_pubkey == hex_to_bytes(OUTPUT_BLOCK[18:68])
+        assert outs[1].amount == hex_to_bytes(OUTPUT_BLOCK[68:84])
+        assert outs[1].script_pubkey == hex_to_bytes(OUTPUT_BLOCK[86:])
 
     def test_message(self):
         outs = construct_outputs(OUTPUTS + MESSAGES)
-        assert outs[2].value == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[136:152])
-        assert outs[2].script == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[154:168])
-        assert outs[3].value == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[168:184])
-        assert outs[3].script == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[186:])
+        assert outs[2].amount == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[136:152])
+        assert outs[2].script_pubkey == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[154:168])
+        assert outs[3].amount == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[168:184])
+        assert outs[3].script_pubkey == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[186:])
 
     def test_long_message(self):
         amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
@@ -285,7 +308,7 @@ class TestConstructOutputBlock:
             message='hello'*9, version='test'
         )
         outs = construct_outputs(outputs)
-        assert len(outs) == 5 and outs[3].value == amount and outs[4].value == amount
+        assert len(outs) == 5 and outs[3].amount == amount and outs[4].amount == amount
 
 
 def test_construct_input_block():
