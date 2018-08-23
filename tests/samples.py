@@ -5,6 +5,8 @@ BITCOIN_ADDRESS_PAY2SH = '39SrGQEfFXcTYJhBvjZeQja66Cpz82EEUn'
 BITCOIN_ADDRESS_TEST = 'mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS'
 BITCOIN_ADDRESS_TEST_COMPRESSED = 'muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz'
 BITCOIN_ADDRESS_TEST_PAY2SH = '2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk'
+PAY2SH_HASH = b'U\x13\x1e\xfbz\x0e\xddLv\xcc;\xbe\x83;\xfcY\xa6\xf7<k'
+PAY2SH_TEST_HASH = b'\xf2&\x1e\x95d\xc9\xdf\xff\xa8\x15\x05\xc1S\xfb\x95\xbf\x93\x99C\x08'
 PRIVATE_KEY_BYTES = b'\xc2\x8a\x9f\x80s\x8fw\rRx\x03\xa5f\xcfo\xc3\xed\xf6\xce\xa5\x86\xc4\xfcJR#\xa5\xady~\x1a\xc3'
 PRIVATE_KEY_DER = (b"0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06"
                    b"\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 \xc2\x8a\x9f"
