@@ -177,7 +177,7 @@ def deserialize(tx):
         txindex, tx = read_bytes(tx, 4)
         script_sig, tx = read_var_string(tx)
         sequence, tx = read_bytes(tx, 4)
-        inputs.append(TxIn(script_sig, txid, txindex, b'', sequence=sequence))
+        inputs.append(TxIn(script_sig, txid, txindex, sequence=sequence))
 
     outs, tx = read_var_int(tx)
     outputs = []
