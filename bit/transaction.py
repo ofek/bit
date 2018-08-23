@@ -5,14 +5,17 @@ import re
 
 from bit.crypto import double_sha256, sha256
 from bit.exceptions import InsufficientFunds
-from bit.format import address_to_public_key_hash, TEST_SCRIPT_HASH, MAIN_SCRIPT_HASH
+from bit.format import (address_to_public_key_hash, segwit_scriptpubkey,
+                        TEST_SCRIPT_HASH, MAIN_SCRIPT_HASH, TEST_PUBKEY_HASH,
+                        MAIN_PUBKEY_HASH)
 from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
     bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint, script_push, get_signatures_from_script
 )
 
-from bit.format import verify_sig
+from bit.format import verify_sig, get_version
 from bit.base58 import b58decode_check
+from bit.base32 import decode as segwit_decode
 
 VERSION_1 = 0x01.to_bytes(4, byteorder='little')
 SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
@@ -253,38 +256,46 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     return unspents, outputs
 
 
+def address_to_scriptpubkey(address):
+    # Raise ValueError if we cannot identify the address.
+    get_version(address)
+    try:
+        version = b58decode_check(address)[:1]
+    except ValueError:
+        witver, data = segwit_decode(address)
+        return segwit_scriptpubkey(witver, data)
+
+    if version == MAIN_PUBKEY_HASH or version == TEST_PUBKEY_HASH:
+        return (OP_DUP + OP_HASH160 + OP_PUSH_20 +
+                address_to_public_key_hash(address) +
+                OP_EQUALVERIFY + OP_CHECKSIG)
+    elif version == MAIN_SCRIPT_HASH or version == TEST_SCRIPT_HASH:
+        return (OP_HASH160 + OP_PUSH_20 +
+                address_to_public_key_hash(address) +
+                OP_EQUAL)
+
+
 def construct_outputs(outputs):
     outputs_obj = []
 
     for data in outputs:
         dest, amount = data
 
-        # P2SH
-        if amount and (b58decode_check(dest)[0:1] == MAIN_SCRIPT_HASH or 
-                       b58decode_check(dest)[0:1] == TEST_SCRIPT_HASH):
-            script = (OP_HASH160 + OP_PUSH_20 +
-                      address_to_public_key_hash(dest) +
-                      OP_EQUAL)
-
-            amount = amount.to_bytes(8, byteorder='little')
-
-        # P2PKH
-        elif amount:
-            script = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
-                      address_to_public_key_hash(dest) +
-                      OP_EQUALVERIFY + OP_CHECKSIG)
+        # P2PKH/P2SH/Bech32
+        if amount:
+            script_pubkey = address_to_scriptpubkey(dest)
 
             amount = amount.to_bytes(8, byteorder='little')
 
         # Blockchain storage
         else:
-            script = (OP_RETURN +
-                      len(dest).to_bytes(1, byteorder='little') +
-                      dest)
+            script_pubkey = (OP_RETURN +
+                             len(dest).to_bytes(1, byteorder='little') +
+                             dest)
 
             amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
-        outputs_obj.append(TxOut(amount, script))
+        outputs_obj.append(TxOut(amount, script_pubkey))
 
     return outputs_obj
 
