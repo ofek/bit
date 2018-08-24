@@ -11,7 +11,8 @@ from bit.format import (address_to_public_key_hash, segwit_scriptpubkey,
 from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
     bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint,
-    script_push, get_signatures_from_script, read_bytes, read_var_int, read_var_string
+    script_push, get_signatures_from_script, read_bytes, read_var_int, read_var_string,
+    read_segwit_string
 )
 
 from bit.format import verify_sig, get_version
@@ -19,6 +20,8 @@ from bit.base58 import b58decode_check
 from bit.base32 import decode as segwit_decode
 
 VERSION_1 = 0x01.to_bytes(4, byteorder='little')
+MARKER = b'\x00'
+FLAG = b'\x01'
 SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
 LOCK_TIME = 0x00.to_bytes(4, byteorder='little')
 HASH_TYPE = 0x01.to_bytes(4, byteorder='little')
@@ -37,13 +40,17 @@ MESSAGE_LIMIT = 40
 
 
 class TxIn:
-    __slots__ = ('script_sig', 'script_sig_len', 'txid', 'txindex', 'sequence')
+    __slots__ = ('script_sig', 'script_sig_len', 'txid', 'txindex', 'witness',
+                 'sequence')
 
-    def __init__(self, script_sig, txid, txindex, sequence=SEQUENCE):
+    def __init__(self, script_sig, txid, txindex, witness=b'',
+                 sequence=SEQUENCE):
+
         self.script_sig = script_sig
         self.script_sig_len = int_to_varint(len(script_sig))
         self.txid = txid
         self.txindex = txindex
+        self.witness = witness
         self.sequence = sequence
 
     def __eq__(self, other):
@@ -51,9 +58,19 @@ class TxIn:
                 self.script_sig_len == other.script_sig_len and
                 self.txid == other.txid and
                 self.txindex == other.txindex and
+                self.witness == other.witness and
                 self.sequence == other.sequence)
 
     def __repr__(self):
+        if self.is_segwit():
+            return 'TxIn({}, {}, {}, {}, {}, {})'.format(
+                repr(self.script_sig),
+                repr(self.script_sig_len),
+                repr(self.txid),
+                repr(self.txindex),
+                repr(self.witness),
+                repr(self.sequence)
+            )
         return 'TxIn({}, {}, {}, {}, {})'.format(
             repr(self.script_sig),
             repr(self.script_sig_len),
@@ -70,6 +87,9 @@ class TxIn:
             self.script_sig,
             self.sequence
         ])
+
+    def is_segwit(self):
+        return self.witness
 
 
 Output = namedtuple('Output', ('address', 'amount', 'currency'))
@@ -104,16 +124,24 @@ class TxOut:
 
 
 class TxObj:
-    __slots__ = ('version', 'TxIn', 'TxOut', 'locktime')
+    __slots__ = ('version', 'marker', 'flag', 'TxIn', 'TxOut', 'locktime')
 
     def __init__(self, version, TxIn, TxOut, locktime):
+        segwit_tx = any([i.witness for i in TxIn])
         self.version = version
+        self.marker = MARKER if segwit_tx else b''
+        self.flag = FLAG if segwit_tx else b''
         self.TxIn = TxIn
+        if segwit_tx:
+            for i in self.TxIn:
+                i.witness = i.witness if i.witness else b'\x00'
         self.TxOut = TxOut
         self.locktime = locktime
 
     def __eq__(self, other):
         return (self.version == other.version and
+                self.marker == other.marker and
+                self.flag == other.flag and
                 self.TxIn == other.TxIn and
                 self.TxOut == other.TxOut and
                 self.locktime == other.locktime)
@@ -129,15 +157,27 @@ class TxObj:
     def __bytes__(self):
         inp = int_to_varint(len(self.TxIn)) + b''.join(map(bytes, self.TxIn))
         out = int_to_varint(len(self.TxOut)) + b''.join(map(bytes, self.TxOut))
+        wit = b''.join([w.witness for w in self.TxIn])
         return b''.join([
             self.version,
+            self.marker,
+            self.flag,
             inp,
             out,
+            wit,
             self.locktime
         ])
 
     def to_hex(self):
         return bytes_to_hex(bytes(self))
+
+    @classmethod
+    def is_segwit(cls, tx):
+        if isinstance(tx, cls):
+            return tx.marker + tx.flag == MARKER + FLAG
+        elif not isinstance(tx, bytes):
+            tx = hex_to_bytes(tx)
+        return tx[4:6] == MARKER + FLAG
 
 
 def calc_txid(tx_hex):
@@ -168,7 +208,13 @@ def deserialize(tx):
     if isinstance(tx, str) and re.match('^[0-9a-fA-F]*$', tx):
         return deserialize(hex_to_bytes(tx))
 
+    segwit_tx = TxObj.is_segwit(tx)
+
     version, tx = read_bytes(tx, 4)
+
+    if segwit_tx:
+        _, tx = read_bytes(tx, 1)  # ``marker`` is nulled
+        _, tx = read_bytes(tx, 1)  # ``flag`` is nulled
 
     ins, tx = read_var_int(tx)
     inputs = []
@@ -185,6 +231,15 @@ def deserialize(tx):
         amount, tx = read_bytes(tx, 8)
         script_pubkey, tx = read_var_string(tx)
         outputs.append(TxOut(amount, script_pubkey))
+
+    if segwit_tx:
+        for i in range(ins):
+            wnum, tx = read_var_int(tx)
+            witness = int_to_varint(wnum)
+            for _ in range(wnum):
+                w, tx = read_segwit_string(tx)
+                witness += w
+            inputs[i].witness = witness
 
     locktime, _ = read_bytes(tx, 4)
 

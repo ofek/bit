@@ -4,7 +4,7 @@ from bit.exceptions import InsufficientFunds
 from bit.network.meta import Unspent
 from bit.transaction import (
     TxIn, TxOut, TxObj, calc_txid, create_new_transaction,
-    construct_outputs, estimate_tx_fee, sanitize_tx_data
+    construct_outputs, deserialize, estimate_tx_fee, sanitize_tx_data
 )
 from bit.utils import hex_to_bytes
 from bit.wallet import PrivateKey
@@ -22,6 +22,19 @@ FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a3c
               'c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac0888fc04000000001976a914'
               '92461bde6283b461ece7ddf4dbf1e0a48bd113d888ac00000000')
 
+SEGWIT_TX_1 = ('010000000001021f9c125fc1c14ef7f4b03b4b7dad7be4c3b054d7c266689a456a'
+               'daffd6ec7a31010000006a47304402201cfc264e99287d17fd19a9d8d82746b97e'
+               '80a2e94e5bbe3ef73a44a3df2399e702207152926699eb4555a88a3243c6640627'
+               '6e9aba808c24049e7dedba27b057b1b00121021816325d19fd34fd87a039e83e35'
+               'fc9de3c9de64a501a6684b9bf9946364fbb7ffffffff6e6d2db49c4bf5bb97e888'
+               '30058a58eb1c4d092e980b2bb663c81632f5dd8b0b0100000017160014175e9f8b'
+               '21d4f2f76a7360458f90717e08fbcdb6ffffffff0280f0fa02000000001600140e'
+               'e268c86d05f290add1bfc9bdfc3992d785bce2e84ef5050000000017a9146a45a0'
+               '3574460e17a1d75d9535d90bad20d8d79b870002473044022033a25adc3230a0b9'
+               '3028520b2bd089e26ce366bcf22064d41f6c5a3c200d956302201f45ef76dde3fc'
+               '27f741f9fc93e6280dac991c364ee578eafb3348db662339000121037d69688686'
+               '4509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f00000000')
+
 INPUTS = [
     TxIn(
         (b"G0D\x02 E\xb7C\xdb\xaa\xaa,\xd1\xef\x0b\x914oVD\xe3-\xc7\x0c\xde\x05\t"
@@ -30,7 +43,6 @@ INPUTS = [
          b"hu\xa7\x1a]\xb6L\xff\xcb\x139k\x16=\x03\x9b\x1d\x93'\x82H\x91\x80C4v"
          b"\xa45**\xdd\x00\xeb\xb0\xd5\xc9LQ[r\xeb\x10\xf1\xfd\x8f?\x03\xb4/J+%["
          b"\xfc\x9a\xa9\xe3"),
-#        b'\x8a',
         (b"\x88x9\x9d\x83\xec%\xc6'\xcf\xbfu?\xf9\xca6\x027>"
          b"\xacCz\xb2gaT\xa3\xc2\xda#\xad\xf3"),
         b'\x01\x00\x00\x00'
@@ -69,28 +81,44 @@ SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
 
 class TestTxIn:
     def test_init(self):
-        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
+        txin = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
         assert txin.script_sig == b'script'
         assert txin.script_sig_len == b'\x06'
         assert txin.txid == b'txid'
         assert txin.txindex == b'\x04'
+        assert txin.witness == b''
+        assert txin.sequence == b'\xff\xff\xff\xff'
+
+    def test_init_segwit(self):
+        txin = TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')
+        assert txin.script_sig == b'script'
+        assert txin.script_sig_len == b'\x06'
+        assert txin.txid == b'txid'
+        assert txin.txindex == b'\x04'
+        assert txin.witness == b'witness'
         assert txin.sequence == b'\xff\xff\xff\xff'
 
     def test_equality(self):
-        txin1 = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
-        txin2 = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
-        txin3 = TxIn(b'script', b'txi', b'\x03', b'\xff\xff\xff\xff')
+        txin1 = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
+        txin2 = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
+        txin3 = TxIn(b'script', b'txi', b'\x03', sequence=b'\xff\xff\xff\xff')
         assert txin1 == txin2
         assert txin1 != txin3
 
     def test_repr(self):
-        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
+        txin = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
 
         assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, {})" \
                              "".format(repr(b'\x06'), repr(b'\x04'), repr(b'\xff\xff\xff\xff'))
 
+    def test_repr_segwit(self):
+        txin = TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')
+
+        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, b'witness', {})" \
+                             "".format(repr(b'\x06'), repr(b'\x04'), repr(b'\xff\xff\xff\xff'))
+
     def test_bytes_repr(self):
-        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
+        txin = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
 
         assert bytes(txin) == b''.join([b'txid', b'\x04', b'\x06', b'script', b'\xff\xff\xff\xff'])
 
@@ -125,7 +153,7 @@ class TestTxOut:
 
 class TestTxObj:
     def test_init(self):
-        txin = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txin = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
         txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
         txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
         assert txobj.version == b'\x01\x00\x00\x00'
@@ -133,9 +161,19 @@ class TestTxObj:
         assert txobj.TxOut == txout
         assert txobj.locktime == b'\x00\x00\x00\x00'
 
+    def test_init_segwit(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        assert txobj.version == b'\x01\x00\x00\x00'
+        assert txobj.marker+txobj.flag == b'\x00\x01'
+        assert txobj.TxIn == txin
+        assert txobj.TxOut == txout
+        assert txobj.locktime == b'\x00\x00\x00\x00'
+
     def test_equality(self):
-        txin1 = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
-        txin2 = [TxIn(b'scrip2', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txin1 = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
+        txin2 = [TxIn(b'scrip2', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
         txout1 = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
         txout2 = [TxOut(b'\x88\x14\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
 
@@ -153,7 +191,7 @@ class TestTxObj:
         assert txobj1 != txobj6
 
     def test_repr(self):
-        txin = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txin = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
         txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
         txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
 
@@ -164,13 +202,24 @@ class TestTxObj:
                                         repr(b'\x00\x00\x00\x00'))
 
     def test_bytes_repr(self):
-        txin = [TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')]
+        txin = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
         txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
         txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
 
         assert bytes(txobj) == b''.join([b'\x01\x00\x00\x00',
                                          b'\x01txid\x04\x06script\xff\xff\xff\xff',
                                          b'\x01\x88\x13\x00\x00\x00\x00\x00\x00\rscript_pubkey',
+                                         b'\x00\x00\x00\x00'])
+
+    def test_bytes_repr_segwit(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        assert bytes(txobj) == b''.join([b'\x01\x00\x00\x00', b'\x00\x01',
+                                         b'\x01txid\x04\x06script\xff\xff\xff\xff',
+                                         b'\x01\x88\x13\x00\x00\x00\x00\x00\x00\rscript_pubkey',
+                                         b'witness',
                                          b'\x00\x00\x00\x00'])
 
 
@@ -334,6 +383,54 @@ class TestCreateSignedTransaction:
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         tx = create_new_transaction(private_key, UNSPENTS, OUTPUTS)
         assert tx[-288:] == FINAL_TX_1[-288:]
+
+
+class TestDeserializeTransaction:
+    def test_legacy_deserialize(self):
+        txobj = deserialize(FINAL_TX_1)
+        assert txobj.version == hex_to_bytes(FINAL_TX_1[:8])
+        assert txobj.marker+txobj.flag == b''
+        assert len(txobj.TxIn) == 1
+        assert txobj.TxIn[0].txid == hex_to_bytes(FINAL_TX_1[10:74])
+        assert txobj.TxIn[0].txindex == hex_to_bytes(FINAL_TX_1[74:82])
+        assert txobj.TxIn[0].script_sig_len == hex_to_bytes(FINAL_TX_1[82:84])
+        assert txobj.TxIn[0].script_sig == hex_to_bytes(FINAL_TX_1[84:360])
+        assert txobj.TxIn[0].witness == b''
+        assert txobj.TxIn[0].sequence == hex_to_bytes(FINAL_TX_1[360:368])
+        assert len(txobj.TxOut) == 2
+        assert txobj.TxOut[0].amount == hex_to_bytes(FINAL_TX_1[370:386])
+        assert txobj.TxOut[0].script_pubkey_len == hex_to_bytes(FINAL_TX_1[386:388])
+        assert txobj.TxOut[0].script_pubkey == hex_to_bytes(FINAL_TX_1[388:438])
+        assert txobj.TxOut[1].amount == hex_to_bytes(FINAL_TX_1[438:454])
+        assert txobj.TxOut[1].script_pubkey_len == hex_to_bytes(FINAL_TX_1[454:456])
+        assert txobj.TxOut[1].script_pubkey == hex_to_bytes(FINAL_TX_1[456:506])
+        assert txobj.locktime == hex_to_bytes(FINAL_TX_1[506:])
+
+    def test_segwit_deserialize(self):
+        txobj = deserialize(SEGWIT_TX_1)
+        assert txobj.version == hex_to_bytes(SEGWIT_TX_1[:8])
+        assert txobj.marker+txobj.flag == hex_to_bytes(SEGWIT_TX_1[8:12])
+        assert len(txobj.TxIn) == 2
+        assert txobj.TxIn[0].txid == hex_to_bytes(SEGWIT_TX_1[14:78])
+        assert txobj.TxIn[0].txindex == hex_to_bytes(SEGWIT_TX_1[78:86])
+        assert txobj.TxIn[0].script_sig_len == hex_to_bytes(SEGWIT_TX_1[86:88])
+        assert txobj.TxIn[0].script_sig == hex_to_bytes(SEGWIT_TX_1[88:300])
+        assert txobj.TxIn[0].sequence == hex_to_bytes(SEGWIT_TX_1[300:308])
+        assert txobj.TxIn[0].witness == hex_to_bytes(SEGWIT_TX_1[564:566])
+        assert txobj.TxIn[1].txid == hex_to_bytes(SEGWIT_TX_1[308:372])
+        assert txobj.TxIn[1].txindex == hex_to_bytes(SEGWIT_TX_1[372:380])
+        assert txobj.TxIn[1].script_sig_len == hex_to_bytes(SEGWIT_TX_1[380:382])
+        assert txobj.TxIn[1].script_sig == hex_to_bytes(SEGWIT_TX_1[382:428])
+        assert txobj.TxIn[1].sequence == hex_to_bytes(SEGWIT_TX_1[428:436])
+        assert txobj.TxIn[1].witness == hex_to_bytes(SEGWIT_TX_1[566:780])
+        assert len(txobj.TxOut) == 2
+        assert txobj.TxOut[0].amount == hex_to_bytes(SEGWIT_TX_1[438:454])
+        assert txobj.TxOut[0].script_pubkey_len == hex_to_bytes(SEGWIT_TX_1[454:456])
+        assert txobj.TxOut[0].script_pubkey == hex_to_bytes(SEGWIT_TX_1[456:500])
+        assert txobj.TxOut[1].amount == hex_to_bytes(SEGWIT_TX_1[500:516])
+        assert txobj.TxOut[1].script_pubkey_len == hex_to_bytes(SEGWIT_TX_1[516:518])
+        assert txobj.TxOut[1].script_pubkey == hex_to_bytes(SEGWIT_TX_1[518:564])
+        assert txobj.locktime == hex_to_bytes(SEGWIT_TX_1[780:])
 
 
 class TestEstimateTxFee:

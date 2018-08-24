@@ -89,6 +89,12 @@ def read_as_int(stream, bytes):
     return int(bytes_to_hex(stream[0:bytes][::-1]), base=16), stream[bytes:]
 
 
+def read_segwit_string(stream):
+    bytes, stream = read_var_int(stream)
+    witness, stream = read_bytes(stream, bytes)
+    return int_to_varint(bytes) + witness, stream
+
+
 def get_signatures_from_script(script):
     """Returns a list of signatures retrieved from the provided (partially)
     signed multisig scriptSig.
