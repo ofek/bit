@@ -145,12 +145,15 @@ class PrivateKey(BaseKey):
         super().__init__(wif=wif)
 
         self._address = None
+        self._segwit_address = None
         self._scriptcode = None
+        self._segwit_scriptcode = None
 
         self.balance = 0
         self.unspents = []
         self.transactions = []
 
+        self.version = 'main'
         self.instance = 'PrivateKey'
 
     @property
@@ -160,6 +163,13 @@ class PrivateKey(BaseKey):
             self._address = public_key_to_address(self._public_key, version='main')
         return self._address
 
+    # @property
+    # def segwit_address(self):
+    #     """The public segwit nested in P2SH address you share with others to receive funds."""
+    #     if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
+    #         self._segwit_address = public_key_to_segwit_address(self._public_key, version=self.version)
+    #     return self._segwit_address
+
     @property
     def scriptcode(self):
         self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
@@ -167,13 +177,19 @@ class PrivateKey(BaseKey):
                             OP_EQUALVERIFY + OP_CHECKSIG)
         return self._scriptcode
 
+    # @property
+    # def segwit_scriptcode(self):
+    #     self._segwit_scriptcode = (b'\x00' + b'\x14' +
+    #                            ripemd160_sha256(self.public_key))
+    #     return self._segwit_scriptcode
+
     def can_sign_unspent(self, unspent):
         return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def to_wif(self):
         return bytes_to_wif(
             self._pk.secret,
-            version='main',
+            version=self.version,
             compressed=self.is_compressed()
         )
 
@@ -257,7 +273,7 @@ class PrivateKey(BaseKey):
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
-            version='main'
+            version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -353,7 +369,7 @@ class PrivateKey(BaseKey):
             combine=combine,
             message=message,
             compressed=compressed,
-            version='main'
+            version=self.version
         )
 
         data = {
@@ -457,19 +473,30 @@ class PrivateKeyTestnet(BaseKey):
         super().__init__(wif=wif)
 
         self._address = None
+        self._segwit_address = None
+        self._scriptcode = None
+        self._segwit_scriptcode = None
 
         self.balance = 0
         self.unspents = []
         self.transactions = []
 
+        self.version = 'test'
         self.instance = 'PrivateKeyTestnet'
 
     @property
     def address(self):
         """The public address you share with others to receive funds."""
         if self._address is None:
-            self._address = public_key_to_address(self._public_key, version='test')
+            self._address = public_key_to_address(self._public_key, version=self.version)
         return self._address
+
+    # @property
+    # def segwit_address(self):
+    #     """The public segwit nested in P2SH address you share with others to receive funds."""
+    #     if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
+    #         self._segwit_address = public_key_to_segwit_address(self._public_key, version='test')
+    #     return self._segwit_address
 
     @property
     def scriptcode(self):
@@ -478,13 +505,19 @@ class PrivateKeyTestnet(BaseKey):
                             OP_EQUALVERIFY + OP_CHECKSIG)
         return self._scriptcode
 
+    # @property
+    # def segwit_scriptcode(self):
+    #     self._segwit_scriptcode = (b'\x00' + b'\x14' +
+    #                            ripemd160_sha256(self.public_key))
+    #     return self._segwit_scriptcode
+
     def can_sign_unspent(self, unspent):
         return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def to_wif(self):
         return bytes_to_wif(
             self._pk.secret,
-            version='test',
+            version=self.version,
             compressed=self.is_compressed()
         )
 
@@ -568,7 +601,7 @@ class PrivateKeyTestnet(BaseKey):
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
-            version='test'
+            version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -664,7 +697,7 @@ class PrivateKeyTestnet(BaseKey):
             combine=combine,
             message=message,
             compressed=compressed,
-            version='test'
+            version=self.version
         )
 
         data = {
@@ -780,7 +813,9 @@ class MultiSig:
 
         self.version = 'main'
         self._address = None
+        self._segwit_address = None
         self._scriptcode = None
+        self._segwit_scriptcode = None
 
         self.balance = 0
         self.unspents = []
@@ -795,6 +830,7 @@ class MultiSig:
             self.public_keys = public_keys
             self.m = m
             self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
+            self.is_compressed = all(len(p) == 66 for p in public_keys)
 
     @property
     def address(self):
@@ -803,10 +839,22 @@ class MultiSig:
             self._address = multisig_to_address(self.public_keys, self.m, version=self.version)
         return self._address
 
+    # @property
+    # def segwit_address(self):
+    #     """The public segwit nested in P2SH address you share with others to receive funds."""
+    #     if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
+    #         self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='main')
+    #     return self._segwit_address
+
     @property
     def scriptcode(self):
         self._scriptcode = self.redeemscript
         return self._scriptcode
+
+    # def segwit_scriptcode(self):
+    #     self._segwit_scriptcode = (b'\x00' + b'\x20' +
+    #                            sha256(self.redeemscript))
+    #     return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
         return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
@@ -908,7 +956,7 @@ class MultiSig:
             combine=combine,
             message=message,
             compressed=self._pk.is_compressed(),
-            version='main'
+            version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -1004,7 +1052,7 @@ class MultiSig:
             combine=combine,
             message=message,
             compressed=compressed,
-            version='main'
+            version=self.version
         )
 
         data = {
@@ -1070,7 +1118,9 @@ class MultiSigTestnet:
 
         self.version = 'test'
         self._address = None
+        self._segwit_address = None
         self._scriptcode = None
+        self._segwit_scriptcode = None
 
         self.balance = 0
         self.unspents = []
@@ -1085,6 +1135,7 @@ class MultiSigTestnet:
             self.public_keys = public_keys
             self.m = m
             self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
+            self.is_compressed = all(len(p) == 66 for p in public_keys)
 
     @property
     def address(self):
@@ -1093,10 +1144,23 @@ class MultiSigTestnet:
             self._address = multisig_to_address(self.public_keys, self.m, version=self.version)
         return self._address
 
+    # @property
+    # def segwit_address(self):
+    #     """The public segwit nested in P2SH address you share with others to receive funds."""
+    #     if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
+    #         self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='test')
+    #     return self._segwit_address
+
     @property
     def scriptcode(self):
         self._scriptcode = self.redeemscript
         return self._scriptcode
+
+    # @property
+    # def segwit_scriptcode(self):
+    #     self._segwit_scriptcode = (b'\x00' + b'\x20' +
+    #                            sha256(self.redeemscript))
+    #     return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
         return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
@@ -1198,7 +1262,7 @@ class MultiSigTestnet:
             combine=combine,
             message=message,
             compressed=self._pk.is_compressed(),
-            version='test'
+            version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -1294,7 +1358,7 @@ class MultiSigTestnet:
             combine=combine,
             message=message,
             compressed=compressed,
-            version='test'
+            version=self.version
         )
 
         data = {
