@@ -7,11 +7,20 @@ from bit.transaction import (
     construct_outputs, deserialize, estimate_tx_fee, sanitize_tx_data
 )
 from bit.utils import hex_to_bytes
-from bit.wallet import PrivateKey
-from .samples import WALLET_FORMAT_MAIN, BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST
+from bit.wallet import PrivateKey, PrivateKeyTestnet, MultiSigTestnet
+from .samples import (
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST_1,
+    WALLET_FORMAT_TEST_2, BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST,
+    BITCOIN_ADDRESS_PAY2SH, BITCOIN_ADDRESS_TEST_PAY2SH,
+    BITCOIN_SEGWIT_ADDRESS, BITCOIN_SEGWIT_ADDRESS_PAY2SH,
+    BITCOIN_SEGWIT_HASH, BITCOIN_SEGWIT_HASH_PAY2SH, BITCOIN_SEGWIT_ADDRESS_TEST,
+    BITCOIN_SEGWIT_ADDRESS_TEST_PAY2SH, BITCOIN_SEGWIT_HASH_TEST,
+    BITCOIN_SEGWIT_HASH_TEST_PAY2SH, PAY2SH_HASH, PAY2SH_TEST_HASH
+)
 
 
 RETURN_ADDRESS = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
+RETURN_ADDRESS_MAIN = '1ELReFsTCUY2mfaDTy32qxYiT49z786eFg'
 
 FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a3c2'
               'da23adf3010000008a473044022068b8dce776ef1c071f4c516836cdfb358e44ef'
@@ -34,6 +43,40 @@ SEGWIT_TX_1 = ('010000000001021f9c125fc1c14ef7f4b03b4b7dad7be4c3b054d7c266689a45
                '3028520b2bd089e26ce366bcf22064d41f6c5a3c200d956302201f45ef76dde3fc'
                '27f741f9fc93e6280dac991c364ee578eafb3348db662339000121037d69688686'
                '4509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f00000000')
+
+FINAL_TX_SEGWIT = ('0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c95'
+                '77e4d7fc707771229cf0000000006a47304402210081448fea35a40abaac5'
+                '1146dc3939deb77fc60fb41f05597a9c87587c77980d2021f2ea8e3df49da'
+                'f730b26a031022e0775d868e15492b60d1c2844c71c0635cc701210218163'
+                '25d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb7ff'
+                'ffffffcbd4b41660d8d348c15fc430deb5fd55d62cb756b36d1c5b9f3c5af'
+                '9e14e2cf40000000017160014905aa72f3d1747094a24d3adbc38905bb451'
+                'ffc8ffffffff0280f0fa020000000017a914ea654a94b18eb41ce290c135c'
+                'ccf9f348e7856a28750adef080000000017a9146015d175e191e6e5b99211'
+                'e3ffc6ea7658cb051a87000247304402206f46cdef352f0ab87af8cbef79b'
+                'bc61d371202ccd563ed0ee3517b3b0744374e022057a1cf2e8a1f2afbc475'
+                '0210afb5cb021dfbec5f69f8fa1b0fa72ab0779566850121021816325d19f'
+                'd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb700000000')
+
+FINAL_TX_BATCH = ('010000000001024623e78d68e72b428eb4f53f73086ad824a2c2b6be90'
+                '6e3113ab2afc494406640000000023220020d3a4db6921782f78eb4f158f'
+                '73adde471629dd5aca41c14a5bfc2ec2a8f39202ffffffffe2ded7092c80'
+                '87f18343b716586ea047c060a36952a308fabf7565133907af3701000000'
+                '17160014905aa72f3d1747094a24d3adbc38905bb451ffc8ffffffff0200'
+                '286bee000000001600140ee268c86d05f290add1bfc9bdfc3992d785bce2'
+                '9888993b0000000017a914d35515db546bb040e61651150343a218c87b47'
+                '1e87040047304402207dc5472cb898a22e5a83069e5c13cd089dd1039645'
+                'bce9c5677ce552464df12202202f4f7723dab05b2f60a30b815feddb3650'
+                '8368585b71786baea166096501cf3601483045022100f88e3c0ab1e119f1'
+                '8f001cbe4734877a6e08e1fa5efb250ee7c73469fa8838da02201d4730ee'
+                '3749fc99fdc0fd6ec6199a4d51c82c839c97f596c5d00c2b2103a71b0147'
+                '5221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9'
+                '946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bbe0'
+                '56ff81b23e8c09280f52ae02473044022032c85230fb391a65bd07d07285'
+                '6296f425e31248d99dd65be93732c28f2d5cb90220706ec886bacb81e002'
+                '070a4ba4abe027448f90503ce479be82b72b2f97e924cb0121021816325d'
+                '19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb70000'
+                '0000')
 
 INPUTS = [
     TxIn(
@@ -60,6 +103,34 @@ UNSPENTS = [
             '76a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac',
             'f3ad23dac2a3546167b27a43ac3e370236caf93f75bfcf27c625ec839d397888',
             1)
+]
+UNSPENTS_SEGWIT = [
+    Unspent(100000000,
+            1,
+            '76a914905aa72f3d1747094a24d3adbc38905bb451ffc888ac',
+            'f09c22717770fcd7e477953c3ca7ecb9bd44ec4d5392f24fdd247dbb8db2d388',
+            0,
+            False),
+    Unspent(100000000,
+            1,
+            'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87',
+            'f42c4ee1f95a3c9f5b1c6db356b72cd655fdb5de30c45fc148d3d86016b4d4cb',
+            0,
+            True)
+]
+UNSPENTS_BATCH = [
+    Unspent(2000000000,
+            1,
+            'a914d35515db546bb040e61651150343a218c87b471e87',
+            '64064449fc2aab13316e90beb6c2a224d86a08733ff5b48e422be7688de72346',
+            0,
+            True),
+    Unspent(3000000000,
+            1,
+            'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87',
+            '37af0739136575bffa08a35269a360c047a06e5816b74383f187802c09d7dee2',
+            1,
+            True)
 ]
 OUTPUTS = [
     ('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 50000),
@@ -96,6 +167,7 @@ class TestTxIn:
         assert txin.txid == b'txid'
         assert txin.txindex == b'\x04'
         assert txin.witness == b'witness'
+        assert txin.amount == None
         assert txin.sequence == b'\xff\xff\xff\xff'
 
     def test_equality(self):
@@ -114,8 +186,8 @@ class TestTxIn:
     def test_repr_segwit(self):
         txin = TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')
 
-        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, b'witness', {})" \
-                             "".format(repr(b'\x06'), repr(b'\x04'), repr(b'\xff\xff\xff\xff'))
+        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, b'witness', {}, {})" \
+                             "".format(repr(b'\x06'), repr(b'\x04'), repr(None), repr(b'\xff\xff\xff\xff'))
 
     def test_bytes_repr(self):
         txin = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
@@ -384,6 +456,26 @@ class TestCreateSignedTransaction:
         tx = create_new_transaction(private_key, UNSPENTS, OUTPUTS)
         assert tx[-288:] == FINAL_TX_1[-288:]
 
+    def test_segwit_transaction(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        tx = key1.create_transaction(outputs=[("2NEcbT1xeB7488HqpmXeC2u5zqYFQ5n4x5Q",
+                                               50000000, "satoshi")],
+                                     fee=200, unspents=UNSPENTS_SEGWIT)
+        assert tx == FINAL_TX_SEGWIT
+
+    def test_batch_and_multisig_tx(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_2)
+        p = [key1.public_key.hex(), key2.public_key.hex()]
+        multi1 = MultiSigTestnet(key1, p, 2)
+        multi2 = MultiSigTestnet(key2, p, 2)
+        tx0 = multi2.create_transaction(outputs=[("bcrt1qpm3x3jrdqhefptw3hlymmlpejttct08zgzzd2t",
+                                                  4000000000, "satoshi")],
+                                        fee=220, unspents=UNSPENTS_BATCH)
+        tx1 = key1.sign_transaction(tx0, unspents=UNSPENTS_BATCH)
+        tx2 = multi1.sign_transaction(tx1, unspents=UNSPENTS_BATCH[::-1])
+        assert tx2 == FINAL_TX_BATCH
+
 
 class TestDeserializeTransaction:
     def test_legacy_deserialize(self):
@@ -467,6 +559,40 @@ class TestConstructOutputBlock:
         )
         outs = construct_outputs(outputs)
         assert len(outs) == 5 and outs[3].amount == amount and outs[4].amount == amount
+
+    def test_outputs_pay2sh(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_ADDRESS_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS_MAIN
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 2 and outs[0].amount == amount and outs[0].script_pubkey.hex() == 'a914' + PAY2SH_HASH.hex() + '87'
+
+    def test_outputs_pay2sh_testnet(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_ADDRESS_TEST_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS, version='test'
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 2 and outs[0].amount == amount and outs[0].script_pubkey.hex() == 'a914' + PAY2SH_TEST_HASH.hex() + '87'
+
+    def test_outputs_pay2segwit(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_SEGWIT_ADDRESS, 1, 'satoshi'), (BITCOIN_SEGWIT_ADDRESS_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS_MAIN
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 3 and outs[0].amount == amount and outs[0].script_pubkey.hex() == '0014' + BITCOIN_SEGWIT_HASH
+        assert outs[1].amount == amount and outs[1].script_pubkey.hex() == '0020' + BITCOIN_SEGWIT_HASH_PAY2SH
+
+    def test_outputs_pay2segwit_testnet(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_SEGWIT_ADDRESS_TEST, 1, 'satoshi'), (BITCOIN_SEGWIT_ADDRESS_TEST_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS, version='test'
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 3 and outs[0].amount == amount and outs[0].script_pubkey.hex() == '0014' + BITCOIN_SEGWIT_HASH_TEST
+        assert outs[1].amount == amount and outs[1].script_pubkey.hex() == '0020' + BITCOIN_SEGWIT_HASH_TEST_PAY2SH
 
 
 def test_calc_txid():

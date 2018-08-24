@@ -1,19 +1,22 @@
 import json
 
-from bit.crypto import ECPrivateKey
+from bit.crypto import ECPrivateKey, ripemd160_sha256, sha256
 from bit.curve import Point
 from bit.format import (
-    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes, address_to_public_key_hash, multisig_to_address, multisig_to_redeemscript,
+    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes,
+    address_to_public_key_hash, multisig_to_address, multisig_to_redeemscript,
+    public_key_to_segwit_address, multisig_to_segwit_address
 )
 from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.network.meta import Unspent
 from bit.transaction import (
-    calc_txid, create_new_transaction, sanitize_tx_data, sign_legacy_tx,
+    calc_txid, create_new_transaction, sanitize_tx_data, sign_tx,
     OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20,
     deserialize, address_to_scriptpubkey
     )
 
 from bit.utils import bytes_to_hex
+
 
 def wif_to_key(wif):
     private_key_bytes, compressed, version = wif_to_bytes(wif)
@@ -163,12 +166,12 @@ class PrivateKey(BaseKey):
             self._address = public_key_to_address(self._public_key, version='main')
         return self._address
 
-    # @property
-    # def segwit_address(self):
-    #     """The public segwit nested in P2SH address you share with others to receive funds."""
-    #     if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
-    #         self._segwit_address = public_key_to_segwit_address(self._public_key, version=self.version)
-    #     return self._segwit_address
+    @property
+    def segwit_address(self):
+        """The public segwit nested in P2SH address you share with others to receive funds."""
+        if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
+            self._segwit_address = public_key_to_segwit_address(self._public_key, version=self.version)
+        return self._segwit_address
 
     @property
     def scriptcode(self):
@@ -177,14 +180,15 @@ class PrivateKey(BaseKey):
                             OP_EQUALVERIFY + OP_CHECKSIG)
         return self._scriptcode
 
-    # @property
-    # def segwit_scriptcode(self):
-    #     self._segwit_scriptcode = (b'\x00' + b'\x14' +
-    #                            ripemd160_sha256(self.public_key))
-    #     return self._segwit_scriptcode
+    @property
+    def segwit_scriptcode(self):
+        self._segwit_scriptcode = (b'\x00' + b'\x14' +
+                               ripemd160_sha256(self.public_key))
+        return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
 
     def to_wif(self):
         return bytes_to_wif(
@@ -220,6 +224,9 @@ class PrivateKey(BaseKey):
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
         self.unspents[:] = NetworkAPI.get_unspent(self.address)
+        if self.segwit_address:
+            segwit_unspents = NetworkAPI.get_unspent(self.segwit_address)
+            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -229,6 +236,8 @@ class PrivateKey(BaseKey):
         :rtype: ``list`` of ``str`` transaction IDs
         """
         self.transactions[:] = NetworkAPI.get_transactions(self.address)
+        if self.segwit_address:
+            self.transactions += NetworkAPI.get_transactions(self.segwit_address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -264,12 +273,18 @@ class PrivateKey(BaseKey):
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
+        try:
+            unspents = unspents or self.get_unspents()
+        except ConnectionError:
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+
+        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents,
             outputs,
             fee or get_fee_cached(),
-            leftover or self.address,
+            leftover or return_address,
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
@@ -369,7 +384,7 @@ class PrivateKey(BaseKey):
             combine=combine,
             message=message,
             compressed=compressed,
-            version=self.version
+            version='main'
         )
 
         data = {
@@ -406,7 +421,7 @@ class PrivateKey(BaseKey):
                 raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
-            return sign_legacy_tx(self, tx_data, unspents=unspents)
+            return sign_tx(self, tx_data, unspents=unspents)
 
     @classmethod
     def from_hex(cls, hexed):
@@ -491,12 +506,12 @@ class PrivateKeyTestnet(BaseKey):
             self._address = public_key_to_address(self._public_key, version=self.version)
         return self._address
 
-    # @property
-    # def segwit_address(self):
-    #     """The public segwit nested in P2SH address you share with others to receive funds."""
-    #     if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
-    #         self._segwit_address = public_key_to_segwit_address(self._public_key, version='test')
-    #     return self._segwit_address
+    @property
+    def segwit_address(self):
+        """The public segwit nested in P2SH address you share with others to receive funds."""
+        if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
+            self._segwit_address = public_key_to_segwit_address(self._public_key, version='test')
+        return self._segwit_address
 
     @property
     def scriptcode(self):
@@ -505,14 +520,15 @@ class PrivateKeyTestnet(BaseKey):
                             OP_EQUALVERIFY + OP_CHECKSIG)
         return self._scriptcode
 
-    # @property
-    # def segwit_scriptcode(self):
-    #     self._segwit_scriptcode = (b'\x00' + b'\x14' +
-    #                            ripemd160_sha256(self.public_key))
-    #     return self._segwit_scriptcode
+    @property
+    def segwit_scriptcode(self):
+        self._segwit_scriptcode = (b'\x00' + b'\x14' +
+                               ripemd160_sha256(self.public_key))
+        return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
 
     def to_wif(self):
         return bytes_to_wif(
@@ -548,6 +564,9 @@ class PrivateKeyTestnet(BaseKey):
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
         self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
+        if self.segwit_address:
+            segwit_unspents = NetworkAPI.get_unspent_testnet(self.segwit_address)
+            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -557,6 +576,8 @@ class PrivateKeyTestnet(BaseKey):
         :rtype: ``list`` of ``str`` transaction IDs
         """
         self.transactions[:] = NetworkAPI.get_transactions_testnet(self.address)
+        if self.segwit_address:
+            self.transactions += NetworkAPI.get_transactions_testnet(self.segwit_address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -592,12 +613,18 @@ class PrivateKeyTestnet(BaseKey):
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
+        try:
+            unspents = unspents or self.get_unspents()
+        except ConnectionError:
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+
+        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents,
             outputs,
             fee or get_fee_cached(),
-            leftover or self.address,
+            leftover or return_address,
             combine=combine,
             message=message,
             compressed=self.is_compressed(),
@@ -697,7 +724,7 @@ class PrivateKeyTestnet(BaseKey):
             combine=combine,
             message=message,
             compressed=compressed,
-            version=self.version
+            version='test'
         )
 
         data = {
@@ -734,7 +761,7 @@ class PrivateKeyTestnet(BaseKey):
                 raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
-            return sign_legacy_tx(self, tx_data, unspents=unspents)
+            return sign_tx(self, tx_data, unspents=unspents)
 
     @classmethod
     def from_hex(cls, hexed):
@@ -839,25 +866,26 @@ class MultiSig:
             self._address = multisig_to_address(self.public_keys, self.m, version=self.version)
         return self._address
 
-    # @property
-    # def segwit_address(self):
-    #     """The public segwit nested in P2SH address you share with others to receive funds."""
-    #     if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
-    #         self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='main')
-    #     return self._segwit_address
+    @property
+    def segwit_address(self):
+        """The public segwit nested in P2SH address you share with others to receive funds."""
+        if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
+            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='main')
+        return self._segwit_address
 
     @property
     def scriptcode(self):
         self._scriptcode = self.redeemscript
         return self._scriptcode
 
-    # def segwit_scriptcode(self):
-    #     self._segwit_scriptcode = (b'\x00' + b'\x20' +
-    #                            sha256(self.redeemscript))
-    #     return self._segwit_scriptcode
+    def segwit_scriptcode(self):
+        self._segwit_scriptcode = (b'\x00' + b'\x20' +
+                               sha256(self.redeemscript))
+        return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
 
     def sign(self, data):
         """Signs some data which can be verified later by others using
@@ -896,10 +924,10 @@ class MultiSig:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        if self.version == 'test':
-            self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
-        else:
-            self.unspents[:] = NetworkAPI.get_unspent(self.address)
+        self.unspents[:] = NetworkAPI.get_unspent(self.address)
+        if self.segwit_address:
+            segwit_unspents = NetworkAPI.get_unspent(self.segwit_address)
+            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -908,10 +936,8 @@ class MultiSig:
 
         :rtype: ``list`` of ``str`` transaction IDs
         """
-        if self.version == 'test':
-            self.transactions[:] = NetworkAPI.get_transactions_testnet(self.address)
-        else:
-            self.transactions[:] = NetworkAPI.get_transactions(self.address)
+        self.transactions[:] = NetworkAPI.get_transactions(self.address)
+        self.transactions += NetworkAPI.get_transactions(self.segwit_address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -947,15 +973,20 @@ class MultiSig:
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
+        try:
+            unspents = unspents or self.get_unspents()
+        except ConnectionError:
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+
+        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents,
             outputs,
             fee or get_fee_cached(),
-            leftover or self.address,
+            leftover or return_address,
             combine=combine,
             message=message,
-            compressed=self._pk.is_compressed(),
             version=self.version
         )
 
@@ -1052,7 +1083,7 @@ class MultiSig:
             combine=combine,
             message=message,
             compressed=compressed,
-            version=self.version
+            version='main'
         )
 
         data = {
@@ -1089,7 +1120,7 @@ class MultiSig:
                 raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
-            return sign_legacy_tx(self, tx_data, unspents=unspents)
+            return sign_tx(self, tx_data, unspents=unspents)
 
 
 class MultiSigTestnet:
@@ -1144,26 +1175,27 @@ class MultiSigTestnet:
             self._address = multisig_to_address(self.public_keys, self.m, version=self.version)
         return self._address
 
-    # @property
-    # def segwit_address(self):
-    #     """The public segwit nested in P2SH address you share with others to receive funds."""
-    #     if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
-    #         self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='test')
-    #     return self._segwit_address
+    @property
+    def segwit_address(self):
+        """The public segwit nested in P2SH address you share with others to receive funds."""
+        if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
+            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='test')
+        return self._segwit_address
 
     @property
     def scriptcode(self):
         self._scriptcode = self.redeemscript
         return self._scriptcode
 
-    # @property
-    # def segwit_scriptcode(self):
-    #     self._segwit_scriptcode = (b'\x00' + b'\x20' +
-    #                            sha256(self.redeemscript))
-    #     return self._segwit_scriptcode
+    @property
+    def segwit_scriptcode(self):
+        self._segwit_scriptcode = (b'\x00' + b'\x20' +
+                               sha256(self.redeemscript))
+        return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
 
     def sign(self, data):
         """Signs some data which can be verified later by others using
@@ -1202,10 +1234,10 @@ class MultiSigTestnet:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        if self.version == 'test':
-            self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
-        else:
-            self.unspents[:] = NetworkAPI.get_unspent(self.address)
+        self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
+        if self.segwit_address:
+            segwit_unspents = NetworkAPI.get_unspent_testnet(self.segwit_address)
+            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -1214,10 +1246,8 @@ class MultiSigTestnet:
 
         :rtype: ``list`` of ``str`` transaction IDs
         """
-        if self.version == 'test':
-            self.transactions[:] = NetworkAPI.get_transactions_testnet(self.address)
-        else:
-            self.transactions[:] = NetworkAPI.get_transactions(self.address)
+        self.transactions[:] = NetworkAPI.get_transactions_testnet(self.address)
+        self.transactions += NetworkAPI.get_transactions_testnet(self.segwit_address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -1253,15 +1283,20 @@ class MultiSigTestnet:
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
+        try:
+            unspents = unspents or self.get_unspents()
+        except ConnectionError:
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+
+        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
 
         unspents, outputs = sanitize_tx_data(
-            unspents or self.unspents,
+            unspents,
             outputs,
             fee or get_fee_cached(),
-            leftover or self.address,
+            leftover or return_address,
             combine=combine,
             message=message,
-            compressed=self._pk.is_compressed(),
             version=self.version
         )
 
@@ -1307,7 +1342,7 @@ class MultiSigTestnet:
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
-        NetworkAPI.broadcast_tx(tx_hex)
+        NetworkAPI.broadcast_tx_testnet(tx_hex)
 
         return calc_txid(tx_hex)
 
@@ -1358,7 +1393,7 @@ class MultiSigTestnet:
             combine=combine,
             message=message,
             compressed=compressed,
-            version=self.version
+            version='test'
         )
 
         data = {
@@ -1395,4 +1430,4 @@ class MultiSigTestnet:
                 raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
-            return sign_legacy_tx(self, tx_data, unspents=unspents)
+            return sign_tx(self, tx_data, unspents=unspents)

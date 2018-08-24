@@ -5,14 +5,15 @@ TX_TRUST_HIGH = 30
 
 class Unspent:
     """Represents an unspent transaction output (UTXO)."""
-    __slots__ = ('amount', 'confirmations', 'script', 'txid', 'txindex')
+    __slots__ = ('amount', 'confirmations', 'script', 'txid', 'txindex', 'segwit')
 
-    def __init__(self, amount, confirmations, script, txid, txindex):
+    def __init__(self, amount, confirmations, script, txid, txindex, segwit=False):
         self.amount = amount
         self.confirmations = confirmations
         self.script = script
         self.txid = txid
         self.txindex = txindex
+        self.segwit = segwit
 
     def to_dict(self):
         return {attr: getattr(self, attr) for attr in Unspent.__slots__}
@@ -25,13 +26,19 @@ class Unspent:
         return (self.amount == other.amount and
                 self.script == other.script and
                 self.txid == other.txid and
-                self.txindex == other.txindex)
+                self.txindex == other.txindex and
+                self.segwit == other.segwit)
 
     def __repr__(self):
-        return 'Unspent(amount={}, confirmations={}, script={}, txid={}, txindex={})'.format(
+        return 'Unspent(amount={}, confirmations={}, script={}, txid={}, txindex={}, segwit={})'.format(
             repr(self.amount),
             repr(self.confirmations),
             repr(self.script),
             repr(self.txid),
-            repr(self.txindex)
+            repr(self.txindex),
+            repr(self.segwit)
         )
+
+    def set_segwit(self, segwit):
+        self.segwit = segwit
+        return self
