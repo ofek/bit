@@ -238,21 +238,6 @@ class TestPrivateKeyTestnet:
 
         assert current > initial
 
-    def test_send_pay2sh(self):
-        """
-        We don't yet support pay2sh, so we must throw an exception if we get one.
-        Otherwise, we could send coins into an unrecoverable blackhole, needlessly.
-        pay2sh addresses begin with 2 in testnet and 3 on mainnet.
-        """
-        if TRAVIS and sys.version_info[:2] != (3, 6):
-            return
-
-        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
-        private_key.get_unspents()
-
-        with pytest.raises(ValueError):
-            private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'jpy')])
-
     def test_cold_storage(self):
         if TRAVIS and sys.version_info[:2] != (3, 6):
             return
