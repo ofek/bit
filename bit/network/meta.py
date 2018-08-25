@@ -40,5 +40,5 @@ class Unspent:
         )
 
     def set_segwit(self, segwit):
-        self.segwit = segwit
+        self.segwit = bool(segwit)
         return self

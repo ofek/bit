@@ -147,6 +147,9 @@ class PrivateKey(BaseKey):
     def __init__(self, wif=None):
         super().__init__(wif=wif)
 
+        self.version = 'main'
+        self.instance = 'PrivateKey'
+
         self._address = None
         self._segwit_address = None
         self._scriptcode = None
@@ -156,14 +159,11 @@ class PrivateKey(BaseKey):
         self.unspents = []
         self.transactions = []
 
-        self.version = 'main'
-        self.instance = 'PrivateKey'
-
     @property
     def address(self):
         """The public address you share with others to receive funds."""
         if self._address is None:
-            self._address = public_key_to_address(self._public_key, version='main')
+            self._address = public_key_to_address(self._public_key, version=self.version)
         return self._address
 
     @property
@@ -187,8 +187,11 @@ class PrivateKey(BaseKey):
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        if self.segwit_address:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        else:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def to_wif(self):
         return bytes_to_wif(
@@ -487,6 +490,9 @@ class PrivateKeyTestnet(BaseKey):
     def __init__(self, wif=None):
         super().__init__(wif=wif)
 
+        self.version = 'test'
+        self.instance = 'PrivateKeyTestnet'
+
         self._address = None
         self._segwit_address = None
         self._scriptcode = None
@@ -495,9 +501,6 @@ class PrivateKeyTestnet(BaseKey):
         self.balance = 0
         self.unspents = []
         self.transactions = []
-
-        self.version = 'test'
-        self.instance = 'PrivateKeyTestnet'
 
     @property
     def address(self):
@@ -510,7 +513,7 @@ class PrivateKeyTestnet(BaseKey):
     def segwit_address(self):
         """The public segwit nested in P2SH address you share with others to receive funds."""
         if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
-            self._segwit_address = public_key_to_segwit_address(self._public_key, version='test')
+            self._segwit_address = public_key_to_segwit_address(self._public_key, version=self.version)
         return self._segwit_address
 
     @property
@@ -527,8 +530,11 @@ class PrivateKeyTestnet(BaseKey):
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        if self.segwit_address:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        else:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def to_wif(self):
         return bytes_to_wif(
@@ -814,6 +820,7 @@ class PrivateKeyTestnet(BaseKey):
 
 Key = PrivateKey
 
+
 class MultiSig:
     """This class represents a Bitcoin multisignature contract.
     **Note:** coins on the test network have no monetary value!
@@ -836,9 +843,19 @@ class MultiSig:
         if private_key.instance != 'PrivateKey':
             raise TypeError('MultiSig only accepts a PrivateKey class to assign a private key.')
 
-        self._pk = private_key
+        if bytes_to_hex(private_key.public_key) not in public_keys:
+            raise TypeError('Private key does not match any provided public key.')
 
         self.version = 'main'
+        self.instance = 'MultiSig'
+
+        self._pk = private_key
+        self.public_key = private_key.public_key
+        self.public_keys = public_keys
+        self.m = m
+        self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
+        self.is_compressed = all(len(p) == 66 for p in public_keys)
+
         self._address = None
         self._segwit_address = None
         self._scriptcode = None
@@ -847,17 +864,6 @@ class MultiSig:
         self.balance = 0
         self.unspents = []
         self.transactions = []
-
-        self.instance = 'MultiSig'
-
-        if bytes_to_hex(private_key.public_key) not in public_keys:
-            raise TypeError('Private key does not match any provided public key.')
-        else:
-            self.public_key = private_key.public_key
-            self.public_keys = public_keys
-            self.m = m
-            self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
-            self.is_compressed = all(len(p) == 66 for p in public_keys)
 
     @property
     def address(self):
@@ -870,7 +876,7 @@ class MultiSig:
     def segwit_address(self):
         """The public segwit nested in P2SH address you share with others to receive funds."""
         if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
-            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='main')
+            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version=self.version)
         return self._segwit_address
 
     @property
@@ -884,8 +890,11 @@ class MultiSig:
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        if self.segwit_address:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        else:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def sign(self, data):
         """Signs some data which can be verified later by others using
@@ -1145,9 +1154,19 @@ class MultiSigTestnet:
         if private_key.instance != 'PrivateKeyTestnet':
             raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet class to assign a private key.')
 
-        self._pk = private_key
+        if bytes_to_hex(private_key.public_key) not in public_keys:
+            raise TypeError('Private key does not match any provided public key.')
 
         self.version = 'test'
+        self.instance = 'MultiSigTestnet'
+
+        self._pk = private_key
+        self.public_key = private_key.public_key
+        self.public_keys = public_keys
+        self.m = m
+        self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
+        self.is_compressed = all(len(p) == 66 for p in public_keys)
+
         self._address = None
         self._segwit_address = None
         self._scriptcode = None
@@ -1156,17 +1175,6 @@ class MultiSigTestnet:
         self.balance = 0
         self.unspents = []
         self.transactions = []
-
-        self.instance = 'MultiSigTestnet'
-
-        if bytes_to_hex(private_key.public_key) not in public_keys:
-            raise TypeError('Private key does not match any provided public key.')
-        else:
-            self.public_key = private_key.public_key
-            self.public_keys = public_keys
-            self.m = m
-            self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
-            self.is_compressed = all(len(p) == 66 for p in public_keys)
 
     @property
     def address(self):
@@ -1179,7 +1187,7 @@ class MultiSigTestnet:
     def segwit_address(self):
         """The public segwit nested in P2SH address you share with others to receive funds."""
         if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
-            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version='test')
+            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version=self.version)
         return self._segwit_address
 
     @property
@@ -1194,8 +1202,11 @@ class MultiSigTestnet:
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
-        return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        if self.segwit_address:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
+                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+        else:
+            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
 
     def sign(self, data):
         """Signs some data which can be verified later by others using
@@ -1386,7 +1397,7 @@ class MultiSigTestnet:
         :rtype: ``str``
         """
         unspents, outputs = sanitize_tx_data(
-            unspents or NetworkAPI.get_unspent(address),
+            unspents or NetworkAPI.get_unspent_testnet(address),
             outputs,
             fee or get_fee_cached(),
             leftover or address,

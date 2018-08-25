@@ -505,8 +505,7 @@ def sign_tx(private_key, tx, *, unspents):
 
             script_sig = b'\x22' + private_key.segwit_scriptcode
 
-            # TODO: Should witness_count below be converted to smallest bytes-representation [int_to_unknown_bytes(witness_count, byteorder='little')], or always 1 byte?
-            witness = (witness_count.to_bytes(1, byteorder='little') if segwit_input else b'') + b'\x00' + witness + script_blob
+            witness = (int_to_varint(witness_count) if segwit_input else b'') + b'\x00' + witness + script_blob
             witness += (int_to_varint(len(private_key.redeemscript)) if segwit_input else script_push(len(private_key.redeemscript))) + private_key.redeemscript
 
             script_sig = script_sig if segwit_input else witness

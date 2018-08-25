@@ -26,4 +26,5 @@ class TestUnspent:
         unspent = Unspent(10000, 7, 'script', 'txid', 0)
 
         assert repr(unspent) == ("Unspent(amount=10000, confirmations=7, "
-                                 "script='script', txid='txid', txindex=0)")
+                                 "script='script', txid='txid', txindex=0, "
+                                 "segwit=False)")
