@@ -99,8 +99,8 @@ def get_signatures_from_script(script):
     """Returns a list of signatures retrieved from the provided (partially)
     signed multisig scriptSig.
 
-    :param data: The partially-signed multisig scriptSig.
-    :type data: ``bytes``
+    :param script: The partially-signed multisig scriptSig.
+    :type script: ``bytes``
     :returns: A list of retrieved signature from the provided scriptSig.
     :rtype: A ``list`` of ``bytes`` signatures
     """
