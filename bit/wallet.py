@@ -163,14 +163,18 @@ class PrivateKey(BaseKey):
     def address(self):
         """The public address you share with others to receive funds."""
         if self._address is None:
-            self._address = public_key_to_address(self._public_key, version=self.version)
+            self._address = public_key_to_address(self._public_key,
+                                                  version=self.version)
         return self._address
 
     @property
     def segwit_address(self):
-        """The public segwit nested in P2SH address you share with others to receive funds."""
-        if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
-            self._segwit_address = public_key_to_segwit_address(self._public_key, version=self.version)
+        """The public segwit nested in P2SH address you share with others to
+        receive funds."""
+        # Only make segwit address if public key is compressed
+        if self._segwit_address is None and self.is_compressed():
+            self._segwit_address = public_key_to_segwit_address(
+                self._public_key, version=self.version)
         return self._segwit_address
 
     @property
@@ -182,16 +186,18 @@ class PrivateKey(BaseKey):
 
     @property
     def segwit_scriptcode(self):
-        self._segwit_scriptcode = (b'\x00' + b'\x14' +
-                               ripemd160_sha256(self.public_key))
+        self._segwit_scriptcode = (b'\x00' + b'\x14'
+                                   + ripemd160_sha256(self.public_key))
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
+        script = bytes_to_hex(address_to_scriptpubkey(self.address))
         if self.segwit_address:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+            segwit_script = bytes_to_hex(address_to_scriptpubkey(
+                self.segwit_address))
+            return unspent.script == script or unspent.script == segwit_script
         else:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+            return unspent.script == script
 
     def to_wif(self):
         return bytes_to_wif(
@@ -285,9 +291,12 @@ class PrivateKey(BaseKey):
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide '
+                                  'the unspents to spend from directly.')
 
-        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
+        # If at least one input is from segwit the return address is for segwit
+        return_address = self.segwit_address if any(
+            [u.segwit for u in unspents]) else self.address
 
         unspents, outputs = sanitize_tx_data(
             unspents,
@@ -339,7 +348,13 @@ class PrivateKey(BaseKey):
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs,
+            fee=fee,
+            absolute_fee=absolute_fee,
+            leftover=leftover,
+            combine=combine,
+            message=message,
+            unspents=unspents
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -428,7 +443,9 @@ class PrivateKey(BaseKey):
             try:
                 unspents = unspents or self.get_unspents()
             except ConnectionError:
-                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+                raise ConnectionError(
+                    'All APIs are unreachable. Please provide the unspent '
+                    'inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)
@@ -513,14 +530,18 @@ class PrivateKeyTestnet(BaseKey):
     def address(self):
         """The public address you share with others to receive funds."""
         if self._address is None:
-            self._address = public_key_to_address(self._public_key, version=self.version)
+            self._address = public_key_to_address(self._public_key,
+                                                  version=self.version)
         return self._address
 
     @property
     def segwit_address(self):
-        """The public segwit nested in P2SH address you share with others to receive funds."""
-        if self._segwit_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
-            self._segwit_address = public_key_to_segwit_address(self._public_key, version=self.version)
+        """The public segwit nested in P2SH address you share with others to
+        receive funds."""
+        # Only make segwit address if public key is compressed
+        if self._segwit_address is None and self.is_compressed():
+            self._segwit_address = public_key_to_segwit_address(
+                self._public_key, version=self.version)
         return self._segwit_address
 
     @property
@@ -532,16 +553,18 @@ class PrivateKeyTestnet(BaseKey):
 
     @property
     def segwit_scriptcode(self):
-        self._segwit_scriptcode = (b'\x00' + b'\x14' +
-                               ripemd160_sha256(self.public_key))
+        self._segwit_scriptcode = (b'\x00' + b'\x14'
+                                   + ripemd160_sha256(self.public_key))
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
+        script = bytes_to_hex(address_to_scriptpubkey(self.address))
         if self.segwit_address:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+            segwit_script = bytes_to_hex(address_to_scriptpubkey(
+                self.segwit_address))
+            return unspent.script == script or unspent.script == segwit_script
         else:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+            return unspent.script == script
 
     def to_wif(self):
         return bytes_to_wif(
@@ -635,9 +658,12 @@ class PrivateKeyTestnet(BaseKey):
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide '
+                                  'the unspents to spend from directly.')
 
-        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
+        # If at least one input is from segwit the return address is for segwit
+        return_address = self.segwit_address if any(
+            [u.segwit for u in unspents]) else self.address
 
         unspents, outputs = sanitize_tx_data(
             unspents,
@@ -689,7 +715,13 @@ class PrivateKeyTestnet(BaseKey):
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs,
+            fee=fee,
+            absolute_fee=absolute_fee,
+            leftover=leftover,
+            combine=combine,
+            message=message,
+            unspents=unspents
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -778,7 +810,9 @@ class PrivateKeyTestnet(BaseKey):
             try:
                 unspents = unspents or self.get_unspents()
             except ConnectionError:
-                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+                raise ConnectionError(
+                    'All APIs are unreachable. Please provide the unspent '
+                    'inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)
@@ -855,7 +889,8 @@ class MultiSig:
     def __init__(self, private_key, public_keys, m):
 
         if private_key.instance != 'PrivateKey':
-            raise TypeError('MultiSig only accepts a PrivateKey class to assign a private key.')
+            raise TypeError('MultiSig only accepts a PrivateKey class to '
+                            'assign a private key.')
 
         if bytes_to_hex(private_key.public_key) not in public_keys:
             raise TypeError('Private key does not match any provided public key.')
@@ -883,14 +918,18 @@ class MultiSig:
     def address(self):
         """The public address you share with others to receive funds."""
         if self._address is None:
-            self._address = multisig_to_address(self.public_keys, self.m, version=self.version)
+            self._address = multisig_to_address(self.public_keys, self.m,
+                                                version=self.version)
         return self._address
 
     @property
     def segwit_address(self):
-        """The public segwit nested in P2SH address you share with others to receive funds."""
-        if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
-            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version=self.version)
+        """The public segwit nested in P2SH address you share with others to
+        receive funds."""
+        # Only make segwit-address if all public keys are compressed
+        if self._segwit_address is None and self.is_compressed:
+            self._segwit_address = multisig_to_segwit_address(self.public_keys,
+                self.m, version=self.version)
         return self._segwit_address
 
     @property
@@ -899,16 +938,17 @@ class MultiSig:
         return self._scriptcode
 
     def segwit_scriptcode(self):
-        self._segwit_scriptcode = (b'\x00' + b'\x20' +
-                               sha256(self.redeemscript))
+        self._segwit_scriptcode = (b'\x00' + b'\x20'
+                                   + sha256(self.redeemscript))
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
+        script = bytes_to_hex(address_to_scriptpubkey(self.address))
         if self.segwit_address:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+            segwit_script = bytes_to_hex(address_to_scriptpubkey(self.segwit_address))
+            return unspent.script == script or unspent.script == segwit_script
         else:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+            return unspent.script == script
 
     def sign(self, data):
         """Signs some data which can be verified later by others using
@@ -947,7 +987,6 @@ class MultiSig:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        # TODO: Make those vsizes more readable and understandable
         add_p2sh_vsize = (self.m * 73 + len(int_to_varint(self.redeemscript))
                           + len(self.public_keys) * 34)
         add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
@@ -1009,9 +1048,12 @@ class MultiSig:
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide '
+                                  'the unspents to spend from directly.')
 
-        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
+        # If at least one input is from segwit the return address is for segwit
+        return_address = self.segwit_address if any(
+            [u.segwit for u in unspents]) else self.address
 
         unspents, outputs = sanitize_tx_data(
             unspents,
@@ -1063,7 +1105,13 @@ class MultiSig:
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs,
+            fee=fee,
+            absolute_fee=absolute_fee,
+            leftover=leftover,
+            combine=combine,
+            message=message,
+            unspents=unspents
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -1152,7 +1200,9 @@ class MultiSig:
             try:
                 unspents = unspents or self.get_unspents()
             except ConnectionError:
-                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+                raise ConnectionError(
+                    'All APIs are unreachable. Please provide the unspent '
+                    'inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)
@@ -1178,7 +1228,8 @@ class MultiSigTestnet:
     def __init__(self, private_key, public_keys, m):
 
         if private_key.instance != 'PrivateKeyTestnet':
-            raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet class to assign a private key.')
+            raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet '
+                            'class to assign a private key.')
 
         if bytes_to_hex(private_key.public_key) not in public_keys:
             raise TypeError('Private key does not match any provided public key.')
@@ -1211,9 +1262,12 @@ class MultiSigTestnet:
 
     @property
     def segwit_address(self):
-        """The public segwit nested in P2SH address you share with others to receive funds."""
-        if self._segwit_address is None and self.is_compressed is True:  # Only make segwit-address if all public keys are compressed
-            self._segwit_address = multisig_to_segwit_address(self.public_keys, self.m, version=self.version)
+        """The public segwit nested in P2SH address you share with others to
+        receive funds."""
+        # Only make segwit-address if all public keys are compressed
+        if self._segwit_address is None and self.is_compressed is True:
+            self._segwit_address = multisig_to_segwit_address(self.public_keys,
+                self.m, version=self.version)
         return self._segwit_address
 
     @property
@@ -1228,11 +1282,12 @@ class MultiSigTestnet:
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):
+        script = bytes_to_hex(address_to_scriptpubkey(self.address))
         if self.segwit_address:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)) or
-                    unspent.script == bytes_to_hex(address_to_scriptpubkey(self.segwit_address)))
+            segwit_script = bytes_to_hex(address_to_scriptpubkey(self.segwit_address))
+            return unspent.script == script or unspent.script == segwit_script
         else:
-            return (unspent.script == bytes_to_hex(address_to_scriptpubkey(self.address)))
+            return unspent.script == script
 
     def sign(self, data):
         """Signs some data which can be verified later by others using
@@ -1333,9 +1388,12 @@ class MultiSigTestnet:
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide '
+                                  'the unspents to spend from directly.')
 
-        return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address  # If at least one input is from segwit the return address is for segwit
+        # If at least one input is from segwit the return address is for segwit
+        return_address = self.segwit_address if any(
+            [u.segwit for u in unspents]) else self.address
 
         unspents, outputs = sanitize_tx_data(
             unspents,
@@ -1387,7 +1445,13 @@ class MultiSigTestnet:
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs,
+            fee=fee,
+            absolute_fee=absolute_fee,
+            leftover=leftover,
+            combine=combine,
+            message=message,
+            unspents=unspents
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -1476,7 +1540,9 @@ class MultiSigTestnet:
             try:
                 unspents = unspents or self.get_unspents()
             except ConnectionError:
-                raise ConnectionError('All APIs are unreachable. Please provide the unspent inputs as unspents directly to sign this transaction.')
+                raise ConnectionError(
+                    'All APIs are unreachable. Please provide the unspent '
+                    'inputs as unspents directly to sign this transaction.')
 
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)

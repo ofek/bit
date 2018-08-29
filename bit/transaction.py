@@ -470,7 +470,8 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
         if amount:  # ``dest`` could be a text to be stored in the blockchain; but only if ``amount`` is exactly zero.
             vs = get_version(dest)
             if vs and vs != version:
-                raise ValueError('Cannot send to ' + vs + 'net address when spending from a ' + version + 'net address.')
+                raise ValueError('Cannot send to ' + vs + 'net address when '
+                                 'spending from a ' + version + 'net address.')
 
     outputs.extend(messages)
 
@@ -542,10 +543,12 @@ def sign_tx(private_key, tx, *, unspents):
         for unspent in unspents:
             if not private_key.can_sign_unspent(unspent):
                 continue
-            tx_input = hex_to_bytes(unspent.txid)[::-1] + unspent.txindex.to_bytes(4, byteorder='little')
+            tx_input = hex_to_bytes(unspent.txid)[::-1] + \
+                unspent.txindex.to_bytes(4, byteorder='little')
             input_dict[tx_input] = unspent.to_dict()
     except TypeError:
-        raise ValueError('Please provide as unspents at least all inputs to be signed with the function call.')
+        raise ValueError('Please provide as unspents at least all inputs to '
+                         'be signed with the function call.')
 
     # Determine input indices to sign from input_dict (allows for transaction batching)
     sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid+i.txindex in input_dict]
@@ -600,9 +603,14 @@ def sign_tx(private_key, tx, *, unspents):
 
         elif segwit_input:
             try:
-                tx.TxIn[i].amount = input_dict[tx_input]['amount'].to_bytes(8, byteorder='little')
+                tx.TxIn[i].amount = input_dict[tx_input]['amount']\
+                                    .to_bytes(8, byteorder='little')
             except Attributerror:
-                raise ValueError('Cannot sign a segwit input when the input\'s amount is unknown. Maybe no network connection or the input is already spent? Then please provide all inputs to sign as `Unspent` objects to the function call.')
+                raise ValueError(
+                    'Cannot sign a segwit input when the input\'s amount is '
+                    'unknown. Maybe no network connection or the input is '
+                    'already spent? Then please provide all inputs to sign as '
+                    '`Unspent` objects to the function call.')
 
             hashed = sha256(  # BIP-143: Used for Segwit
                 version +
@@ -624,39 +632,55 @@ def sign_tx(private_key, tx, *, unspents):
         signature = private_key.sign(hashed) + b'\x01'
 
         # ------------------------------------------------------------------
-        if private_key.instance == 'MultiSig' or private_key.instance == 'MultiSigTestnet':
+        if (private_key.instance == 'MultiSig' or
+                private_key.instance == 'MultiSigTestnet'):
             # P2(W)SH input
 
             script_blob = b''
             sigs = {}
-            witness_count = 3  # initial number of witness items (OP_0 + one signature + redeemscript).
+            # Initial number of witness items (OP_0 + one signature + redeemscript).
+            witness_count = 3
             if input_script_field:
                 sig_list = get_signatures_from_script(input_script_field)
-                script_blob += b'\x00' * (private_key.m - len(sig_list)-1)  # Bitcoin Core convention: Every missing signature is denoted by 0x00. Only used for already partially-signed scriptSigs.
-                witness_count = private_key.m + 2  # total number of witness items when partially or fully signed.
-                # For a partially signed input: make a dictionary containing all the provided signatures with public-keys as keys
+                # Bitcoin Core convention: Every missing signature is denoted
+                # by 0x00. Only used for already partially-signed scriptSigs:
+                script_blob += b'\x00' * (private_key.m - len(sig_list)-1)
+                # Total number of witness items when partially or fully signed:
+                witness_count = private_key.m + 2
+                # For a partially signed input make a dictionary containing
+                # all the provided signatures with public-keys as keys:
                 for sig in sig_list:
                     for pub in private_key.public_keys:
                         if verify_sig(sig[:-1], hashed, hex_to_bytes(pub)):
-                            sigs[pub] = sig  # If we already found a valid signature for pubkey we just overwrite it and don't care.
+                            # If we already found a valid signature for pubkey
+                            # we just overwrite it and don't care.
+                            sigs[pub] = sig
                 if len(sigs) == private_key.m:
-                    raise TypeError('Transaction is already signed with sufficiently needed signatures.')
+                    raise TypeError('Transaction is already signed with '
+                                    'sufficiently needed signatures.')
                 elif len(sigs) > private_key.m:
-                    raise TypeError('Transaction already contains {} signatures, but only {} needed.').format(len(sigs), private_key.m)
+                    raise TypeError('Transaction already contains {} '
+                                    'signatures, but only {} needed.').format(
+                                        len(sigs), private_key.m)
 
             sigs[bytes_to_hex(public_key)] = signature
 
             witness = b''
-            for pub in private_key.public_keys:  # Sort the signatures according to the public-key list:
+            # Sort ingthe signatures according to the public-key list:
+            for pub in private_key.public_keys:
                 if pub in sigs:
                     sig = sigs[pub]
-                    length = int_to_varint(len(sig)) if segwit_input else script_push(len(sig))
+                    length = int_to_varint(len(sig)) if segwit_input else \
+                        script_push(len(sig))
                     witness += length + sig
 
             script_sig = b'\x22' + private_key.segwit_scriptcode
 
-            witness = (int_to_varint(witness_count) if segwit_input else b'') + b'\x00' + witness + script_blob
-            witness += (int_to_varint(len(private_key.redeemscript)) if segwit_input else script_push(len(private_key.redeemscript))) + private_key.redeemscript
+            witness = (int_to_varint(witness_count) if segwit_input else b'') \
+                + b'\x00' + witness + script_blob
+            witness += (int_to_varint(len(private_key.redeemscript)) if
+                segwit_input else script_push(len(private_key.redeemscript))) \
+                + private_key.redeemscript
 
             script_sig = script_sig if segwit_input else witness
             witness = witness if segwit_input else b'\x00' if segwit_tx else b''
@@ -699,7 +723,8 @@ def create_new_transaction(private_key, unspents, outputs):
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder='little')
         amount = int(unspent.amount).to_bytes(8, byteorder='little')
-        inputs.append(TxIn(script_sig, txid, txindex, amount=amount, segwit_input=unspent.segwit))
+        inputs.append(TxIn(script_sig, txid, txindex, amount=amount,
+                           segwit_input=unspent.segwit))
 
     tx_unsigned = TxObj(version, inputs, outputs, lock_time)
 
