@@ -4,7 +4,8 @@ from bit.exceptions import InsufficientFunds
 from bit.network.meta import Unspent
 from bit.transaction import (
     TxIn, TxOut, TxObj, calc_txid, create_new_transaction,
-    construct_outputs, deserialize, estimate_tx_fee, sanitize_tx_data
+    construct_outputs, deserialize, estimate_tx_fee, sanitize_tx_data,
+    select_coins
 )
 from bit.utils import hex_to_bytes
 from bit.wallet import PrivateKey, PrivateKeyTestnet, MultiSigTestnet
@@ -375,25 +376,10 @@ class TestSanitizeTxData:
             combine=False, message=None, version='test'
         )
 
-        assert unspents == [Unspent(3000, 0, '', '', 0)]
+        assert(len(unspents)) == 1
         assert len(outputs) == 2
         assert outputs[1][0] == RETURN_ADDRESS
-        assert outputs[1][1] == 1000
-
-    def test_no_combine_remaining_small_inputs(self):
-        unspents_original = [Unspent(1500, 0, '', '', 0),
-                             Unspent(1600, 0, '', '', 0),
-                             Unspent(1700, 0, '', '', 0)]
-        outputs_original = [(RETURN_ADDRESS, 2000, 'satoshi')]
-
-        unspents, outputs = sanitize_tx_data(
-            unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=False, message=None, version='test'
-        )
-        assert unspents == [Unspent(1500, 0, '', '', 0), Unspent(1600, 0, '', '', 0)]
-        assert len(outputs) == 2
-        assert outputs[1][0] == RETURN_ADDRESS
-        assert outputs[1][1] == 1100
+        assert outputs[1][1] == unspents[0].amount - 2000
 
     def test_no_combine_with_fee(self):
         """
@@ -542,6 +528,27 @@ class TestEstimateTxFee:
 
     def test_none(self):
         assert estimate_tx_fee(740, 5, 170, 5, 0) == 0
+
+
+class TestSelectCoins:
+    def test_perfect_match(self):
+        unspents, remaining = select_coins(100000000, 0, [34, 34], 0, absolute_fee=True,
+            consolidate=False, unspents=UNSPENTS_SEGWIT)
+        assert len(unspents) == 1
+        assert remaining == 0
+
+    def test_perfect_match_with_range(self):
+        unspents, remaining = select_coins(99960000, 200, [34, 34], 0, absolute_fee=True,
+            consolidate=False, unspents=UNSPENTS_SEGWIT)
+        assert len(unspents) == 1
+        assert remaining == 0
+
+    def test_random_draw(self):
+        print(UNSPENTS_SEGWIT)
+        unspents, remaining = select_coins(150000000, 0, [34, 34], 0, absolute_fee=True,
+            consolidate=False, unspents=UNSPENTS_SEGWIT)
+        assert all([u in UNSPENTS_SEGWIT for u in unspents])
+        assert remaining == 50000000
 
 
 class TestConstructOutputBlock:
