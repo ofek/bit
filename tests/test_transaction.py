@@ -444,13 +444,10 @@ class TestCreateSignedTransaction:
         assert tx[-288:] == FINAL_TX_1[-288:]
 
     def test_segwit_transaction(self):
-        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
-        tx = key1.create_transaction(
-            outputs=[("2NEcbT1xeB7488HqpmXeC2u5zqYFQ5n4x5Q", 50000000, "satoshi")],
-            fee=10000,
-            absolute_fee=True,
-            unspents=UNSPENTS_SEGWIT
-        )
+        outputs = [("2NEcbT1xeB7488HqpmXeC2u5zqYFQ5n4x5Q", 50000000),
+                   ("2N21Gzex7WJCzzsA5D33nofcnm1dYSKuJzT", 149990000)]
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        tx = create_new_transaction(private_key, UNSPENTS_SEGWIT, outputs)
         assert tx == FINAL_TX_SEGWIT
 
     def test_batch_and_multisig_tx(self):
@@ -459,12 +456,11 @@ class TestCreateSignedTransaction:
         p = [key1.public_key.hex(), key2.public_key.hex()]
         multi1 = MultiSigTestnet(key1, p, 2)
         multi2 = MultiSigTestnet(key2, p, 2)
-        tx0 = multi2.create_transaction(
-            outputs=[("bcrt1qpm3x3jrdqhefptw3hlymmlpejttct08zgzzd2t",
-                      4000000000, "satoshi")],
-            fee=28080,
-            absolute_fee=True,
-            unspents=UNSPENTS_BATCH
+        tx0 = create_new_transaction(
+            multi2,
+            UNSPENTS_BATCH,
+            [("bcrt1qpm3x3jrdqhefptw3hlymmlpejttct08zgzzd2t", 4000000000),
+            ("2NCWeVbWmaUp92dSFP3RddPk6r3GTd6cDd6", 999971920)]
         )
         tx1 = key1.sign_transaction(tx0, unspents=UNSPENTS_BATCH)
         tx2 = multi1.sign_transaction(tx1, unspents=UNSPENTS_BATCH[::-1])
