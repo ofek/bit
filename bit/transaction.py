@@ -189,15 +189,15 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
 
 
-def estimate_tx_fee(n_in, n_out, satoshis, compressed):
+def estimate_tx_fee(in_size, n_in, out_size, n_out, satoshis):
 
     if not satoshis:
         return 0
 
     estimated_size = (
-        n_in * (148 if compressed else 180)
+        in_size
         + len(int_to_unknown_bytes(n_in, byteorder='little'))
-        + n_out * 34
+        + out_size
         + len(int_to_unknown_bytes(n_out, byteorder='little'))
         + 8
     )
@@ -253,7 +253,9 @@ def deserialize(tx):
     return txobj
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=None, compressed=True, version='main'):
+def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
+                     message=None, compressed=True, absolute_fee=False,
+                     min_change=0, version='main'):
     """
     sanitize_tx_data()
 
@@ -281,12 +283,21 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     # Include return address in output count.
     num_outputs = len(outputs) + len(messages) + 1
     sum_outputs = sum(out[1] for out in outputs)
+    out_size = (sum(len(address_to_scriptpubkey(o[0])) + 9 for o in outputs)
+                + len(messages) * (MESSAGE_LIMIT + 9))
 
     total_in = 0
 
     if combine:
         # calculated_fee is in total satoshis.
-        calculated_fee = estimate_tx_fee(len(unspents), num_outputs, fee, compressed)
+        calculated_fee = estimate_tx_fee(
+            sum(unspent.vsize for unspent in unspents),
+            len(unspents),
+            out_size + len(address_to_scriptpubkey(leftover)) + 9,
+            num_outputs,
+            fee
+        )
+        calculated_fee = fee if absolute_fee else calculated_fee
         total_out = sum_outputs + calculated_fee
         unspents = unspents.copy()
         total_in += sum(unspent.amount for unspent in unspents)
@@ -298,7 +309,15 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
         for index, unspent in enumerate(unspents):
             total_in += unspent.amount
-            calculated_fee = estimate_tx_fee(len(unspents[:index + 1]), num_outputs, fee, compressed)
+            #calculated_fee = estimate_tx_fee(len(unspents[:index + 1]), num_outputs, fee, compressed)
+            calculated_fee = estimate_tx_fee(
+                sum(u.vsize for u in unspents[:index + 1]),
+                len(unspents[:index + 1]),
+                out_size + len(address_to_scriptpubkey(leftover)) + 9,
+                num_outputs,
+                fee
+            )
+            calculated_fee = fee if absolute_fee else calculated_fee
             total_out = sum_outputs + calculated_fee
 
             if total_in >= total_out:

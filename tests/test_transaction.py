@@ -45,38 +45,39 @@ SEGWIT_TX_1 = ('010000000001021f9c125fc1c14ef7f4b03b4b7dad7be4c3b054d7c266689a45
                '4509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f00000000')
 
 FINAL_TX_SEGWIT = ('0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c95'
-                '77e4d7fc707771229cf0000000006a47304402210081448fea35a40abaac5'
-                '1146dc3939deb77fc60fb41f05597a9c87587c77980d2021f2ea8e3df49da'
-                'f730b26a031022e0775d868e15492b60d1c2844c71c0635cc701210218163'
-                '25d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb7ff'
-                'ffffffcbd4b41660d8d348c15fc430deb5fd55d62cb756b36d1c5b9f3c5af'
-                '9e14e2cf40000000017160014905aa72f3d1747094a24d3adbc38905bb451'
-                'ffc8ffffffff0280f0fa020000000017a914ea654a94b18eb41ce290c135c'
-                'ccf9f348e7856a28750adef080000000017a9146015d175e191e6e5b99211'
-                'e3ffc6ea7658cb051a87000247304402206f46cdef352f0ab87af8cbef79b'
-                'bc61d371202ccd563ed0ee3517b3b0744374e022057a1cf2e8a1f2afbc475'
-                '0210afb5cb021dfbec5f69f8fa1b0fa72ab0779566850121021816325d19f'
-                'd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb700000000')
+                   '77e4d7fc707771229cf0000000006b4830450221008dd5c2feb30d40dd'
+                   '621afef413d3abc285d39aa0716233d7ccbc56a50678ebc4022005be97'
+                   'c4e432d373885b20ae822c432f96f78ad290a191f060730997ade095b0'
+                   '0121021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9b'
+                   'f9946364fbb7ffffffffcbd4b41660d8d348c15fc430deb5fd55d62cb7'
+                   '56b36d1c5b9f3c5af9e14e2cf40000000017160014905aa72f3d174709'
+                   '4a24d3adbc38905bb451ffc8ffffffff0280f0fa020000000017a914ea'
+                   '654a94b18eb41ce290c135cccf9f348e7856a28770aaf0080000000017'
+                   'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87000247304402'
+                   '2073604374fdbd121d8cf4facb19a553630d145e1a1405d8144d2c0cca'
+                   '77da30ba022004a47a760b6bc68e99b88c1febfd8620d6bfd4f609b83e'
+                   'e1c39f77f4689f69a20121021816325d19fd34fd87a039e83e35fc9de3'
+                   'c9de64a501a6684b9bf9946364fbb700000000')
 
 FINAL_TX_BATCH = ('010000000001024623e78d68e72b428eb4f53f73086ad824a2c2b6be90'
-                '6e3113ab2afc494406640000000023220020d3a4db6921782f78eb4f158f'
-                '73adde471629dd5aca41c14a5bfc2ec2a8f39202ffffffffe2ded7092c80'
-                '87f18343b716586ea047c060a36952a308fabf7565133907af3701000000'
-                '17160014905aa72f3d1747094a24d3adbc38905bb451ffc8ffffffff0200'
-                '286bee000000001600140ee268c86d05f290add1bfc9bdfc3992d785bce2'
-                '9888993b0000000017a914d35515db546bb040e61651150343a218c87b47'
-                '1e87040047304402207dc5472cb898a22e5a83069e5c13cd089dd1039645'
-                'bce9c5677ce552464df12202202f4f7723dab05b2f60a30b815feddb3650'
-                '8368585b71786baea166096501cf3601483045022100f88e3c0ab1e119f1'
-                '8f001cbe4734877a6e08e1fa5efb250ee7c73469fa8838da02201d4730ee'
-                '3749fc99fdc0fd6ec6199a4d51c82c839c97f596c5d00c2b2103a71b0147'
-                '5221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9'
-                '946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bbe0'
-                '56ff81b23e8c09280f52ae02473044022032c85230fb391a65bd07d07285'
-                '6296f425e31248d99dd65be93732c28f2d5cb90220706ec886bacb81e002'
-                '070a4ba4abe027448f90503ce479be82b72b2f97e924cb0121021816325d'
-                '19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb70000'
-                '0000')
+                  '6e3113ab2afc494406640000000023220020d3a4db6921782f78eb4f15'
+                  '8f73adde471629dd5aca41c14a5bfc2ec2a8f39202ffffffffe2ded709'
+                  '2c8087f18343b716586ea047c060a36952a308fabf7565133907af3701'
+                  '00000017160014905aa72f3d1747094a24d3adbc38905bb451ffc8ffff'
+                  'ffff0200286bee000000001600140ee268c86d05f290add1bfc9bdfc39'
+                  '92d785bce2505c9a3b0000000017a914d35515db546bb040e616511503'
+                  '43a218c87b471e870400473044022037e201de1f63d3f3f54bcea95a2c'
+                  'afb06efd77472219dab80ed5ccf6eaf0e63902205693fa791957ca0c7f'
+                  '40599913e03dd6a0cd9bb73d8dbdda7cd1c17ae5badd9f014730440220'
+                  '2f4dd12673ea33fb9e7e771f59dba4d7b4a3d820bac9633ea24cdb0241'
+                  '2f225002205ae28fefa3a2e9255faf17375aca5d1fe51fedf0b4dd3315'
+                  '2f64df1f7f53c42501475221021816325d19fd34fd87a039e83e35fc9d'
+                  'e3c9de64a501a6684b9bf9946364fbb721037d696886864509ed63044d'
+                  '8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f52ae024830450221'
+                  '0082e63d77985503a42307cd650a0a78630eb6edd84fefada23721ec54'
+                  '3614c53e0220407313344a20be5c7dfbb418d87bbd33916fe24ba5f38c'
+                  '2cba96d3499410bbd90121021816325d19fd34fd87a039e83e35fc9de3'
+                  'c9de64a501a6684b9bf9946364fbb700000000')
 
 INPUTS = [
     TxIn(
@@ -110,13 +111,13 @@ UNSPENTS_SEGWIT = [
             '76a914905aa72f3d1747094a24d3adbc38905bb451ffc888ac',
             'f09c22717770fcd7e477953c3ca7ecb9bd44ec4d5392f24fdd247dbb8db2d388',
             0,
-            False),
+            'p2pkh'),
     Unspent(100000000,
             1,
             'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87',
             'f42c4ee1f95a3c9f5b1c6db356b72cd655fdb5de30c45fc148d3d86016b4d4cb',
             0,
-            True)
+            'np2wkh')
 ]
 UNSPENTS_BATCH = [
     Unspent(2000000000,
@@ -124,13 +125,13 @@ UNSPENTS_BATCH = [
             'a914d35515db546bb040e61651150343a218c87b471e87',
             '64064449fc2aab13316e90beb6c2a224d86a08733ff5b48e422be7688de72346',
             0,
-            True),
+            'np2wsh'),
     Unspent(3000000000,
             1,
             'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87',
             '37af0739136575bffa08a35269a360c047a06e5816b74383f187802c09d7dee2',
             1,
-            True)
+            'np2wsh')
 ]
 OUTPUTS = [
     ('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 50000),
@@ -424,7 +425,7 @@ class TestSanitizeTxData:
     def test_no_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2500, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -458,9 +459,12 @@ class TestCreateSignedTransaction:
 
     def test_segwit_transaction(self):
         key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
-        tx = key1.create_transaction(outputs=[("2NEcbT1xeB7488HqpmXeC2u5zqYFQ5n4x5Q",
-                                               50000000, "satoshi")],
-                                     fee=200, unspents=UNSPENTS_SEGWIT)
+        tx = key1.create_transaction(
+            outputs=[("2NEcbT1xeB7488HqpmXeC2u5zqYFQ5n4x5Q", 50000000, "satoshi")],
+            fee=10000,
+            absolute_fee=True,
+            unspents=UNSPENTS_SEGWIT
+        )
         assert tx == FINAL_TX_SEGWIT
 
     def test_batch_and_multisig_tx(self):
@@ -469,9 +473,13 @@ class TestCreateSignedTransaction:
         p = [key1.public_key.hex(), key2.public_key.hex()]
         multi1 = MultiSigTestnet(key1, p, 2)
         multi2 = MultiSigTestnet(key2, p, 2)
-        tx0 = multi2.create_transaction(outputs=[("bcrt1qpm3x3jrdqhefptw3hlymmlpejttct08zgzzd2t",
-                                                  4000000000, "satoshi")],
-                                        fee=220, unspents=UNSPENTS_BATCH)
+        tx0 = multi2.create_transaction(
+            outputs=[("bcrt1qpm3x3jrdqhefptw3hlymmlpejttct08zgzzd2t",
+                      4000000000, "satoshi")],
+            fee=28080,
+            absolute_fee=True,
+            unspents=UNSPENTS_BATCH
+        )
         tx1 = key1.sign_transaction(tx0, unspents=UNSPENTS_BATCH)
         tx2 = multi1.sign_transaction(tx1, unspents=UNSPENTS_BATCH[::-1])
         assert tx2 == FINAL_TX_BATCH
@@ -527,13 +535,13 @@ class TestDeserializeTransaction:
 
 class TestEstimateTxFee:
     def test_accurate_compressed(self):
-        assert estimate_tx_fee(1, 2, 70, True) == 15820
+        assert estimate_tx_fee(148, 1, 68, 2, 70) == 15820
 
     def test_accurate_uncompressed(self):
-        assert estimate_tx_fee(1, 2, 70, False) == 18060
+        assert estimate_tx_fee(180, 1, 68, 2, 70) == 18060
 
     def test_none(self):
-        assert estimate_tx_fee(5, 5, 0, True) == 0
+        assert estimate_tx_fee(740, 5, 170, 5, 0) == 0
 
 
 class TestConstructOutputBlock:

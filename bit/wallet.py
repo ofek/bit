@@ -15,7 +15,7 @@ from bit.transaction import (
     deserialize, address_to_scriptpubkey
     )
 
-from bit.utils import bytes_to_hex
+from bit.utils import bytes_to_hex, int_to_varint
 
 
 def wif_to_key(wif):
@@ -226,10 +226,15 @@ class PrivateKey(BaseKey):
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkAPI.get_unspent(self.address)
-        if self.segwit_address:
-            segwit_unspents = NetworkAPI.get_unspent(self.segwit_address)
-            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
+        self.unspents[:] = list(map(
+            lambda u: u.set_type('p2pkh' if self.is_compressed else
+                                 'p2pkh-uncompressed'),
+            NetworkAPI.get_unspent(self.address)
+        ))
+        self.unspents += list(map(
+            lambda u: u.set_type('np2wpkh'),
+            NetworkAPI.get_unspent(self.segwit_address)
+        ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -243,8 +248,9 @@ class PrivateKey(BaseKey):
             self.transactions += NetworkAPI.get_transactions(self.segwit_address)
         return self.transactions
 
-    def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):  # pragma: no cover
+    def create_transaction(self, outputs, fee=None, absolute_fee=False,
+                           leftover=None, combine=True, message=None,
+                           unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -290,14 +296,14 @@ class PrivateKey(BaseKey):
             leftover or return_address,
             combine=combine,
             message=message,
-            compressed=self.is_compressed(),
+            absolute_fee=absolute_fee,
             version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, leftover=None, combine=True,
-             message=None, unspents=None):  # pragma: no cover
+    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
+             combine=True, message=None, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKey.create_transaction`.
@@ -333,7 +339,7 @@ class PrivateKey(BaseKey):
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -341,8 +347,9 @@ class PrivateKey(BaseKey):
         return calc_txid(tx_hex)
 
     @classmethod
-    def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
-                            combine=True, message=None, unspents=None):  # pragma: no cover
+    def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
+                            absolute_fee=False, leftover=None, combine=True,
+                            message=None, unspents=None):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -386,7 +393,7 @@ class PrivateKey(BaseKey):
             leftover or address,
             combine=combine,
             message=message,
-            compressed=compressed,
+            absolute_fee=absolute_fee,
             version='main'
         )
 
@@ -569,10 +576,15 @@ class PrivateKeyTestnet(BaseKey):
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
-        if self.segwit_address:
-            segwit_unspents = NetworkAPI.get_unspent_testnet(self.segwit_address)
-            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
+        self.unspents[:] = list(map(
+            lambda u: u.set_type('p2pkh' if self.is_compressed else
+                                 'p2pkh-uncompressed'),
+            NetworkAPI.get_unspent_testnet(self.address)
+        ))
+        self.unspents += list(map(
+            lambda u: u.set_type('np2wpkh'),
+            NetworkAPI.get_unspent_testnet(self.segwit_address)
+        ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -586,8 +598,9 @@ class PrivateKeyTestnet(BaseKey):
             self.transactions += NetworkAPI.get_transactions_testnet(self.segwit_address)
         return self.transactions
 
-    def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):
+    def create_transaction(self, outputs, fee=None, absolute_fee=False,
+                           leftover=None, combine=True, message=None,
+                           unspents=None):
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -633,14 +646,14 @@ class PrivateKeyTestnet(BaseKey):
             leftover or return_address,
             combine=combine,
             message=message,
-            compressed=self.is_compressed(),
+            absolute_fee=absolute_fee,
             version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, leftover=None, combine=True,
-             message=None, unspents=None):
+    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
+             combine=True, message=None, unspents=None):
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKeyTestnet.create_transaction`.
@@ -676,7 +689,7 @@ class PrivateKeyTestnet(BaseKey):
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -684,8 +697,9 @@ class PrivateKeyTestnet(BaseKey):
         return calc_txid(tx_hex)
 
     @classmethod
-    def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
-                            combine=True, message=None, unspents=None):
+    def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
+                            absolute_fee=False, leftover=None, combine=True,
+                            message=None, unspents=None):
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -729,7 +743,7 @@ class PrivateKeyTestnet(BaseKey):
             leftover or address,
             combine=combine,
             message=message,
-            compressed=compressed,
+            absolute_fee=absolute_fee,
             version='test'
         )
 
@@ -933,10 +947,19 @@ class MultiSig:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkAPI.get_unspent(self.address)
-        if self.segwit_address:
-            segwit_unspents = NetworkAPI.get_unspent(self.segwit_address)
-            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
+        # TODO: Make those vsizes more readable and understandable
+        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(self.redeemscript))
+                          + len(self.public_keys) * 34)
+        add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
+
+        self.unspents[:] = list(map(
+            lambda u: u.set_type('p2sh', add_p2sh_vsize+46),
+            NetworkAPI.get_unspent(self.address)
+        ))
+        self.unspents += list(map(
+            lambda u: u.set_type('np2wsh', add_np2wsh_vsize+75),
+            NetworkAPI.get_unspent(self.segwit_address)
+        ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -949,8 +972,9 @@ class MultiSig:
         self.transactions += NetworkAPI.get_transactions(self.segwit_address)
         return self.transactions
 
-    def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):
+    def create_transaction(self, outputs, fee=None, absolute_fee=False,
+                           leftover=None, combine=True, message=None,
+                           unspents=None):
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -996,13 +1020,14 @@ class MultiSig:
             leftover or return_address,
             combine=combine,
             message=message,
+            absolute_fee=absolute_fee,
             version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, leftover=None, combine=True,
-             message=None, unspents=None):  # pragma: no cover
+    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
+             combine=True, message=None, unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKey.create_transaction`.
@@ -1038,7 +1063,7 @@ class MultiSig:
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -1046,8 +1071,9 @@ class MultiSig:
         return calc_txid(tx_hex)
 
     @classmethod
-    def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
-                            combine=True, message=None, unspents=None):  # pragma: no cover
+    def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
+                            absolute_fee=False, leftover=None, combine=True,
+                            message=None, unspents=None):  # pragma: no cover
         """Prepares a P2SH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -1091,7 +1117,7 @@ class MultiSig:
             leftover or address,
             combine=combine,
             message=message,
-            compressed=compressed,
+            absolute_fee=absolute_fee,
             version='main'
         )
 
@@ -1245,10 +1271,19 @@ class MultiSigTestnet:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkAPI.get_unspent_testnet(self.address)
-        if self.segwit_address:
-            segwit_unspents = NetworkAPI.get_unspent_testnet(self.segwit_address)
-            self.unspents += list(map(lambda u: u.set_segwit(True), segwit_unspents))
+        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(self.redeemscript))
+                          + len(self.public_keys) * 34)
+        add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
+
+        self.unspents[:] = list(map(
+            lambda u: u.set_type('p2sh', add_p2sh_vsize+46),
+            NetworkAPI.get_unspent_testnet(self.address)
+        ))
+        self.unspents += list(map(
+            lambda u: u.set_type('np2wsh', add_np2wsh_vsize+75),
+            NetworkAPI.get_unspent_testnet(self.segwit_address)
+        ))
+
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -1261,8 +1296,9 @@ class MultiSigTestnet:
         self.transactions += NetworkAPI.get_transactions_testnet(self.segwit_address)
         return self.transactions
 
-    def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
-                           message=None, unspents=None):
+    def create_transaction(self, outputs, fee=None, absolute_fee=False,
+                           leftover=None, combine=True, message=None,
+                           unspents=None):
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -1308,13 +1344,14 @@ class MultiSigTestnet:
             leftover or return_address,
             combine=combine,
             message=message,
+            absolute_fee=absolute_fee,
             version=self.version
         )
 
         return create_new_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, leftover=None, combine=True,
-             message=None, unspents=None):  # pragma: no cover
+    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
+             combine=True, message=None, unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKey.create_transaction`.
@@ -1350,7 +1387,7 @@ class MultiSigTestnet:
         """
 
         tx_hex = self.create_transaction(
-            outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
+            outputs, fee=fee, absolute_fee=absolute_fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -1358,8 +1395,9 @@ class MultiSigTestnet:
         return calc_txid(tx_hex)
 
     @classmethod
-    def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
-                            combine=True, message=None, unspents=None):  # pragma: no cover
+    def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
+                            absolute_fee=False, leftover=None, combine=True,
+                            message=None, unspents=None):  # pragma: no cover
         """Prepares a P2SH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -1403,7 +1441,7 @@ class MultiSigTestnet:
             leftover or address,
             combine=combine,
             message=message,
-            compressed=compressed,
+            absolute_fee=absolute_fee,
             version='test'
         )
 
