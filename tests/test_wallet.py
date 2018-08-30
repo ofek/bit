@@ -250,8 +250,20 @@ class TestPrivateKeyTestnet:
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
         private_key.get_unspents()
 
-        with pytest.raises(ValueError):
-            private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'jpy')])
+        initial = len(private_key.get_transactions())
+        current = initial
+        tries = 0
+
+        private_key.send([('2NFKbBHzzh32q5DcZJNgZE9sF7gYmtPbawk', 1, 'jpy')])
+
+        while tries < 15:  # pragma: no cover
+            current = len(private_key.get_transactions())
+            if current > initial:
+                break
+            time.sleep(5)
+            tries += 1
+
+        assert current > initial
 
     def test_cold_storage(self):
         if TRAVIS and sys.version_info[:2] != (3, 6):
