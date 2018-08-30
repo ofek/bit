@@ -44,12 +44,10 @@ class TestGetVersion:
             get_version('dg2dNAjuezub6iJVPNML5pW5ZQvtA9ocL')
 
     def test_mainnet_pay2sh(self):
-        with pytest.raises(ValueError):
-            get_version(BITCOIN_ADDRESS_PAY2SH)
+        assert get_version(BITCOIN_ADDRESS_PAY2SH) == 'main'
 
     def test_testnet_pay2sh(self):
-        with pytest.raises(ValueError):
-            get_version(BITCOIN_ADDRESS_TEST_PAY2SH)
+        assert get_version(BITCOIN_ADDRESS_TEST_PAY2SH) == 'test'
 
 
 class TestVerifySig:
