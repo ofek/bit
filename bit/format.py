@@ -45,9 +45,9 @@ def address_to_public_key_hash(address):
 def get_version(address):
     version = b58decode_check(address)[:1]
 
-    if version == MAIN_PUBKEY_HASH:
+    if version in (MAIN_PUBKEY_HASH, MAIN_SCRIPT_HASH):
         return 'main'
-    elif version == TEST_PUBKEY_HASH:
+    elif version in (TEST_PUBKEY_HASH, TEST_SCRIPT_HASH):
         return 'test'
     else:
         raise ValueError('{} does not correspond to a mainnet nor '
