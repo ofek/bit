@@ -3,15 +3,25 @@ import pytest
 from bit.exceptions import InsufficientFunds
 from bit.network.meta import Unspent
 from bit.transaction import (
-    TxIn, calc_txid, create_new_transaction, construct_input_block,
-    construct_outputs, estimate_tx_fee, sanitize_tx_data
+    TxIn, TxOut, TxObj, calc_txid, create_new_transaction,
+    construct_outputs, deserialize, estimate_tx_fee, sanitize_tx_data,
+    select_coins
 )
-from bit.utils import hex_to_bytes
-from bit.wallet import PrivateKey
-from .samples import WALLET_FORMAT_MAIN
+from bit.utils import hex_to_bytes, get_signatures_from_script
+from bit.wallet import PrivateKey, PrivateKeyTestnet, MultiSigTestnet
+from .samples import (
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST_1,
+    WALLET_FORMAT_TEST_2, BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST,
+    BITCOIN_ADDRESS_PAY2SH, BITCOIN_ADDRESS_TEST_PAY2SH,
+    BITCOIN_SEGWIT_ADDRESS, BITCOIN_SEGWIT_ADDRESS_PAY2SH,
+    BITCOIN_SEGWIT_HASH, BITCOIN_SEGWIT_HASH_PAY2SH, BITCOIN_SEGWIT_ADDRESS_TEST,
+    BITCOIN_SEGWIT_ADDRESS_TEST_PAY2SH, BITCOIN_SEGWIT_HASH_TEST,
+    BITCOIN_SEGWIT_HASH_TEST_PAY2SH, PAY2SH_HASH, PAY2SH_TEST_HASH
+)
 
 
 RETURN_ADDRESS = 'n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi'
+RETURN_ADDRESS_MAIN = '1ELReFsTCUY2mfaDTy32qxYiT49z786eFg'
 
 FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a3c2'
               'da23adf3010000008a473044022068b8dce776ef1c071f4c516836cdfb358e44ef'
@@ -22,6 +32,54 @@ FINAL_TX_1 = ('01000000018878399d83ec25c627cfbf753ff9ca3602373eac437ab2676154a3c
               'c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac0888fc04000000001976a914'
               '92461bde6283b461ece7ddf4dbf1e0a48bd113d888ac00000000')
 
+SEGWIT_TX_1 = ('010000000001021f9c125fc1c14ef7f4b03b4b7dad7be4c3b054d7c266689a456a'
+               'daffd6ec7a31010000006a47304402201cfc264e99287d17fd19a9d8d82746b97e'
+               '80a2e94e5bbe3ef73a44a3df2399e702207152926699eb4555a88a3243c6640627'
+               '6e9aba808c24049e7dedba27b057b1b00121021816325d19fd34fd87a039e83e35'
+               'fc9de3c9de64a501a6684b9bf9946364fbb7ffffffff6e6d2db49c4bf5bb97e888'
+               '30058a58eb1c4d092e980b2bb663c81632f5dd8b0b0100000017160014175e9f8b'
+               '21d4f2f76a7360458f90717e08fbcdb6ffffffff0280f0fa02000000001600140e'
+               'e268c86d05f290add1bfc9bdfc3992d785bce2e84ef5050000000017a9146a45a0'
+               '3574460e17a1d75d9535d90bad20d8d79b870002473044022033a25adc3230a0b9'
+               '3028520b2bd089e26ce366bcf22064d41f6c5a3c200d956302201f45ef76dde3fc'
+               '27f741f9fc93e6280dac991c364ee578eafb3348db662339000121037d69688686'
+               '4509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f00000000')
+
+FINAL_TX_SEGWIT = ('0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c95'
+                   '77e4d7fc707771229cf0000000006b4830450221008dd5c2feb30d40dd'
+                   '621afef413d3abc285d39aa0716233d7ccbc56a50678ebc4022005be97'
+                   'c4e432d373885b20ae822c432f96f78ad290a191f060730997ade095b0'
+                   '0121021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9b'
+                   'f9946364fbb7ffffffffcbd4b41660d8d348c15fc430deb5fd55d62cb7'
+                   '56b36d1c5b9f3c5af9e14e2cf40000000017160014905aa72f3d174709'
+                   '4a24d3adbc38905bb451ffc8ffffffff0280f0fa020000000017a914ea'
+                   '654a94b18eb41ce290c135cccf9f348e7856a28770aaf0080000000017'
+                   'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87000247304402'
+                   '2073604374fdbd121d8cf4facb19a553630d145e1a1405d8144d2c0cca'
+                   '77da30ba022004a47a760b6bc68e99b88c1febfd8620d6bfd4f609b83e'
+                   'e1c39f77f4689f69a20121021816325d19fd34fd87a039e83e35fc9de3'
+                   'c9de64a501a6684b9bf9946364fbb700000000')
+
+FINAL_TX_BATCH = ('010000000001024623e78d68e72b428eb4f53f73086ad824a2c2b6be90'
+                  '6e3113ab2afc494406640000000023220020d3a4db6921782f78eb4f15'
+                  '8f73adde471629dd5aca41c14a5bfc2ec2a8f39202ffffffffe2ded709'
+                  '2c8087f18343b716586ea047c060a36952a308fabf7565133907af3701'
+                  '00000017160014905aa72f3d1747094a24d3adbc38905bb451ffc8ffff'
+                  'ffff0200286bee000000001600140ee268c86d05f290add1bfc9bdfc39'
+                  '92d785bce2505c9a3b0000000017a914d35515db546bb040e616511503'
+                  '43a218c87b471e870400473044022037e201de1f63d3f3f54bcea95a2c'
+                  'afb06efd77472219dab80ed5ccf6eaf0e63902205693fa791957ca0c7f'
+                  '40599913e03dd6a0cd9bb73d8dbdda7cd1c17ae5badd9f014730440220'
+                  '2f4dd12673ea33fb9e7e771f59dba4d7b4a3d820bac9633ea24cdb0241'
+                  '2f225002205ae28fefa3a2e9255faf17375aca5d1fe51fedf0b4dd3315'
+                  '2f64df1f7f53c42501475221021816325d19fd34fd87a039e83e35fc9d'
+                  'e3c9de64a501a6684b9bf9946364fbb721037d696886864509ed63044d'
+                  '8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f52ae024830450221'
+                  '0082e63d77985503a42307cd650a0a78630eb6edd84fefada23721ec54'
+                  '3614c53e0220407313344a20be5c7dfbb418d87bbd33916fe24ba5f38c'
+                  '2cba96d3499410bbd90121021816325d19fd34fd87a039e83e35fc9de3'
+                  'c9de64a501a6684b9bf9946364fbb700000000')
+
 INPUTS = [
     TxIn(
         (b"G0D\x02 E\xb7C\xdb\xaa\xaa,\xd1\xef\x0b\x914oVD\xe3-\xc7\x0c\xde\x05\t"
@@ -30,7 +88,6 @@ INPUTS = [
          b"hu\xa7\x1a]\xb6L\xff\xcb\x139k\x16=\x03\x9b\x1d\x93'\x82H\x91\x80C4v"
          b"\xa45**\xdd\x00\xeb\xb0\xd5\xc9LQ[r\xeb\x10\xf1\xfd\x8f?\x03\xb4/J+%["
          b"\xfc\x9a\xa9\xe3"),
-#        b'\x8a',
         (b"\x88x9\x9d\x83\xec%\xc6'\xcf\xbfu?\xf9\xca6\x027>"
          b"\xacCz\xb2gaT\xa3\xc2\xda#\xad\xf3"),
         b'\x01\x00\x00\x00'
@@ -48,6 +105,34 @@ UNSPENTS = [
             '76a91492461bde6283b461ece7ddf4dbf1e0a48bd113d888ac',
             'f3ad23dac2a3546167b27a43ac3e370236caf93f75bfcf27c625ec839d397888',
             1)
+]
+UNSPENTS_SEGWIT = [
+    Unspent(100000000,
+            1,
+            '76a914905aa72f3d1747094a24d3adbc38905bb451ffc888ac',
+            'f09c22717770fcd7e477953c3ca7ecb9bd44ec4d5392f24fdd247dbb8db2d388',
+            0,
+            'p2pkh'),
+    Unspent(100000000,
+            1,
+            'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87',
+            'f42c4ee1f95a3c9f5b1c6db356b72cd655fdb5de30c45fc148d3d86016b4d4cb',
+            0,
+            'np2wkh')
+]
+UNSPENTS_BATCH = [
+    Unspent(2000000000,
+            1,
+            'a914d35515db546bb040e61651150343a218c87b471e87',
+            '64064449fc2aab13316e90beb6c2a224d86a08733ff5b48e422be7688de72346',
+            0,
+            'np2wsh'),
+    Unspent(3000000000,
+            1,
+            'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87',
+            '37af0739136575bffa08a35269a360c047a06e5816b74383f187802c09d7dee2',
+            1,
+            'np2wsh')
 ]
 OUTPUTS = [
     ('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 50000),
@@ -69,25 +154,147 @@ SIGNED_DATA = (b'\x85\xc7\xf6\xc6\x80\x13\xc2g\xd3t\x8e\xb8\xb4\x1f\xcc'
 
 class TestTxIn:
     def test_init(self):
-        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
-        assert txin.script == b'script'
-        assert txin.script_len == b'\x06'
+        txin = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
+        assert txin.script_sig == b'script'
+        assert txin.script_sig_len == b'\x06'
         assert txin.txid == b'txid'
         assert txin.txindex == b'\x04'
+        assert txin.witness == b''
+        assert txin.sequence == b'\xff\xff\xff\xff'
+
+    def test_init_segwit(self):
+        txin = TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')
+        assert txin.script_sig == b'script'
+        assert txin.script_sig_len == b'\x06'
+        assert txin.txid == b'txid'
+        assert txin.txindex == b'\x04'
+        assert txin.witness == b'witness'
+        assert txin.amount == None
         assert txin.sequence == b'\xff\xff\xff\xff'
 
     def test_equality(self):
-        txin1 = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
-        txin2 = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
-        txin3 = TxIn(b'script', b'txi', b'\x03', b'\xff\xff\xff\xff')
+        txin1 = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
+        txin2 = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
+        txin3 = TxIn(b'script', b'txi', b'\x03', sequence=b'\xff\xff\xff\xff')
         assert txin1 == txin2
         assert txin1 != txin3
 
     def test_repr(self):
-        txin = TxIn(b'script', b'txid', b'\x04', b'\xff\xff\xff\xff')
+        txin = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
 
         assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, {})" \
                              "".format(repr(b'\x06'), repr(b'\x04'), repr(b'\xff\xff\xff\xff'))
+
+    def test_repr_segwit(self):
+        txin = TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')
+
+        assert repr(txin) == "TxIn(b'script', {}, b'txid', {}, b'witness', {}, {})" \
+                             "".format(repr(b'\x06'), repr(b'\x04'), repr(None), repr(b'\xff\xff\xff\xff'))
+
+    def test_bytes_repr(self):
+        txin = TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')
+
+        assert bytes(txin) == b''.join([b'txid', b'\x04', b'\x06', b'script', b'\xff\xff\xff\xff'])
+
+
+class TestTxOut:
+    def test_init(self):
+        txout = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        assert txout.amount == b'\x88\x13\x00\x00\x00\x00\x00\x00'
+        assert txout.script_pubkey_len == b'\r'
+        assert txout.script_pubkey == b'script_pubkey'
+
+    def test_equality(self):
+        txout1 = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        txout2 = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        txout3 = TxOut(b'\x88\x14\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+        txout4 = TxOut(b'\x88\x14\x00\x00\x00\x00\x00\x00', b'script_pub')
+        assert txout1 == txout2
+        assert txout1 != txout3
+        assert txout3 != txout4
+
+    def test_repr(self):
+        txout = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+
+        assert repr(txout) == "TxOut({}, b'script_pubkey', {})" \
+                              "".format(repr(b'\x88\x13\x00\x00\x00\x00\x00\x00'), repr(b'\r'))
+
+    def test_bytes_repr(self):
+        txout = TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')
+
+        assert bytes(txout) == b''.join([b'\x88\x13\x00\x00\x00\x00\x00\x00', b'\r', b'script_pubkey'])
+
+
+class TestTxObj:
+    def test_init(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        assert txobj.version == b'\x01\x00\x00\x00'
+        assert txobj.TxIn == txin
+        assert txobj.TxOut == txout
+        assert txobj.locktime == b'\x00\x00\x00\x00'
+
+    def test_init_segwit(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        assert txobj.version == b'\x01\x00\x00\x00'
+        assert txobj.marker+txobj.flag == b'\x00\x01'
+        assert txobj.TxIn == txin
+        assert txobj.TxOut == txout
+        assert txobj.locktime == b'\x00\x00\x00\x00'
+
+    def test_equality(self):
+        txin1 = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
+        txin2 = [TxIn(b'scrip2', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
+        txout1 = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txout2 = [TxOut(b'\x88\x14\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+
+        txobj1 = TxObj(b'\x01\x00\x00\x00', txin1, txout1, b'\x00\x00\x00\x00')
+        txobj2 = TxObj(b'\x01\x00\x00\x00', txin1, txout1, b'\x00\x00\x00\x00')
+        txobj3 = TxObj(b'\x01\x00\x00\x00', txin1, txout2, b'\x00\x00\x00\x00')
+        txobj4 = TxObj(b'\x01\x00\x00\x00', txin2, txout1, b'\x00\x00\x00\x00')
+        txobj5 = TxObj(b'\x02\x00\x00\x00', txin1, txout1, b'\x00\x00\x00\x00')
+        txobj6 = TxObj(b'\x01\x00\x00\x00', txin1, txout1, b'\x01\x00\x00\x00')
+
+        assert txobj1 == txobj2
+        assert txobj1 != txobj3
+        assert txobj1 != txobj4
+        assert txobj1 != txobj5
+        assert txobj1 != txobj6
+
+    def test_repr(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        assert repr(txobj) == "TxObj({}, {}, {}, {})" \
+                              "".format(repr(b'\x01\x00\x00\x00'),
+                                        repr(txin),
+                                        repr(txout),
+                                        repr(b'\x00\x00\x00\x00'))
+
+    def test_bytes_repr(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        assert bytes(txobj) == b''.join([b'\x01\x00\x00\x00',
+                                         b'\x01txid\x04\x06script\xff\xff\xff\xff',
+                                         b'\x01\x88\x13\x00\x00\x00\x00\x00\x00\rscript_pubkey',
+                                         b'\x00\x00\x00\x00'])
+
+    def test_bytes_repr_segwit(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        assert bytes(txobj) == b''.join([b'\x01\x00\x00\x00', b'\x00\x01',
+                                         b'\x01txid\x04\x06script\xff\xff\xff\xff',
+                                         b'\x01\x88\x13\x00\x00\x00\x00\x00\x00\rscript_pubkey',
+                                         b'witness',
+                                         b'\x00\x00\x00\x00'])
 
 
 class TestSanitizeTxData:
@@ -98,11 +305,11 @@ class TestSanitizeTxData:
     def test_message(self):
         unspents_original = [Unspent(10000, 0, '', '', 0),
                              Unspent(10000, 0, '', '', 0)]
-        outputs_original = [('test', 1000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 1000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=5, leftover=RETURN_ADDRESS,
-            combine=True, message='hello'
+            combine=True, message='hello', version='test'
         )
 
         assert len(outputs) == 3
@@ -112,7 +319,7 @@ class TestSanitizeTxData:
     def test_fee_applied(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS, 2000, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
@@ -123,24 +330,24 @@ class TestSanitizeTxData:
     def test_zero_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=True, message=None
+            combine=True, message=None, version='test'
         )
 
         assert unspents == unspents_original
-        assert outputs == [('test', 2000)]
+        assert outputs == [(BITCOIN_ADDRESS_TEST, 2000)]
 
     def test_combine_remaining(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 500, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 500, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=True, message=None
+            combine=True, message=None, version='test'
         )
 
         assert unspents == unspents_original
@@ -151,43 +358,28 @@ class TestSanitizeTxData:
     def test_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2500, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
                 unspents_original, outputs_original, fee=50, leftover=RETURN_ADDRESS,
-                combine=True, message=None
+                combine=True, message=None, version='test'
             )
 
     def test_no_combine_remaining(self):
         unspents_original = [Unspent(7000, 0, '', '', 0),
                              Unspent(3000, 0, '', '', 0)]
-        outputs_original = [('test', 2000, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2000, 'satoshi')]
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=False, message=None
+            combine=False, message=None, version='test'
         )
 
-        assert unspents == [Unspent(3000, 0, '', '', 0)]
+        assert(len(unspents)) == 1
         assert len(outputs) == 2
         assert outputs[1][0] == RETURN_ADDRESS
-        assert outputs[1][1] == 1000
-
-    def test_no_combine_remaining_small_inputs(self):
-        unspents_original = [Unspent(1500, 0, '', '', 0),
-                             Unspent(1600, 0, '', '', 0),
-                             Unspent(1700, 0, '', '', 0)]
-        outputs_original = [(RETURN_ADDRESS, 2000, 'satoshi')]
-
-        unspents, outputs = sanitize_tx_data(
-            unspents_original, outputs_original, fee=0, leftover=RETURN_ADDRESS,
-            combine=False, message=None
-        )
-        assert unspents == [Unspent(1500, 0, '', '', 0), Unspent(1600, 0, '', '', 0)]
-        assert len(outputs) == 2
-        assert outputs[1][0] == RETURN_ADDRESS
-        assert outputs[1][1] == 1100
+        assert outputs[1][1] == unspents[0].amount - 2000
 
     def test_no_combine_with_fee(self):
         """
@@ -200,12 +392,12 @@ class TestSanitizeTxData:
 
         unspents, outputs = sanitize_tx_data(
             unspents_original, outputs_original, fee=1, leftover=RETURN_ADDRESS,
-            combine=False, message=None
+            combine=False, message=None, version='test'
         )
 
         unspents_single, outputs_single = sanitize_tx_data(
             unspents_single, outputs_original, fee=1, leftover=RETURN_ADDRESS,
-            combine=False, message=None
+            combine=False, message=None, version='test'
         )
 
         assert unspents == [Unspent(5000, 0, '', '', 0)]
@@ -219,12 +411,29 @@ class TestSanitizeTxData:
     def test_no_combine_insufficient_funds(self):
         unspents_original = [Unspent(1000, 0, '', '', 0),
                              Unspent(1000, 0, '', '', 0)]
-        outputs_original = [('test', 2500, 'satoshi')]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 2500, 'satoshi')]
 
         with pytest.raises(InsufficientFunds):
             sanitize_tx_data(
                 unspents_original, outputs_original, fee=50, leftover=RETURN_ADDRESS,
                 combine=False, message=None
+            )
+
+    def test_no_combine_mainnet_with_testnet(self):
+        unspents = [Unspent(20000, 0, '', '', 0)]
+        outputs = [(BITCOIN_ADDRESS, 500, 'satoshi'),
+                   (BITCOIN_ADDRESS_TEST, 500, 'satoshi')]
+
+        with pytest.raises(ValueError):
+            sanitize_tx_data(
+                unspents, outputs, fee=50, leftover=RETURN_ADDRESS,  # leftover is a testnet-address
+                combine=False, message=None, version='main'
+            )
+
+        with pytest.raises(ValueError):
+            sanitize_tx_data(
+                unspents, outputs, fee=50, leftover=BITCOIN_ADDRESS,  # leftover is a mainnet-address
+                combine=False, message=None, version='main'
             )
 
 
@@ -234,44 +443,209 @@ class TestCreateSignedTransaction:
         tx = create_new_transaction(private_key, UNSPENTS, OUTPUTS)
         assert tx[-288:] == FINAL_TX_1[-288:]
 
+    def test_segwit_transaction(self):
+        outputs = [("2NEcbT1xeB7488HqpmXeC2u5zqYFQ5n4x5Q", 50000000),
+                   ("2N21Gzex7WJCzzsA5D33nofcnm1dYSKuJzT", 149990000)]
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        tx = create_new_transaction(private_key, UNSPENTS_SEGWIT, outputs)
+        assert tx == FINAL_TX_SEGWIT
+
+    def test_batch_and_multisig_tx(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_2)
+        p = [key1.public_key.hex(), key2.public_key.hex()]
+        multi1 = MultiSigTestnet(key1, p, 2)
+        multi2 = MultiSigTestnet(key2, p, 2)
+        tx0 = create_new_transaction(
+            multi2,
+            UNSPENTS_BATCH,
+            [("bcrt1qpm3x3jrdqhefptw3hlymmlpejttct08zgzzd2t", 4000000000),
+            ("2NCWeVbWmaUp92dSFP3RddPk6r3GTd6cDd6", 999971920)]
+        )
+        tx1 = key1.sign_transaction(tx0, unspents=UNSPENTS_BATCH)
+        tx2 = multi1.sign_transaction(tx1, unspents=UNSPENTS_BATCH[::-1])
+        assert tx2 == FINAL_TX_BATCH
+
+
+class TestDeserializeTransaction:
+    def test_legacy_deserialize(self):
+        txobj = deserialize(FINAL_TX_1)
+        assert txobj.version == hex_to_bytes(FINAL_TX_1[:8])
+        assert txobj.marker+txobj.flag == b''
+        assert len(txobj.TxIn) == 1
+        assert txobj.TxIn[0].txid == hex_to_bytes(FINAL_TX_1[10:74])
+        assert txobj.TxIn[0].txindex == hex_to_bytes(FINAL_TX_1[74:82])
+        assert txobj.TxIn[0].script_sig_len == hex_to_bytes(FINAL_TX_1[82:84])
+        assert txobj.TxIn[0].script_sig == hex_to_bytes(FINAL_TX_1[84:360])
+        assert txobj.TxIn[0].witness == b''
+        assert txobj.TxIn[0].sequence == hex_to_bytes(FINAL_TX_1[360:368])
+        assert len(txobj.TxOut) == 2
+        assert txobj.TxOut[0].amount == hex_to_bytes(FINAL_TX_1[370:386])
+        assert txobj.TxOut[0].script_pubkey_len == hex_to_bytes(FINAL_TX_1[386:388])
+        assert txobj.TxOut[0].script_pubkey == hex_to_bytes(FINAL_TX_1[388:438])
+        assert txobj.TxOut[1].amount == hex_to_bytes(FINAL_TX_1[438:454])
+        assert txobj.TxOut[1].script_pubkey_len == hex_to_bytes(FINAL_TX_1[454:456])
+        assert txobj.TxOut[1].script_pubkey == hex_to_bytes(FINAL_TX_1[456:506])
+        assert txobj.locktime == hex_to_bytes(FINAL_TX_1[506:])
+
+    def test_segwit_deserialize(self):
+        txobj = deserialize(SEGWIT_TX_1)
+        assert txobj.version == hex_to_bytes(SEGWIT_TX_1[:8])
+        assert txobj.marker+txobj.flag == hex_to_bytes(SEGWIT_TX_1[8:12])
+        assert len(txobj.TxIn) == 2
+        assert txobj.TxIn[0].txid == hex_to_bytes(SEGWIT_TX_1[14:78])
+        assert txobj.TxIn[0].txindex == hex_to_bytes(SEGWIT_TX_1[78:86])
+        assert txobj.TxIn[0].script_sig_len == hex_to_bytes(SEGWIT_TX_1[86:88])
+        assert txobj.TxIn[0].script_sig == hex_to_bytes(SEGWIT_TX_1[88:300])
+        assert txobj.TxIn[0].sequence == hex_to_bytes(SEGWIT_TX_1[300:308])
+        assert txobj.TxIn[0].witness == hex_to_bytes(SEGWIT_TX_1[564:566])
+        assert txobj.TxIn[1].txid == hex_to_bytes(SEGWIT_TX_1[308:372])
+        assert txobj.TxIn[1].txindex == hex_to_bytes(SEGWIT_TX_1[372:380])
+        assert txobj.TxIn[1].script_sig_len == hex_to_bytes(SEGWIT_TX_1[380:382])
+        assert txobj.TxIn[1].script_sig == hex_to_bytes(SEGWIT_TX_1[382:428])
+        assert txobj.TxIn[1].sequence == hex_to_bytes(SEGWIT_TX_1[428:436])
+        assert txobj.TxIn[1].witness == hex_to_bytes(SEGWIT_TX_1[566:780])
+        assert len(txobj.TxOut) == 2
+        assert txobj.TxOut[0].amount == hex_to_bytes(SEGWIT_TX_1[438:454])
+        assert txobj.TxOut[0].script_pubkey_len == hex_to_bytes(SEGWIT_TX_1[454:456])
+        assert txobj.TxOut[0].script_pubkey == hex_to_bytes(SEGWIT_TX_1[456:500])
+        assert txobj.TxOut[1].amount == hex_to_bytes(SEGWIT_TX_1[500:516])
+        assert txobj.TxOut[1].script_pubkey_len == hex_to_bytes(SEGWIT_TX_1[516:518])
+        assert txobj.TxOut[1].script_pubkey == hex_to_bytes(SEGWIT_TX_1[518:564])
+        assert txobj.locktime == hex_to_bytes(SEGWIT_TX_1[780:])
+
+
+class TestGetSignaturesFromScript:
+    def test_get_signatures_1(self):
+        script = hex_to_bytes(
+                  '0047304402200b526cf17f86891a62f4bd27745494005682d650c27dda87'
+                  '7f35b0161c38bc9002204674a0be6275ce948812c200251802d15eaa1953'
+                  '3d864d64b83b992c10b3ecf201'
+                  '483045022100a57ba5464a03343bd5ebf21ce0d3d49b84710c62a421b7d5'
+                  'b86de75ca10d8c7602206395d6a552fc0dbb31d3c0b1db34fa4a14cc29d6'
+                  '60c8c68172c7e513cb6a0ac901'
+                  '475221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9b'
+                  'f9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bbe'
+                  '056ff81b23e8c09280f52ae')
+        sigs = get_signatures_from_script(script)
+        assert len(sigs) == 2
+        assert sigs[0][:4] == hex_to_bytes('30440220')
+        assert sigs[0][-4:] == hex_to_bytes('b3ecf201')
+        assert sigs[1][:4] == hex_to_bytes('30450221')
+        assert sigs[1][-4:] == hex_to_bytes('6a0ac901')
+
+        def test_get_signatures_2(self):
+            script = hex_to_bytes(
+                  '0047304402200b526cf17f86891a62f4bd27745494005682d650c27dda87'
+                  '7f35b0161c38bc9002204674a0be6275ce948812c200251802d15eaa1953'
+                  '3d864d64b83b992c10b3ecf201'
+                  '00'
+                  '695221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9b'
+                  'f9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bb'
+                  'e056ff81b23e8c09280f21033dc7fb58b701fc0af63ee3a8b72ebbeed04a'
+                  '1c006b50007f32ec6a33a56213f853ae0400483045022100f686296df668'
+                  '17198feead5fa24f3f04cb7e6780187e73fc8c531254fd002c13022044ef'
+                  'e2ea00f31de395376d83cb122bd708116d151bdf2de61107d77447b475c6'
+                  '0100695221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a668'
+                  '4b9bf9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247b'
+                  'd2bbe056ff81b23e8c09280f21033dc7fb58b701fc0af63ee3a8b72ebbee'
+                  'd04a1c006b50007f32ec6a33a56213f853ae')
+            sigs = get_signatures_from_script(script)
+            assert len(sigs) == 1
+            assert sigs[0][:4] == hex_to_bytes('30440220')
+            assert sigs[0][-4:] == hex_to_bytes('b3ecf201')
+
+
 
 class TestEstimateTxFee:
     def test_accurate_compressed(self):
-        assert estimate_tx_fee(1, 2, 70, True) == 15820
+        assert estimate_tx_fee(148, 1, 68, 2, 70) == 15820
 
     def test_accurate_uncompressed(self):
-        assert estimate_tx_fee(1, 2, 70, False) == 18060
+        assert estimate_tx_fee(180, 1, 68, 2, 70) == 18060
 
     def test_none(self):
-        assert estimate_tx_fee(5, 5, 0, True) == 0
+        assert estimate_tx_fee(740, 5, 170, 5, 0) == 0
+
+
+class TestSelectCoins:
+    def test_perfect_match(self):
+        unspents, remaining = select_coins(100000000, 0, [34, 34], 0, absolute_fee=True,
+            consolidate=False, unspents=UNSPENTS_SEGWIT)
+        assert len(unspents) == 1
+        assert remaining == 0
+
+    def test_perfect_match_with_range(self):
+        unspents, remaining = select_coins(99960000, 200, [34, 34], 0, absolute_fee=True,
+            consolidate=False, unspents=UNSPENTS_SEGWIT)
+        assert len(unspents) == 1
+        assert remaining == 0
+
+    def test_random_draw(self):
+        print(UNSPENTS_SEGWIT)
+        unspents, remaining = select_coins(150000000, 0, [34, 34], 0, absolute_fee=True,
+            consolidate=False, unspents=UNSPENTS_SEGWIT)
+        assert all([u in UNSPENTS_SEGWIT for u in unspents])
+        assert remaining == 50000000
 
 
 class TestConstructOutputBlock:
     def test_no_message(self):
         outs = construct_outputs(OUTPUTS)
-        assert outs[0].value == hex_to_bytes(OUTPUT_BLOCK[:16])
-        assert outs[0].script == hex_to_bytes(OUTPUT_BLOCK[18:68])
-        assert outs[1].value == hex_to_bytes(OUTPUT_BLOCK[68:84])
-        assert outs[1].script == hex_to_bytes(OUTPUT_BLOCK[86:])
+        assert outs[0].amount == hex_to_bytes(OUTPUT_BLOCK[:16])
+        assert outs[0].script_pubkey == hex_to_bytes(OUTPUT_BLOCK[18:68])
+        assert outs[1].amount == hex_to_bytes(OUTPUT_BLOCK[68:84])
+        assert outs[1].script_pubkey == hex_to_bytes(OUTPUT_BLOCK[86:])
 
     def test_message(self):
         outs = construct_outputs(OUTPUTS + MESSAGES)
-        assert outs[2].value == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[136:152])
-        assert outs[2].script == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[154:168])
-        assert outs[3].value == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[168:184])
-        assert outs[3].script == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[186:])
+        assert outs[2].amount == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[136:152])
+        assert outs[2].script_pubkey == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[154:168])
+        assert outs[3].amount == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[168:184])
+        assert outs[3].script_pubkey == hex_to_bytes(OUTPUT_BLOCK_MESSAGES[186:])
 
     def test_long_message(self):
         amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
         _, outputs = sanitize_tx_data(
-            UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS, message='hello'*9
+            UNSPENTS, [(out[0], out[1], 'satoshi') for out in OUTPUTS], 0, RETURN_ADDRESS,
+            message='hello'*9, version='test'
         )
         outs = construct_outputs(outputs)
-        assert len(outs) == 5 and outs[3].value == amount and outs[4].value == amount
+        assert len(outs) == 5 and outs[3].amount == amount and outs[4].amount == amount
 
+    def test_outputs_pay2sh(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_ADDRESS_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS_MAIN
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 2 and outs[0].amount == amount and outs[0].script_pubkey.hex() == 'a914' + PAY2SH_HASH.hex() + '87'
 
-def test_construct_input_block():
-    assert construct_input_block(INPUTS) == hex_to_bytes(INPUT_BLOCK)
+    def test_outputs_pay2sh_testnet(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_ADDRESS_TEST_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS, version='test'
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 2 and outs[0].amount == amount and outs[0].script_pubkey.hex() == 'a914' + PAY2SH_TEST_HASH.hex() + '87'
+
+    def test_outputs_pay2segwit(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_SEGWIT_ADDRESS, 1, 'satoshi'), (BITCOIN_SEGWIT_ADDRESS_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS_MAIN
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 3 and outs[0].amount == amount and outs[0].script_pubkey.hex() == '0014' + BITCOIN_SEGWIT_HASH
+        assert outs[1].amount == amount and outs[1].script_pubkey.hex() == '0020' + BITCOIN_SEGWIT_HASH_PAY2SH
+
+    def test_outputs_pay2segwit_testnet(self):
+        amount = b'\x01\x00\x00\x00\x00\x00\x00\x00'
+        _, outputs = sanitize_tx_data(
+            UNSPENTS, [(BITCOIN_SEGWIT_ADDRESS_TEST, 1, 'satoshi'), (BITCOIN_SEGWIT_ADDRESS_TEST_PAY2SH, 1, 'satoshi')], 0, RETURN_ADDRESS, version='test'
+        )
+        outs = construct_outputs(outputs)
+        assert len(outs) == 3 and outs[0].amount == amount and outs[0].script_pubkey.hex() == '0014' + BITCOIN_SEGWIT_HASH_TEST
+        assert outs[1].amount == amount and outs[1].script_pubkey.hex() == '0020' + BITCOIN_SEGWIT_HASH_TEST_PAY2SH
 
 
 def test_calc_txid():

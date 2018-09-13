@@ -1,11 +1,14 @@
 from coincurve import verify_signature as _vs
 
 from bit.base58 import b58decode_check, b58encode_check
-from bit.crypto import ripemd160_sha256
+from bit.crypto import ripemd160_sha256, sha256
 from bit.curve import x_to_y
 
-from bit.utils import int_to_unknown_bytes
+from bit.utils import int_to_unknown_bytes, hex_to_bytes, script_push
+from bit.base32 import bech32_decode, BECH32_VERSION_SET
 
+BECH32_MAIN_VERSION_SET = BECH32_VERSION_SET[:1]
+BECH32_TEST_VERSION_SET = BECH32_VERSION_SET[1:]
 MAIN_PUBKEY_HASH = b'\x00'
 MAIN_SCRIPT_HASH = b'\x05'
 MAIN_PRIVATE_KEY = b'\x80'
@@ -43,11 +46,14 @@ def address_to_public_key_hash(address):
 
 
 def get_version(address):
-    version = b58decode_check(address)[:1]
-
-    if version == MAIN_PUBKEY_HASH:
+    version, _ = bech32_decode(address)
+    if version is None:
+            version = b58decode_check(address)[:1]
+    if (version in (MAIN_PUBKEY_HASH, MAIN_SCRIPT_HASH) or
+        version in BECH32_MAIN_VERSION_SET):
         return 'main'
-    elif version == TEST_PUBKEY_HASH:
+    elif (version in (TEST_PUBKEY_HASH, TEST_SCRIPT_HASH) or
+          version in BECH32_TEST_VERSION_SET):
         return 'test'
     else:
         raise ValueError('{} does not correspond to a mainnet nor '
@@ -122,9 +128,22 @@ def public_key_to_address(public_key, version='main'):
     return b58encode_check(version + ripemd160_sha256(public_key))
 
 
+def public_key_to_segwit_address(public_key, version='main'):
+
+    if version == 'test':
+        version = TEST_SCRIPT_HASH
+    else:
+        version = MAIN_SCRIPT_HASH
+
+    length = len(public_key)
+
+    if length != 33:
+        raise ValueError('{} is an invalid length for a public key. Segwit only uses compressed public keys'.format(length))
+
+    return b58encode_check(version + ripemd160_sha256(b'\x00\x14' + ripemd160_sha256(public_key)))
+
+
 def multisig_to_redeemscript(public_keys, m):
-# public_keys must be provided as a list
-    from bit.utils import hex_to_bytes, script_push
 
     if m > 16:
         raise ValueError('More than the allowed maximum of 16 public keys cannot be used.')
@@ -155,6 +174,20 @@ def multisig_to_address(public_keys, m, version='main'):
         version = MAIN_SCRIPT_HASH
 
     return b58encode_check(version + ripemd160_sha256(multisig_to_redeemscript(public_keys, m)))
+
+
+def multisig_to_segwit_address(public_keys, m, version='main'):
+    if version == 'test':
+        version = TEST_SCRIPT_HASH
+    else:
+        version = MAIN_SCRIPT_HASH
+
+    return b58encode_check(version + ripemd160_sha256(b'\x00\x20' + sha256(multisig_to_redeemscript(public_keys, m))))
+
+
+def segwit_scriptpubkey(witver, witprog):
+    """Construct a Segwit scriptPubKey for a given witness program."""
+    return bytes([witver + 0x50 if witver else 0, len(witprog)] + witprog)
 
 
 def public_key_to_coords(public_key):
