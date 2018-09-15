@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -152,6 +153,12 @@
         <li><a href="dev/api.html#bit.network.rates.BlockchainRates.cad_to_satoshi">(bit.network.rates.BlockchainRates class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.rates.RatesAPI.cad_to_satoshi">(bit.network.rates.RatesAPI class method)</a>
+</li>
+      </ul></li>
+      <li><a href="dev/api.html#bit.PrivateKey.can_sign_unspent">can_sign_unspent() (bit.PrivateKey method)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.can_sign_unspent">(bit.PrivateKeyTestnet method)</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.CHF_RATES">CHF_RATES (bit.network.rates.RatesAPI attribute)</a>
@@ -612,6 +619,20 @@
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.scriptcode">(bit.PrivateKeyTestnet attribute)</a>
 </li>
       </ul></li>
+      <li><a href="dev/api.html#bit.network.meta.Unspent.segwit">segwit (bit.network.meta.Unspent attribute)</a>
+</li>
+      <li><a href="dev/api.html#bit.PrivateKey.segwit_address">segwit_address (bit.PrivateKey attribute)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_address">(bit.PrivateKeyTestnet attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="dev/api.html#bit.PrivateKey.segwit_scriptcode">segwit_scriptcode (bit.PrivateKey attribute)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_scriptcode">(bit.PrivateKeyTestnet attribute)</a>
+</li>
+      </ul></li>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.SEK_RATES">SEK_RATES (bit.network.rates.RatesAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bit.network.rates.BitpayRates.sek_to_satoshi">sek_to_satoshi() (bit.network.rates.BitpayRates class method)</a>
@@ -622,14 +643,16 @@
         <li><a href="dev/api.html#bit.network.rates.RatesAPI.sek_to_satoshi">(bit.network.rates.RatesAPI class method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.PrivateKey.send">send() (bit.PrivateKey method)</a>
 
       <ul>
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.send">(bit.PrivateKeyTestnet method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dev/api.html#bit.network.meta.Unspent.set_type">set_type() (bit.network.meta.Unspent method)</a>
+</li>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.SGD_RATES">SGD_RATES (bit.network.rates.RatesAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bit.network.rates.BitpayRates.sgd_to_satoshi">sgd_to_satoshi() (bit.network.rates.BitpayRates class method)</a>
@@ -722,8 +745,6 @@
       </ul></li>
       <li><a href="dev/api.html#bit.network.meta.Unspent.to_dict">to_dict() (bit.network.meta.Unspent method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.PrivateKey.to_hex">to_hex() (bit.PrivateKey method)</a>
 
       <ul>
@@ -732,6 +753,8 @@
         <li><a href="dev/api.html#bit.wallet.BaseKey.to_hex">(bit.wallet.BaseKey method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.PrivateKey.to_int">to_int() (bit.PrivateKey method)</a>
 
       <ul>
@@ -778,6 +801,8 @@
 </li>
       <li><a href="dev/api.html#bit.network.meta.Unspent.txindex">txindex (bit.network.meta.Unspent attribute)</a>
 </li>
+      <li><a href="dev/api.html#bit.network.meta.Unspent.type">type (bit.network.meta.Unspent attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -817,6 +842,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.verify_sig">verify_sig() (in module bit)</a>
+</li>
+      <li><a href="dev/api.html#bit.network.meta.Unspent.vsize">vsize (bit.network.meta.Unspent attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -874,7 +901,7 @@
   <li><a href="https://github.com/ofek/coincurve">Coincurve</a></li>
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
 </ul>
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="guide/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/install.html">Installation</a></li>

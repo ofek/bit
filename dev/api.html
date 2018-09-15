@@ -13,6 +13,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Authors" href="../community/authors.html" />
@@ -80,8 +81,13 @@ byte is disregarded. Compression will be used by all new keys.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="bit.PrivateKey.can_sign_unspent">
+<code class="descname">can_sign_unspent</code><span class="sig-paren">(</span><em>unspent</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.can_sign_unspent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="bit.PrivateKey.create_transaction">
-<code class="descname">create_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.create_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>absolute_fee=False</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.create_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -259,7 +265,7 @@ public key.</p>
 
 <dl class="classmethod">
 <dt id="bit.PrivateKey.prepare_transaction">
-<em class="property">classmethod </em><code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>address</em>, <em>outputs</em>, <em>compressed=True</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>address</em>, <em>outputs</em>, <em>compressed=True</em>, <em>fee=None</em>, <em>absolute_fee=False</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.prepare_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -333,9 +339,21 @@ communicate with the blockchain itself.</li>
 <code class="descname">scriptcode</code><a class="headerlink" href="#bit.PrivateKey.scriptcode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="bit.PrivateKey.segwit_address">
+<code class="descname">segwit_address</code><a class="headerlink" href="#bit.PrivateKey.segwit_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The public segwit nested in P2SH address you share with others to
+receive funds.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bit.PrivateKey.segwit_scriptcode">
+<code class="descname">segwit_scriptcode</code><a class="headerlink" href="#bit.PrivateKey.segwit_scriptcode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="bit.PrivateKey.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.send" title="Permalink to this definition">¶</a></dt>
+<code class="descname">send</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>absolute_fee=False</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction and attempts to broadcast it on
 the blockchain. This accepts the same arguments as
 <a class="reference internal" href="#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
@@ -399,18 +417,25 @@ the public key.</p>
 
 <dl class="method">
 <dt id="bit.PrivateKey.sign_transaction">
-<code class="descname">sign_transaction</code><span class="sig-paren">(</span><em>tx_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.sign_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sign_transaction</code><span class="sig-paren">(</span><em>tx_data</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKey.sign_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction using previously prepared
 transaction data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bit.PrivateKey.prepare_transaction" title="bit.PrivateKey.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Hex-encoded transaction or output of <code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code>.</li>
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+communicate with the blockchain itself.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The signed transaction as hex.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The signed transaction as hex.</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -550,8 +575,13 @@ byte is disregarded. Compression will be used by all new keys.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="bit.PrivateKeyTestnet.can_sign_unspent">
+<code class="descname">can_sign_unspent</code><span class="sig-paren">(</span><em>unspent</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.can_sign_unspent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="bit.PrivateKeyTestnet.create_transaction">
-<code class="descname">create_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.create_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_transaction</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>absolute_fee=False</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.create_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -730,7 +760,7 @@ public key.</p>
 
 <dl class="classmethod">
 <dt id="bit.PrivateKeyTestnet.prepare_transaction">
-<em class="property">classmethod </em><code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>address</em>, <em>outputs</em>, <em>compressed=True</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">prepare_transaction</code><span class="sig-paren">(</span><em>address</em>, <em>outputs</em>, <em>compressed=True</em>, <em>fee=None</em>, <em>absolute_fee=False</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.prepare_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares a P2PKH transaction for offline signing.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -804,9 +834,21 @@ communicate with the blockchain itself.</li>
 <code class="descname">scriptcode</code><a class="headerlink" href="#bit.PrivateKeyTestnet.scriptcode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="bit.PrivateKeyTestnet.segwit_address">
+<code class="descname">segwit_address</code><a class="headerlink" href="#bit.PrivateKeyTestnet.segwit_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The public segwit nested in P2SH address you share with others to
+receive funds.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bit.PrivateKeyTestnet.segwit_scriptcode">
+<code class="descname">segwit_scriptcode</code><a class="headerlink" href="#bit.PrivateKeyTestnet.segwit_scriptcode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="bit.PrivateKeyTestnet.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.send" title="Permalink to this definition">¶</a></dt>
+<code class="descname">send</code><span class="sig-paren">(</span><em>outputs</em>, <em>fee=None</em>, <em>absolute_fee=False</em>, <em>leftover=None</em>, <em>combine=True</em>, <em>message=None</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction and attempts to broadcast it on
 the testnet blockchain. This accepts the same arguments as
 <a class="reference internal" href="#bit.PrivateKeyTestnet.create_transaction" title="bit.PrivateKeyTestnet.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a>.</p>
@@ -870,18 +912,25 @@ the public key.</p>
 
 <dl class="method">
 <dt id="bit.PrivateKeyTestnet.sign_transaction">
-<code class="descname">sign_transaction</code><span class="sig-paren">(</span><em>tx_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.sign_transaction" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sign_transaction</code><span class="sig-paren">(</span><em>tx_data</em>, <em>unspents=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.PrivateKeyTestnet.sign_transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a signed P2PKH transaction using previously prepared
 transaction data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Output of <a class="reference internal" href="#bit.PrivateKeyTestnet.prepare_transaction" title="bit.PrivateKeyTestnet.prepare_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tx_data</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Hex-encoded transaction or output of <code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_transaction()</span></code>.</li>
+<li><strong>unspents</strong> (<code class="docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference internal" href="#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a>) – The UTXOs to use as the inputs. By default Bit will
+communicate with the blockchain itself.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The signed transaction as hex.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The signed transaction as hex.</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">str</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1583,7 +1632,7 @@ test network.</p>
 
 <dl class="class">
 <dt id="bit.network.meta.Unspent">
-<em class="property">class </em><code class="descclassname">bit.network.meta.</code><code class="descname">Unspent</code><span class="sig-paren">(</span><em>amount</em>, <em>confirmations</em>, <em>script</em>, <em>txid</em>, <em>txindex</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.meta.Unspent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bit.network.meta.</code><code class="descname">Unspent</code><span class="sig-paren">(</span><em>amount</em>, <em>confirmations</em>, <em>script</em>, <em>txid</em>, <em>txindex</em>, <em>type='p2pkh'</em>, <em>vsize=None</em>, <em>segwit=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.meta.Unspent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents an unspent transaction output (UTXO).</p>
 <dl class="attribute">
 <dt id="bit.network.meta.Unspent.amount">
@@ -1605,6 +1654,16 @@ test network.</p>
 <code class="descname">script</code><a class="headerlink" href="#bit.network.meta.Unspent.script" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="bit.network.meta.Unspent.segwit">
+<code class="descname">segwit</code><a class="headerlink" href="#bit.network.meta.Unspent.segwit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bit.network.meta.Unspent.set_type">
+<code class="descname">set_type</code><span class="sig-paren">(</span><em>type</em>, <em>vsize=0</em><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.meta.Unspent.set_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="bit.network.meta.Unspent.to_dict">
 <code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bit.network.meta.Unspent.to_dict" title="Permalink to this definition">¶</a></dt>
@@ -1618,6 +1677,16 @@ test network.</p>
 <dl class="attribute">
 <dt id="bit.network.meta.Unspent.txindex">
 <code class="descname">txindex</code><a class="headerlink" href="#bit.network.meta.Unspent.txindex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.meta.Unspent.type">
+<code class="descname">type</code><a class="headerlink" href="#bit.network.meta.Unspent.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bit.network.meta.Unspent.vsize">
+<code class="descname">vsize</code><a class="headerlink" href="#bit.network.meta.Unspent.vsize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2316,7 +2385,7 @@ hour (with 90% probability)”.</td>
   <li><a href="https://github.com/ofek/coincurve">Coincurve</a></li>
   <li><a href="https://github.com/kennethreitz/requests">Requests</a></li>
 </ul>
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guide/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/install.html">Installation</a></li>
