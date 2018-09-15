@@ -24,7 +24,7 @@ class Unspent:
                  'type', 'vsize', 'segwit')
 
     def __init__(self, amount, confirmations, script, txid, txindex,
-                 type='p2pkh', vsize=None):
+                 type='p2pkh', vsize=None, segwit=None):
         self.amount = amount
         self.confirmations = confirmations
         self.script = script
@@ -62,4 +62,4 @@ class Unspent:
         self.type = type if type in UNSPENT_TYPES else 'unknown'
         self.vsize = vsize if vsize else UNSPENT_TYPES[self.type]['vsize']
         self.segwit = UNSPENT_TYPES[self.type]['segwit']
-        return
+        return self
