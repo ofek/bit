@@ -233,7 +233,7 @@ class PrivateKey(BaseKey):
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
         self.unspents[:] = list(map(
-            lambda u: u.set_type('p2pkh' if self.is_compressed else
+            lambda u: u.set_type('p2pkh' if self.is_compressed() else
                                  'p2pkh-uncompressed'),
             NetworkAPI.get_unspent(self.address)
         ))
@@ -600,7 +600,7 @@ class PrivateKeyTestnet(BaseKey):
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
         self.unspents[:] = list(map(
-            lambda u: u.set_type('p2pkh' if self.is_compressed else
+            lambda u: u.set_type('p2pkh' if self.is_compressed() else
                                  'p2pkh-uncompressed'),
             NetworkAPI.get_unspent_testnet(self.address)
         ))
