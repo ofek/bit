@@ -104,16 +104,49 @@ def get_signatures_from_script(script):
     :returns: A list of retrieved signature from the provided scriptSig.
     :rtype: A ``list`` of ``bytes`` signatures
     """
+
+    def is_signature(sig):
+        # From
+        # https://bitcoin.stackexchange.com/questions/58853/how-do-you-figure-out-the-r-and-s-out-of-a-signature-using-python
+        # https://bitcoin.stackexchange.com/questions/12554/why-the-signature-is-always-65-13232-bytes-long)
+        # Expects a signature without the appended SIGHASH
+        if sig[0:1] != b'0' \
+                or sig[1] != len(sig) - 2:
+            # SEQUENCE of DER encoded signature must be 0x30, and
+            # the next bytes denotes the length of the signature
+            return False
+        sig_iter = iter(sig[2:])
+        # Run through loop two times, once for r and once for s value:
+        for _ in range(2):
+            try:
+                if next(sig_iter) != 2:
+                    # r and s values are always leaded by 0x02
+                    break
+                length_v = next(sig_iter)
+                # Read r or s value:
+                v = 0
+                for _ in range(length_v):
+                    v = v * 256 + next(sig_iter)
+                if type(v) != int:
+                    return False
+            except (StopIteration, TypeError) as e:
+                break
+        else:
+            # No errors encountered:
+            # This is a valid DER encoded signature
+            return True
+        # Encountered an error:
+        return False
+
     script = script[1:]  # remove the first OP_0
     sigs = []
-    val, script = read_var_int(script)
-    while val <= 72:  # TODO: Make a better check if the data is a signature (using DER rules: https://bitcoin.stackexchange.com/questions/12554/why-the-signature-is-always-65-13232-bytes-long)
-        if val != 0:  # For partially-signed scriptSigs the missing signatures are each indicated with 0x00 at the end.
-            potential_sig, script = read_bytes(script, val)
-            if bytes_to_hex(potential_sig[0:1]) == '30':
-                sigs.append(potential_sig)
-        if len(script) == 0:  # escape if we have run out of the script
-            break
+    while True:
         val, script = read_var_int(script)
-
+        potential_sig, script = read_bytes(script, val)
+        if is_signature(potential_sig[:-1]):
+            # For partially signed scriptSigs the empty sigs indicated with
+            # 0x00 should always be at the end.
+            sigs.append(potential_sig)
+        if len(script) == 0:
+            break
     return sigs
