@@ -238,7 +238,7 @@ class PrivateKey(BaseKey):
             NetworkAPI.get_unspent(self.address)
         ))
         self.unspents += list(map(
-            lambda u: u.set_type('np2wpkh'),
+            lambda u: u.set_type('np2wkh'),
             NetworkAPI.get_unspent(self.segwit_address)
         ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
@@ -605,7 +605,7 @@ class PrivateKeyTestnet(BaseKey):
             NetworkAPI.get_unspent_testnet(self.address)
         ))
         self.unspents += list(map(
-            lambda u: u.set_type('np2wpkh'),
+            lambda u: u.set_type('np2wkh'),
             NetworkAPI.get_unspent_testnet(self.segwit_address)
         ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
