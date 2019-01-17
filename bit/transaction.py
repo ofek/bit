@@ -515,6 +515,65 @@ def construct_outputs(outputs):
     return outputs_obj
 
 
+def calculate_preimages(tx_obj, inputs_parameters):
+    # Transaction object used to create preimage must be contained in `tx_obj`
+    # with the scriptSigs containing the scriptCodes for the preimages.
+    # `inputs_parameters` contains the input indeces for which to calculate preimages,
+    # the hashType and denoting if the input is a segwit input.
+    # example of `inputs_parameters`: [[0, 1, True], [2, 1, False], [...]]
+
+    # Tx object data:
+    input_count = int_to_varint(len(tx_obj.TxIn))
+    output_count = int_to_varint(len(tx_obj.TxOut))
+    output_block = b''.join([bytes(o) for o in tx_obj.TxOut])
+
+    hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in tx_obj.TxIn]))
+    hashSequence = double_sha256(b''.join([i.sequence for i in tx_obj.TxIn]))
+    hashOutputs = double_sha256(output_block)
+
+    preimages = []
+    for input_index, hash_type, segwit_input in inputs_parameters:
+        # We can only handle hashType == 1:
+        if hash_type != HASH_TYPE:
+            raise ValueError('Bit only support hashType of value 1.')
+        # Calculate prehashes:
+        if segwit_input:
+            # BIP-143 preimage:
+            hashed = sha256(
+                tx_obj.version +
+                hashPrevouts +
+                hashSequence +
+                tx_obj.TxIn[input_index].txid +
+                tx_obj.TxIn[input_index].txindex +
+                tx_obj.TxIn[input_index].script_sig_len +  # scriptCode length
+                tx_obj.TxIn[input_index].script_sig +  # scriptCode (includes amount)
+                tx_obj.TxIn[input_index].sequence +
+                hashOutputs +
+                tx_obj.locktime +
+                hash_type
+            )
+        else:
+            hashed = sha256(
+                tx_obj.version +
+                input_count +
+                b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
+                         for ti in islice(tx_obj.TxIn, input_index)) +
+                tx_obj.TxIn[input_index].txid +
+                tx_obj.TxIn[input_index].txindex +
+                tx_obj.TxIn[input_index].script_sig_len +  # scriptCode length
+                tx_obj.TxIn[input_index].script_sig +  # scriptCode
+                tx_obj.TxIn[input_index].sequence +
+                b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
+                         for ti in islice(tx_obj.TxIn, input_index + 1, None)) +
+                output_count +
+                output_block +
+                tx_obj.locktime +
+                hash_type
+            )
+        preimages.append(hashed)
+    return preimages
+
+
 def sign_tx(private_key, tx, *, unspents):
     """Signs inputs in provided transaction object for which unspents
     are provided and can be signed by the private key.
@@ -547,57 +606,34 @@ def sign_tx(private_key, tx, *, unspents):
     sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid+i.txindex in input_dict]
 
     segwit_tx = TxObj.is_segwit(tx)
-
-    version = tx.version
-    lock_time = tx.locktime
+    public_key = private_key.public_key
+    public_key_push = script_push(len(public_key))
     hash_type = HASH_TYPE
 
-    input_count = int_to_varint(len(tx.TxIn))
-    output_count = int_to_varint(len(tx.TxOut))
-
-    output_block = b''.join([bytes(o) for o in tx.TxOut])
-
-    hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in tx.TxIn]))
-    hashSequence = double_sha256(b''.join([i.sequence for i in tx.TxIn]))
-    hashOutputs = double_sha256(output_block)
-
+    # Make input parameters for preimage calculation
+    inputs_parameters = []
     for i in sign_inputs:
-
+        # Create transaction object for preimage calculation
         tx_input = tx.TxIn[i].txid + tx.TxIn[i].txindex
         segwit_input = input_dict[tx_input]['segwit']
         tx.TxIn[i].segwit_input = segwit_input
-
-        public_key = private_key.public_key
-        public_key_push = script_push(len(public_key))
+        # For partially signed transaction we must extract the signatures:
+        input_script_field = tx.TxIn[i].script_sig
 
         script_code = private_key.scriptcode
         script_code_len = int_to_varint(len(script_code))
 
-        if not segwit_input:
-            hashed = sha256(
-                version +
-                input_count +
-                b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
-                         for ti in islice(tx.TxIn, i)) +
-                tx.TxIn[i].txid +
-                tx.TxIn[i].txindex +
-                script_code_len +
-                script_code +
-                tx.TxIn[i].sequence +
-                b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
-                         for ti in islice(tx.TxIn, i + 1, None)) +
-                output_count +
-                output_block +
-                lock_time +
-                hash_type
-                )
+        # Use scriptCode for preimage calculation of transaction object:
+        tx.TxIn[i].script_sig = script_code
+        tx.TxIn[i].script_sig_len = script_code_len
 
-            input_script_field = tx.TxIn[i].script_sig
-
-        elif segwit_input:
+        if segwit_input:
             try:
-                tx.TxIn[i].amount = input_dict[tx_input]['amount']\
-                                    .to_bytes(8, byteorder='little')
+                tx.TxIn[i].script_sig += input_dict[tx_input]['amount']\
+                                         .to_bytes(8, byteorder='little')
+                # For partially signed transaction we must extract the
+                # signatures:
+                input_script_field = tx.TxIn[i].witness
             except Attributerror:
                 raise ValueError(
                     'Cannot sign a segwit input when the input\'s amount is '
@@ -605,24 +641,12 @@ def sign_tx(private_key, tx, *, unspents):
                     'already spent? Then please provide all inputs to sign as '
                     '`Unspent` objects to the function call.')
 
-            hashed = sha256(  # BIP-143: Used for Segwit
-                version +
-                hashPrevouts +
-                hashSequence +
-                tx.TxIn[i].txid +
-                tx.TxIn[i].txindex +
-                script_code_len +
-                script_code +
-                tx.TxIn[i].amount +
-                tx.TxIn[i].sequence +
-                hashOutputs +
-                lock_time +
-                hash_type
-                )
+        inputs_parameters.append([i, hash_type, segwit_input])
+    preimages = calculate_preimages(tx, inputs_parameters)
 
-            input_script_field = tx.TxIn[i].witness
-
-        signature = private_key.sign(hashed) + b'\x01'
+    # Calculate signature scripts:
+    for hash, (i, _, segwit_input) in zip(preimages, inputs_parameters):
+        signature = private_key.sign(hash) + b'\x01'
 
         # ------------------------------------------------------------------
         if (private_key.instance == 'MultiSig' or
@@ -644,7 +668,7 @@ def sign_tx(private_key, tx, *, unspents):
                 # all the provided signatures with public-keys as keys:
                 for sig in sig_list:
                     for pub in private_key.public_keys:
-                        if verify_sig(sig[:-1], hashed, hex_to_bytes(pub)):
+                        if verify_sig(sig[:-1], hash, hex_to_bytes(pub)):
                             # If we already found a valid signature for pubkey
                             # we just overwrite it and don't care.
                             sigs[pub] = sig
