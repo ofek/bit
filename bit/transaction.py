@@ -3,12 +3,9 @@ from collections import namedtuple
 from itertools import islice
 import re
 from random import randint, shuffle
-
 from bit.crypto import double_sha256, sha256
 from bit.exceptions import InsufficientFunds
-from bit.format import (address_to_public_key_hash, segwit_scriptpubkey,
-                        TEST_SCRIPT_HASH, MAIN_SCRIPT_HASH, TEST_PUBKEY_HASH,
-                        MAIN_PUBKEY_HASH)
+from bit.format import address_to_public_key_hash, segwit_scriptpubkey
 from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
     bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint,
@@ -20,24 +17,13 @@ from bit.format import verify_sig, get_version
 from bit.base58 import b58decode_check
 from bit.base32 import decode as segwit_decode
 
-VERSION_1 = 0x01.to_bytes(4, byteorder='little')
-MARKER = b'\x00'
-FLAG = b'\x01'
-SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
-LOCK_TIME = 0x00.to_bytes(4, byteorder='little')
-HASH_TYPE = 0x01.to_bytes(4, byteorder='little')
+from bit.constants import (
+    TEST_SCRIPT_HASH, MAIN_SCRIPT_HASH, TEST_PUBKEY_HASH, MAIN_PUBKEY_HASH,
+    VERSION_1, MARKER, FLAG, SEQUENCE, LOCK_TIME, HASH_TYPE,
+    OP_0, OP_CHECKLOCKTIMEVERIFY, OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY,
+    OP_HASH160, OP_PUSH_20, OP_RETURN, OP_EQUAL, MESSAGE_LIMIT
 
-OP_0 = b'\x00'
-OP_CHECKLOCKTIMEVERIFY = b'\xb1'
-OP_CHECKSIG = b'\xac'
-OP_DUP = b'v'
-OP_EQUALVERIFY = b'\x88'
-OP_HASH160 = b'\xa9'
-OP_PUSH_20 = b'\x14'
-OP_RETURN = b'\x6a'
-OP_EQUAL = b'\x87'
-
-MESSAGE_LIMIT = 40
+)
 
 
 class TxIn:

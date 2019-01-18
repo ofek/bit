@@ -18,12 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""Reference implementation for Bech32 and segwit addresses."""
-
+from bit.constants import BECH32_VERSION_SET
 
 CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
-BECH32_VERSION_SET = ('bc', 'tb', 'bcrt')
 
 def bech32_polymod(values):
     """Internal function that computes the Bech32 checksum."""

@@ -5,24 +5,13 @@ from bit.crypto import ripemd160_sha256, sha256
 from bit.curve import x_to_y
 
 from bit.utils import int_to_unknown_bytes, hex_to_bytes, script_push
-from bit.base32 import bech32_decode, BECH32_VERSION_SET
-
-BECH32_MAIN_VERSION_SET = BECH32_VERSION_SET[:1]
-BECH32_TEST_VERSION_SET = BECH32_VERSION_SET[1:]
-MAIN_PUBKEY_HASH = b'\x00'
-MAIN_SCRIPT_HASH = b'\x05'
-MAIN_PRIVATE_KEY = b'\x80'
-MAIN_BIP32_PUBKEY = b'\x04\x88\xb2\x1e'
-MAIN_BIP32_PRIVKEY = b'\x04\x88\xad\xe4'
-TEST_PUBKEY_HASH = b'\x6f'
-TEST_SCRIPT_HASH = b'\xc4'
-TEST_PRIVATE_KEY = b'\xef'
-TEST_BIP32_PUBKEY = b'\x045\x87\xcf'
-TEST_BIP32_PRIVKEY = b'\x045\x83\x94'
-PUBLIC_KEY_UNCOMPRESSED = b'\x04'
-PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
-PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
-PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
+from bit.base32 import bech32_decode
+from bit.constants import (
+    BECH32_MAIN_VERSION_SET, BECH32_TEST_VERSION_SET, MAIN_PUBKEY_HASH,
+    MAIN_SCRIPT_HASH, MAIN_PRIVATE_KEY, TEST_PUBKEY_HASH, TEST_SCRIPT_HASH,
+    TEST_PRIVATE_KEY, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_COMPRESSED_EVEN_Y,
+    PUBLIC_KEY_COMPRESSED_ODD_Y, PRIVATE_KEY_COMPRESSED_PUBKEY
+)
 
 
 def verify_sig(signature, data, public_key):
