@@ -130,13 +130,11 @@ class TxOut:
 
 
 class TxObj:
-    __slots__ = ('version', 'marker', 'flag', 'TxIn', 'TxOut', 'locktime')
+    __slots__ = ('version', 'TxIn', 'TxOut', 'locktime')
 
     def __init__(self, version, TxIn, TxOut, locktime):
         segwit_tx = any([i.segwit_input or i.witness for i in TxIn])
         self.version = version
-        self.marker = MARKER if segwit_tx else b''
-        self.flag = FLAG if segwit_tx else b''
         self.TxIn = TxIn
         if segwit_tx:
             for i in self.TxIn:
@@ -146,8 +144,6 @@ class TxObj:
 
     def __eq__(self, other):
         return (self.version == other.version and
-                self.marker == other.marker and
-                self.flag == other.flag and
                 self.TxIn == other.TxIn and
                 self.TxOut == other.TxOut and
                 self.locktime == other.locktime)
@@ -166,8 +162,8 @@ class TxObj:
         wit = b''.join([w.witness for w in self.TxIn])
         return b''.join([
             self.version,
-            self.marker,
-            self.flag,
+            MARKER if wit else b'',
+            FLAG if wit else b'',
             inp,
             out,
             wit,
@@ -190,7 +186,7 @@ class TxObj:
     @classmethod
     def is_segwit(cls, tx):
         if isinstance(tx, cls):
-            return tx.marker + tx.flag == MARKER + FLAG
+            tx = bytes(tx)
         elif not isinstance(tx, bytes):
             tx = hex_to_bytes(tx)
         return tx[4:6] == MARKER + FLAG
