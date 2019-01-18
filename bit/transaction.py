@@ -174,6 +174,16 @@ class TxObj:
             self.locktime
         ])
 
+    def legacy_repr(self):
+        inp = int_to_varint(len(self.TxIn)) + b''.join(map(bytes, self.TxIn))
+        out = int_to_varint(len(self.TxOut)) + b''.join(map(bytes, self.TxOut))
+        return b''.join([
+            self.version,
+            inp,
+            out,
+            self.locktime
+        ])
+
     def to_hex(self):
         return bytes_to_hex(bytes(self))
 
@@ -187,7 +197,8 @@ class TxObj:
 
 
 def calc_txid(tx_hex):
-    return bytes_to_hex(double_sha256(hex_to_bytes(tx_hex))[::-1])
+    tx_obj = deserialize(tx_hex)
+    return bytes_to_hex(double_sha256(tx_obj.legacy_repr())[::-1])
 
 
 def estimate_tx_fee(in_size, n_in, out_size, n_out, satoshis):

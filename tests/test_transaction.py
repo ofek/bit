@@ -648,5 +648,9 @@ class TestConstructOutputBlock:
         assert outs[1].amount == amount and outs[1].script_pubkey.hex() == '0020' + BITCOIN_SEGWIT_HASH_TEST_PAY2SH
 
 
-def test_calc_txid():
-    assert calc_txid(FINAL_TX_1) == 'e6922a6e3f1ff422113f15543fbe1340a727441202f55519640a70ac4636c16f'
+class TestCalcTxId:
+    def test_calc_txid_legacy(self):
+        assert calc_txid(FINAL_TX_1) == 'e6922a6e3f1ff422113f15543fbe1340a727441202f55519640a70ac4636c16f'
+
+    def test_calc_txid_segwit(self):
+        assert calc_txid(SEGWIT_TX_1) == 'a103ed36e9afee8b4001b1c3970ba8cd9839ff95e8b8af3fbe6016f6287bf9c6'
