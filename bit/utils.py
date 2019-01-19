@@ -1,5 +1,6 @@
 import decimal
 from binascii import hexlify
+from coincurve.ecdsa import der_to_cdata
 
 
 class Decimal(decimal.Decimal):
@@ -105,48 +106,20 @@ def get_signatures_from_script(script):
     :rtype: A ``list`` of ``bytes`` signatures
     """
 
-    def is_signature(sig):
-        # From
-        # https://bitcoin.stackexchange.com/questions/58853/how-do-you-figure-out-the-r-and-s-out-of-a-signature-using-python
-        # https://bitcoin.stackexchange.com/questions/12554/why-the-signature-is-always-65-13232-bytes-long)
-        # Expects a signature without the appended SIGHASH
-        if sig[0:1] != b'0' \
-                or sig[1] != len(sig) - 2:
-            # SEQUENCE of DER encoded signature must be 0x30, and
-            # the next bytes denotes the length of the signature
-            return False
-        sig_iter = iter(sig[2:])
-        # Run through loop two times, once for r and once for s value:
-        for _ in range(2):
-            try:
-                if next(sig_iter) != 2:
-                    # r and s values are always leaded by 0x02
-                    break
-                length_v = next(sig_iter)
-                # Read r or s value:
-                v = 0
-                for _ in range(length_v):
-                    v = v * 256 + next(sig_iter)
-                if type(v) != int:
-                    return False
-            except (StopIteration, TypeError) as e:
-                break
-        else:
-            # No errors encountered:
-            # This is a valid DER encoded signature
-            return True
-        # Encountered an error:
-        return False
-
     script = script[1:]  # remove the first OP_0
     sigs = []
     while True:
         val, script = read_var_int(script)
         potential_sig, script = read_bytes(script, val)
-        if is_signature(potential_sig[:-1]):
-            # For partially signed scriptSigs the empty sigs indicated with
-            # 0x00 should always be at the end.
+        try:
+            # Raises ValueError if argument to `der_to_cdata` is not a
+            # DER-encoding of a signature (without the appended SIGHASH).
+            der_to_cdata(potential_sig[:-1])
+            # We only add if DER-encoded signature:
             sigs.append(potential_sig)
+        except ValueError:
+            pass
         if len(script) == 0:
+            # Reached end of script.
             break
     return sigs
