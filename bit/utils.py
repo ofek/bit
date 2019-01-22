@@ -108,7 +108,8 @@ def get_signatures_from_script(script):
 
     script = script[1:]  # remove the first OP_0
     sigs = []
-    while True:
+    while len(script) > 0:
+        # Consume script while extracting possible signatures:
         val, script = read_var_int(script)
         potential_sig, script = read_bytes(script, val)
         try:
@@ -119,7 +120,4 @@ def get_signatures_from_script(script):
             sigs.append(potential_sig)
         except ValueError:
             pass
-        if len(script) == 0:
-            # Reached end of script.
-            break
     return sigs
