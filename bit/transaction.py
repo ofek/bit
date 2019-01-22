@@ -516,11 +516,20 @@ def construct_outputs(outputs):
 
 
 def calculate_preimages(tx_obj, inputs_parameters):
-    # Transaction object used to create preimage must be contained in `tx_obj`
-    # with the scriptSigs containing the scriptCodes for the preimages.
-    # `inputs_parameters` contains the input indeces for which to calculate preimages,
-    # the hashType and denoting if the input is a segwit input.
-    # example of `inputs_parameters`: [[0, 1, True], [2, 1, False], [...]]
+    """Calculates preimages for provided transaction structure and input
+    values.
+
+    :param tx_obj: The transaction object used to calculate preimage from using
+                   a transaction digest algorithm, such as BIP-143 for Segwit
+                   inputs. This transaction object must hence have scriptCodes
+                   filled into the corresponding scriptSigs in the inputs.
+    :type tx_obj: :object:`~bit.transaction.TxObj`
+    :param inputs_parameters: A list of tuples with input index as integer,
+                              hash type as integer and a boolean flag to denote
+                              if the input is spending from a Segwit output.
+                              For example: [(0, 1, True), (2, 1, False), (...)]
+    :type inputs_parameters: A `list` of `tuple`
+    """
 
     # Tx object data:
     input_count = int_to_varint(len(tx_obj.TxIn))
