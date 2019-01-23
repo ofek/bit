@@ -1,5 +1,6 @@
 import decimal
 from binascii import hexlify
+from coincurve.ecdsa import der_to_cdata
 
 
 class Decimal(decimal.Decimal):
@@ -104,16 +105,19 @@ def get_signatures_from_script(script):
     :returns: A list of retrieved signature from the provided scriptSig.
     :rtype: A ``list`` of ``bytes`` signatures
     """
+
     script = script[1:]  # remove the first OP_0
     sigs = []
-    val, script = read_var_int(script)
-    while val <= 72:  # TODO: Make a better check if the data is a signature (using DER rules: https://bitcoin.stackexchange.com/questions/12554/why-the-signature-is-always-65-13232-bytes-long)
-        if val != 0:  # For partially-signed scriptSigs the missing signatures are each indicated with 0x00 at the end.
-            potential_sig, script = read_bytes(script, val)
-            if bytes_to_hex(potential_sig[0:1]) == '30':
-                sigs.append(potential_sig)
-        if len(script) == 0:  # escape if we have run out of the script
-            break
+    while len(script) > 0:
+        # Consume script while extracting possible signatures:
         val, script = read_var_int(script)
-
+        potential_sig, script = read_bytes(script, val)
+        try:
+            # Raises ValueError if argument to `der_to_cdata` is not a
+            # DER-encoding of a signature (without the appended SIGHASH).
+            der_to_cdata(potential_sig[:-1])
+            # We only add if DER-encoded signature:
+            sigs.append(potential_sig)
+        except ValueError:
+            pass
     return sigs

@@ -11,9 +11,9 @@ from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.network.meta import Unspent
 from bit.transaction import (
     calc_txid, create_new_transaction, sanitize_tx_data, sign_tx,
-    OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20,
     deserialize, address_to_scriptpubkey
-    )
+)
+from bit.constants import OP_0, OP_PUSH_20, OP_PUSH_32
 
 from bit.utils import bytes_to_hex, int_to_varint
 
@@ -179,14 +179,12 @@ class PrivateKey(BaseKey):
 
     @property
     def scriptcode(self):
-        self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
-                            address_to_public_key_hash(self.address) +
-                            OP_EQUALVERIFY + OP_CHECKSIG)
+        self._scriptcode = address_to_scriptpubkey(self.address)
         return self._scriptcode
 
     @property
     def segwit_scriptcode(self):
-        self._segwit_scriptcode = (b'\x00' + b'\x14'
+        self._segwit_scriptcode = (OP_0 + OP_PUSH_20
                                    + ripemd160_sha256(self.public_key))
         return self._segwit_scriptcode
 
@@ -238,7 +236,7 @@ class PrivateKey(BaseKey):
             NetworkAPI.get_unspent(self.address)
         ))
         self.unspents += list(map(
-            lambda u: u.set_type('np2wpkh'),
+            lambda u: u.set_type('np2wkh'),
             NetworkAPI.get_unspent(self.segwit_address)
         ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
@@ -546,14 +544,12 @@ class PrivateKeyTestnet(BaseKey):
 
     @property
     def scriptcode(self):
-        self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
-                            address_to_public_key_hash(self.address) +
-                            OP_EQUALVERIFY + OP_CHECKSIG)
+        self._scriptcode = address_to_scriptpubkey(self.address)
         return self._scriptcode
 
     @property
     def segwit_scriptcode(self):
-        self._segwit_scriptcode = (b'\x00' + b'\x14'
+        self._segwit_scriptcode = (OP_0 + OP_PUSH_20
                                    + ripemd160_sha256(self.public_key))
         return self._segwit_scriptcode
 
@@ -605,7 +601,7 @@ class PrivateKeyTestnet(BaseKey):
             NetworkAPI.get_unspent_testnet(self.address)
         ))
         self.unspents += list(map(
-            lambda u: u.set_type('np2wpkh'),
+            lambda u: u.set_type('np2wkh'),
             NetworkAPI.get_unspent_testnet(self.segwit_address)
         ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
@@ -938,7 +934,7 @@ class MultiSig:
         return self._scriptcode
 
     def segwit_scriptcode(self):
-        self._segwit_scriptcode = (b'\x00' + b'\x20'
+        self._segwit_scriptcode = (OP_0 + OP_PUSH_32
                                    + sha256(self.redeemscript))
         return self._segwit_scriptcode
 
@@ -1277,8 +1273,8 @@ class MultiSigTestnet:
 
     @property
     def segwit_scriptcode(self):
-        self._segwit_scriptcode = (b'\x00' + b'\x20' +
-                               sha256(self.redeemscript))
+        self._segwit_scriptcode = (OP_0 + OP_PUSH_32
+                                   + sha256(self.redeemscript))
         return self._segwit_scriptcode
 
     def can_sign_unspent(self, unspent):

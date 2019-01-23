@@ -240,7 +240,6 @@ class TestTxObj:
         txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
         txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
         assert txobj.version == b'\x01\x00\x00\x00'
-        assert txobj.marker+txobj.flag == b'\x00\x01'
         assert txobj.TxIn == txin
         assert txobj.TxOut == txout
         assert txobj.locktime == b'\x00\x00\x00\x00'
@@ -471,7 +470,6 @@ class TestDeserializeTransaction:
     def test_legacy_deserialize(self):
         txobj = deserialize(FINAL_TX_1)
         assert txobj.version == hex_to_bytes(FINAL_TX_1[:8])
-        assert txobj.marker+txobj.flag == b''
         assert len(txobj.TxIn) == 1
         assert txobj.TxIn[0].txid == hex_to_bytes(FINAL_TX_1[10:74])
         assert txobj.TxIn[0].txindex == hex_to_bytes(FINAL_TX_1[74:82])
@@ -491,7 +489,6 @@ class TestDeserializeTransaction:
     def test_segwit_deserialize(self):
         txobj = deserialize(SEGWIT_TX_1)
         assert txobj.version == hex_to_bytes(SEGWIT_TX_1[:8])
-        assert txobj.marker+txobj.flag == hex_to_bytes(SEGWIT_TX_1[8:12])
         assert len(txobj.TxIn) == 2
         assert txobj.TxIn[0].txid == hex_to_bytes(SEGWIT_TX_1[14:78])
         assert txobj.TxIn[0].txindex == hex_to_bytes(SEGWIT_TX_1[78:86])
@@ -648,5 +645,9 @@ class TestConstructOutputBlock:
         assert outs[1].amount == amount and outs[1].script_pubkey.hex() == '0020' + BITCOIN_SEGWIT_HASH_TEST_PAY2SH
 
 
-def test_calc_txid():
-    assert calc_txid(FINAL_TX_1) == 'e6922a6e3f1ff422113f15543fbe1340a727441202f55519640a70ac4636c16f'
+class TestCalcTxId:
+    def test_calc_txid_legacy(self):
+        assert calc_txid(FINAL_TX_1) == 'e6922a6e3f1ff422113f15543fbe1340a727441202f55519640a70ac4636c16f'
+
+    def test_calc_txid_segwit(self):
+        assert calc_txid(SEGWIT_TX_1) == 'a103ed36e9afee8b4001b1c3970ba8cd9839ff95e8b8af3fbe6016f6287bf9c6'
