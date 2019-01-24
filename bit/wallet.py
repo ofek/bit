@@ -872,9 +872,12 @@ class MultiSig:
     :param private_key: A class representing a private key.
     :type private_key: ``PrivateKey``
     :raises TypeError: If ``private_key`` is not a ``PrivateKey``.
-    :param public_keys: A list of public keys encoded as hex assigned
-                        to the multi-signature contract.
-    :type public_keys: ``list`` of ``str``
+    :param public_keys: A list or set of public keys encoded as hex assigned
+                        to the multi-signature contract. If using a list, then
+                        the order of the public keys will be used in the
+                        contract. If using a set, then Bit will order the
+                        public keys according to lexicographical order.
+    :type public_keys: ``list`` of ``str`` or ``set`` of ``str``
     :raises TypeError: When the list ``public_keys`` does not include the public
                        key corresponding to the private key used in this class.
     :param m: The number of required signatures to spend from this multi-
@@ -891,12 +894,15 @@ class MultiSig:
         if bytes_to_hex(private_key.public_key) not in public_keys:
             raise TypeError('Private key does not match any provided public key.')
 
+        if type(public_keys) not in (list, set):
+            raise TypeError('The public keys must be provided in a list or set.')
+
         self.version = 'main'
         self.instance = 'MultiSig'
 
         self._pk = private_key
         self.public_key = private_key.public_key
-        self.public_keys = public_keys
+        self.public_keys = public_keys if type(public_keys) == list else sorted(public_keys)
         self.m = m
         self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
         self.is_compressed = all(len(p) == 66 for p in public_keys)
@@ -1161,9 +1167,12 @@ class MultiSigTestnet:
     :param private_key: A class representing a testnet private key.
     :type private_key: ``PrivateKeyTestnet``
     :raises TypeError: If ``private_key`` is not a ``PrivateKeyTestnet``.
-    :param public_keys: A list of public keys encoded as hex assigned
-                        to the multi-signature contract.
-    :type public_keys: ``list`` of ``str``
+    :param public_keys: A list or set of public keys encoded as hex assigned
+                        to the multi-signature contract. If using a list, then
+                        the order of the public keys will be used in the
+                        contract. If using a set, then Bit will order the
+                        public keys according to lexicographical order.
+    :type public_keys: ``list`` of ``str`` or ``set`` of ``str``
     :raises TypeError: When the list ``public_keys`` does not include the public
                        key corresponding to the private key used in this class.
     :param m: The number of required signatures to spend from this multi-
@@ -1185,7 +1194,7 @@ class MultiSigTestnet:
 
         self._pk = private_key
         self.public_key = private_key.public_key
-        self.public_keys = public_keys
+        self.public_keys = public_keys if type(public_keys) == list else sorted(public_keys)
         self.m = m
         self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
         self.is_compressed = all(len(p) == 66 for p in public_keys)
