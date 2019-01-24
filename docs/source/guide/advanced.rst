@@ -94,23 +94,24 @@ or recommended fees (10 minutes):
     >>> set_rate_cache_time(30)
     >>> set_fee_cache_time(60 * 5)
 
-.. _hextowif:
+.. _bytestowif:
 
-Hex to WIF
-----------
+Bytes to WIF
+------------
 
-If you store your keys as hex instead of WIF you lose the ability to retain
-metadata. To convert your hex keys to WIF to use certain properties, do this:
+If you store your keys as bytes (or hex) instead of WIF you lose the ability to
+retain metadata. To convert your bytes keys to WIF to use certain properties,
+do this:
 
 .. code-block:: python
 
     >>> from bit import Key
-    >>> from bit.format import hex_to_wif
+    >>> from bit.format import bytes_to_wif
     >>>
     >>> # Compressed by default
     >>> key1 = Key()
     >>>
-    >>> wif = hex_to_wif(key1.to_hex(), compressed=False)
+    >>> wif = bytes_to_wif(key1.to_bytes(), compressed=False)
     >>> key2 = Key(wif)
     >>>
     >>> # Same point on curve
