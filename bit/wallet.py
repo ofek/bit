@@ -992,7 +992,7 @@ class MultiSig:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(self.redeemscript))
+        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(len(self.redeemscript)))
                           + len(self.public_keys) * 34)
         add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
 
@@ -1287,7 +1287,7 @@ class MultiSigTestnet:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(self.redeemscript))
+        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(len(self.redeemscript)))
                           + len(self.public_keys) * 34)
         add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
 
