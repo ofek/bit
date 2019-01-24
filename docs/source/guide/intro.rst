@@ -10,7 +10,7 @@ Why Bit?
 
 - Robust API with sane defaults, making development a breeze
 - Python's fastest available implementation (100x faster than closest library)
-- Compliant to all presently implemented Bitcoin Improvement Protocols
+- Compliant to many presently implemented Bitcoin Improvement Protocols
 - All commits require 100% test coverage
 - Available on all major platforms
 - Extensive documentation

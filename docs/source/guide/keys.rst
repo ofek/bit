@@ -41,6 +41,10 @@ The only difference is the network operations for :class:`~bit.PrivateKeyTestnet
 will use Bitcoin's test network where coins have no value. As such, the derived
 address will also be different.
 
+Further, there are 2 kinds of `multisignature`_ keys: :class:`~bit.MultiSig` and
+:class:`~bit.MultiSigTestnet`. They incorporate a private key class from above
+into a multisignature contract.
+
 Creation
 --------
 
@@ -50,6 +54,31 @@ Creation of a new private key is as simple as:
 
     >>> from bit import Key
     >>> key = Key()
+
+To create a multisignature key a :class:`~bit.PrivateKey` (or
+:class:`~bit.PrivateKeyTestnet`) must be provided in addition to a list or set
+of public keys and the number of required signatures for the contract. The
+public keys may be presented as strings in hex format or bytes.
+
+The following code produces a multisignature contract requiring signatures from
+both `key1` and `key2` to spend from:
+
+.. code-block:: python
+
+    >>> from bit import Key, MultiSig
+    >>> key1 = Key()
+    >>> key2 = Key()
+    >>> multisig = MultiSig(key1, {key1.public_key, key2.public_key}, 2)
+
+IMPORTANT:
+
+When providing as argument public keys with a set such as above, then Bit will
+sort the public keys internally in lexicographical order similar to how
+`Electrum`_ behaves.
+If the public keys are provided with a list, then the ordering of the public
+keys of that list are used, similar to how Bitcoin Core behaves.
+Calling `~bit.MultiSig.public_keys` will always output a list with the public
+keys in the order they are being used by in Bit.
 
 Public Point
 ------------
@@ -84,10 +113,10 @@ Access it like so:
 You will also never use this directly. This value is only used internally to
 derive your address and is needed in the construction of every transaction.
 
-Address
--------
+Addresses
+---------
 
-All keys possess an :func:`~bit.PrivateKey.address` property which is derived from your public key:
+All keys possess a :func:`~bit.PrivateKey.address` property which is derived from your public key:
 
 .. code-block:: python
 
@@ -95,6 +124,24 @@ All keys possess an :func:`~bit.PrivateKey.address` property which is derived fr
     '1KF3Vas28f5tnt3rj2fWyR89V9MPw51xhX'
 
 This is what you share with others to receive payments.
+
+Bit also allows to use nested Segwit addresses, which can be displayed with the
+:func:`~bit.PrivateKey.segwit_address` property:
+
+.. code-block:: python
+
+    >>> key.segwit_address
+    '3DYf8JL9F6Lmz98gpvYMH5qVMXAEazSEEn'
+
+The address of a multisignature key can be displayed in similar manner using the
+same properties :func:`~bit.MultiSig.address` and :func:`~bit.MultiSig.segwit_address`:
+
+.. code-block:: python
+
+    >>> multisig.address
+    '328k6RPdgRTLJZe9JUZUanNnJPtWB8tkvM'
+    >>> multisig.segwit_address
+    '3AkJkY9XESnPPuX2ZMFotyGggbytxfNRVZ'
 
 Formats
 -------
@@ -214,4 +261,6 @@ Export:
 .. _elliptic curve: https://en.wikipedia.org/wiki/Elliptic_curve
 .. _SEC: https://en.wikipedia.org/wiki/SECG
 .. _secp256k1: https://en.bitcoin.it/wiki/Secp256k1
+:: _multisignature: https://en.bitcoin.it/wiki/Multisignature
+.. _Electrum: https://electrum.org
 .. _wallet import format: https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format
