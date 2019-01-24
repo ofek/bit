@@ -4,8 +4,8 @@ from bit.crypto import ECPrivateKey, ripemd160_sha256, sha256
 from bit.curve import Point
 from bit.format import (
     bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes,
-    address_to_public_key_hash, multisig_to_address, multisig_to_redeemscript,
-    public_key_to_segwit_address, multisig_to_segwit_address
+    multisig_to_address, multisig_to_redeemscript, public_key_to_segwit_address,
+    multisig_to_segwit_address
 )
 from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.network.meta import Unspent
