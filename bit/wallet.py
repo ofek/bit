@@ -1064,56 +1064,6 @@ class MultiSig:
 
         return create_new_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):  # pragma: no cover
-        """Creates a signed P2SH transaction and attempts to broadcast it on
-        the blockchain. This accepts the same arguments as
-        :func:`~bit.PrivateKey.create_transaction`.
-
-        :param outputs: A sequence of outputs you wish to send in the form
-                        ``(destination, amount, currency)``. The amount can
-                        be either an int, float, or string as long as it is
-                        a valid input to ``decimal.Decimal``. The currency
-                        must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple``
-        :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
-                    that will allow your transaction to be confirmed as soon as
-                    possible.
-        :type fee: ``int``
-        :param leftover: The destination that will receive any change from the
-                         transaction. By default Bit will send any change to
-                         the same address you sent from.
-        :type leftover: ``str``
-        :param combine: Whether or not Bit should use all available UTXOs to
-                        make future transactions smaller and therefore reduce
-                        fees. By default Bit will consolidate UTXOs.
-        :type combine: ``bool``
-        :param message: A message to include in the transaction. This will be
-                        stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
-        :type message: ``str``
-        :param unspents: The UTXOs to use as the inputs. By default Bit will
-                         communicate with the blockchain itself.
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
-        :returns: The transaction ID.
-        :rtype: ``str``
-        """
-
-        tx_hex = self.create_transaction(
-            outputs,
-            fee=fee,
-            absolute_fee=absolute_fee,
-            leftover=leftover,
-            combine=combine,
-            message=message,
-            unspents=unspents
-        )
-
-        NetworkAPI.broadcast_tx(tx_hex)
-
-        return calc_txid(tx_hex)
-
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
                             absolute_fee=False, leftover=None, combine=True,
@@ -1403,56 +1353,6 @@ class MultiSigTestnet:
         )
 
         return create_new_transaction(self, unspents, outputs)
-
-    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):  # pragma: no cover
-        """Creates a signed P2SH transaction and attempts to broadcast it on
-        the blockchain. This accepts the same arguments as
-        :func:`~bit.PrivateKey.create_transaction`.
-
-        :param outputs: A sequence of outputs you wish to send in the form
-                        ``(destination, amount, currency)``. The amount can
-                        be either an int, float, or string as long as it is
-                        a valid input to ``decimal.Decimal``. The currency
-                        must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple``
-        :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
-                    that will allow your transaction to be confirmed as soon as
-                    possible.
-        :type fee: ``int``
-        :param leftover: The destination that will receive any change from the
-                         transaction. By default Bit will send any change to
-                         the same address you sent from.
-        :type leftover: ``str``
-        :param combine: Whether or not Bit should use all available UTXOs to
-                        make future transactions smaller and therefore reduce
-                        fees. By default Bit will consolidate UTXOs.
-        :type combine: ``bool``
-        :param message: A message to include in the transaction. This will be
-                        stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
-        :type message: ``str``
-        :param unspents: The UTXOs to use as the inputs. By default Bit will
-                         communicate with the blockchain itself.
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
-        :returns: The transaction ID.
-        :rtype: ``str``
-        """
-
-        tx_hex = self.create_transaction(
-            outputs,
-            fee=fee,
-            absolute_fee=absolute_fee,
-            leftover=leftover,
-            combine=combine,
-            message=message,
-            unspents=unspents
-        )
-
-        NetworkAPI.broadcast_tx_testnet(tx_hex)
-
-        return calc_txid(tx_hex)
 
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
