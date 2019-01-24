@@ -140,13 +140,12 @@ def multisig_to_redeemscript(public_keys, m):
     redeemscript = int_to_unknown_bytes(m + 80)
 
     for key in public_keys:
-        key_byte = hex_to_bytes(key)
-        length = len(key_byte)
+        length = len(key)
 
         if length not in (33, 65):
             raise ValueError('At least one of the provided public keys is of invalid length {}.'.format(length))
 
-        redeemscript += script_push(length) + key_byte
+        redeemscript += script_push(length) + key
 
     redeemscript += int_to_unknown_bytes(len(public_keys) + 80) + b'\xae'  # Only works for n = len(public_keys) < 17. OK due to P2SH script-length limitation.
 

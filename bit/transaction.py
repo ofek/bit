@@ -677,7 +677,7 @@ def sign_tx(private_key, tx, *, unspents):
                 # all the provided signatures with public-keys as keys:
                 for sig in sig_list:
                     for pub in private_key.public_keys:
-                        if verify_sig(sig[:-1], hash, hex_to_bytes(pub)):
+                        if verify_sig(sig[:-1], hash, pub):
                             # If we already found a valid signature for pubkey
                             # we just overwrite it and don't care.
                             sigs[pub] = sig
@@ -689,7 +689,7 @@ def sign_tx(private_key, tx, *, unspents):
                                     'signatures, but only {} needed.').format(
                                         len(sigs), private_key.m)
 
-            sigs[bytes_to_hex(public_key)] = signature
+            sigs[public_key] = signature
 
             witness = b''
             # Sort ingthe signatures according to the public-key list:

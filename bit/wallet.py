@@ -15,7 +15,7 @@ from bit.transaction import (
 )
 from bit.constants import OP_0, OP_PUSH_20, OP_PUSH_32
 
-from bit.utils import bytes_to_hex, int_to_varint
+from bit.utils import hex_to_bytes, bytes_to_hex, int_to_varint
 
 
 def wif_to_key(wif):
@@ -877,7 +877,7 @@ class MultiSig:
                         the order of the public keys will be used in the
                         contract. If using a set, then Bit will order the
                         public keys according to lexicographical order.
-    :type public_keys: ``list`` of ``str`` or ``set`` of ``str``
+    :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
                        key corresponding to the private key used in this class.
     :param m: The number of required signatures to spend from this multi-
@@ -891,7 +891,8 @@ class MultiSig:
             raise TypeError('MultiSig only accepts a PrivateKey class to '
                             'assign a private key.')
 
-        if bytes_to_hex(private_key.public_key) not in public_keys:
+        if (bytes_to_hex(private_key.public_key) not in public_keys
+                and private_key.public_key not in public_keys):
             raise TypeError('Private key does not match any provided public key.')
 
         if type(public_keys) not in (list, set):
@@ -902,10 +903,12 @@ class MultiSig:
 
         self._pk = private_key
         self.public_key = private_key.public_key
-        self.public_keys = public_keys if type(public_keys) == list else sorted(public_keys)
+        if type(public_keys) == set:
+            public_keys = sorted(public_keys)
+        self.public_keys = list(map(lambda k: k if type(k) == bytes else hex_to_bytes(k), public_keys))
         self.m = m
-        self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
-        self.is_compressed = all(len(p) == 66 for p in public_keys)
+        self.redeemscript = multisig_to_redeemscript(self.public_keys, self.m)
+        self.is_compressed = all(len(p) == 33 for p in self.public_keys)
 
         self._address = None
         self._segwit_address = None
@@ -1172,7 +1175,7 @@ class MultiSigTestnet:
                         the order of the public keys will be used in the
                         contract. If using a set, then Bit will order the
                         public keys according to lexicographical order.
-    :type public_keys: ``list`` of ``str`` or ``set`` of ``str``
+    :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
                        key corresponding to the private key used in this class.
     :param m: The number of required signatures to spend from this multi-
@@ -1186,7 +1189,8 @@ class MultiSigTestnet:
             raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet '
                             'class to assign a private key.')
 
-        if bytes_to_hex(private_key.public_key) not in public_keys:
+        if (bytes_to_hex(private_key.public_key) not in public_keys
+                and private_key.public_key not in public_keys):
             raise TypeError('Private key does not match any provided public key.')
 
         self.version = 'test'
@@ -1194,10 +1198,12 @@ class MultiSigTestnet:
 
         self._pk = private_key
         self.public_key = private_key.public_key
-        self.public_keys = public_keys if type(public_keys) == list else sorted(public_keys)
+        if type(public_keys) == set:
+            public_keys = sorted(public_keys)
+        self.public_keys = list(map(lambda k: k if type(k) == bytes else hex_to_bytes(k), public_keys))
         self.m = m
-        self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
-        self.is_compressed = all(len(p) == 66 for p in public_keys)
+        self.redeemscript = multisig_to_redeemscript(self.public_keys, self.m)
+        self.is_compressed = all(len(p) == 33 for p in self.public_keys)
 
         self._address = None
         self._segwit_address = None
