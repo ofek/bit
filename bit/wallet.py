@@ -1162,6 +1162,9 @@ class MultiSig:
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)
 
+    def __repr__(self):
+        return '<MultiSig: {}>'.format(self.address)
+
 
 class MultiSigTestnet:
     """This class represents a testnet Bitcoin multisignature contract.
@@ -1457,3 +1460,6 @@ class MultiSigTestnet:
 
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)
+
+    def __repr__(self):
+        return '<MultiSigTestnet: {}>'.format(self.address)
