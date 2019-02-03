@@ -65,6 +65,9 @@ have the exact same functionality.</p>
 <p>The only difference is the network operations for <a class="reference internal" href="../dev/api.html#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>
 will use Bitcoin’s test network where coins have no value. As such, the derived
 address will also be different.</p>
+<p>Further, there are 2 kinds of <a href="#id2"><span class="problematic" id="id3">`multisignature`_</span></a> keys: <a class="reference internal" href="../dev/api.html#bit.MultiSig" title="bit.MultiSig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiSig</span></code></a> and
+<a class="reference internal" href="../dev/api.html#bit.MultiSigTestnet" title="bit.MultiSigTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiSigTestnet</span></code></a>. They incorporate a private key class from above
+into a multisignature contract.</p>
 </div>
 <div class="section" id="creation">
 <h2>Creation<a class="headerlink" href="#creation" title="Permalink to this headline">¶</a></h2>
@@ -73,6 +76,26 @@ address will also be different.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>To create a multisignature key a <a class="reference internal" href="../dev/api.html#bit.PrivateKey" title="bit.PrivateKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKey</span></code></a> (or
+<a class="reference internal" href="../dev/api.html#bit.PrivateKeyTestnet" title="bit.PrivateKeyTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrivateKeyTestnet</span></code></a>) must be provided in addition to a list or set
+of public keys and the number of required signatures for the contract. The
+public keys may be presented as strings in hex format or bytes.</p>
+<p>The following code produces a multisignature contract requiring signatures from
+both <cite>key1</cite> and <cite>key2</cite> to spend from:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span><span class="p">,</span> <span class="n">MultiSig</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key2</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multisig</span> <span class="o">=</span> <span class="n">MultiSig</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span> <span class="p">{</span><span class="n">key1</span><span class="o">.</span><span class="n">public_key</span><span class="p">,</span> <span class="n">key2</span><span class="o">.</span><span class="n">public_key</span><span class="p">},</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>IMPORTANT:</p>
+<p>When providing as argument public keys with a set such as above, then Bit will
+sort the public keys internally in lexicographical order similar to how
+<a href="#id4"><span class="problematic" id="id5">`Electrum`_</span></a> behaves.
+If the public keys are provided with a list, then the ordering of the public
+keys of that list are used, similar to how Bitcoin Core behaves.
+Calling <cite>~bit.MultiSig.public_keys</cite> will always output a list with the public
+keys in the order they are being used by in Bit.</p>
 </div>
 <div class="section" id="public-point">
 <h2>Public Point<a class="headerlink" href="#public-point" title="Permalink to this headline">¶</a></h2>
@@ -89,7 +112,7 @@ from the point.</p>
 <div class="section" id="public-key">
 <h2>Public Key<a class="headerlink" href="#public-key" title="Permalink to this headline">¶</a></h2>
 <p>A public key is a public point serialized to bytes. By default all keys will
-use the compressed version unless <a class="reference internal" href="advanced.html#hextowif"><span class="std std-ref">you explicitly need otherwise</span></a>.
+use the compressed version unless <span class="xref std std-ref">you explicitly need otherwise</span>.
 This reduces the size of each transaction and thus fees.</p>
 <p>Access it like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
@@ -99,20 +122,34 @@ This reduces the size of each transaction and thus fees.</p>
 <p>You will also never use this directly. This value is only used internally to
 derive your address and is needed in the construction of every transaction.</p>
 </div>
-<div class="section" id="address">
-<h2>Address<a class="headerlink" href="#address" title="Permalink to this headline">¶</a></h2>
-<p>All keys possess an <a class="reference internal" href="../dev/api.html#bit.PrivateKey.address" title="bit.PrivateKey.address"><code class="xref py py-func docutils literal notranslate"><span class="pre">address()</span></code></a> property which is derived from your public key:</p>
+<div class="section" id="addresses">
+<h2>Addresses<a class="headerlink" href="#addresses" title="Permalink to this headline">¶</a></h2>
+<p>All keys possess a <a class="reference internal" href="../dev/api.html#bit.PrivateKey.address" title="bit.PrivateKey.address"><code class="xref py py-func docutils literal notranslate"><span class="pre">address()</span></code></a> property which is derived from your public key:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">address</span>
 <span class="go">&#39;1KF3Vas28f5tnt3rj2fWyR89V9MPw51xhX&#39;</span>
 </pre></div>
 </div>
 <p>This is what you share with others to receive payments.</p>
+<p>Bit also allows to use nested Segwit addresses, which can be displayed with the
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.segwit_address" title="bit.PrivateKey.segwit_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">segwit_address()</span></code></a> property:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">segwit_address</span>
+<span class="go">&#39;3DYf8JL9F6Lmz98gpvYMH5qVMXAEazSEEn&#39;</span>
+</pre></div>
+</div>
+<p>The address of a multisignature key can be displayed in similar manner using the
+same properties <a class="reference internal" href="../dev/api.html#bit.MultiSig.address" title="bit.MultiSig.address"><code class="xref py py-func docutils literal notranslate"><span class="pre">address()</span></code></a> and <a class="reference internal" href="../dev/api.html#bit.MultiSig.segwit_address" title="bit.MultiSig.segwit_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">segwit_address()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">multisig</span><span class="o">.</span><span class="n">address</span>
+<span class="go">&#39;328k6RPdgRTLJZe9JUZUanNnJPtWB8tkvM&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multisig</span><span class="o">.</span><span class="n">segwit_address</span>
+<span class="go">&#39;3AkJkY9XESnPPuX2ZMFotyGggbytxfNRVZ&#39;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="formats">
 <h2>Formats<a class="headerlink" href="#formats" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="wif">
 <h3>WIF<a class="headerlink" href="#wif" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format">wallet import format</a> is the primary way of representing private keys. This
+<p>The <a href="#id6"><span class="problematic" id="id7">`wallet import format`_</span></a> is the primary way of representing private keys. This
 format stores the secret value as well as some metadata such as whether or not the
 public key should be compressed.</p>
 <p>To import a private key you can pass a key in wallet import format directly to
@@ -197,6 +234,9 @@ want to force the use of a particular class, you can do this:</p>
 <span class="go">b&#39;0\x81\x84\x02\x01\x000\x10\x06\x07*\x86H\xce=\x02\x01\x06\x05+\x81\x04\x00\n\x04m0k\x02\x01\x01\x04 ld\x8f\xd4\xc0\x19\xbd^\xa1\xf7f\xee\x8b9j\x1c\xd3ZX\x89\x1b\x04\x13|e\xe7|g\x84:\xcf\xab\xa1D\x03B\x00\x04\xb6\x1a\x9bQ\x0c?\xe3\xb7\x80\x05,\xcf7\x01{\xf9,&quot;\xb6\xdf\xe5\xbb\x0b+\x9b\xc5\x07@2\xa1\x8a\x01R&lt;\x86\t\x1c\x02\x0fd\x8d\x90\xb5\x99w\xc5\x84(#\xfdr&gt;^\xd3\xb5|\x9d1\xa1\x9c/\x04\xf5\xdd&#39;</span>
 </pre></div>
 </div>
+<p>:: _multisignature: <a class="reference external" href="https://en.bitcoin.it/wiki/Multisignature">https://en.bitcoin.it/wiki/Multisignature</a>
+.. _Electrum: <a class="reference external" href="https://electrum.org">https://electrum.org</a>
+.. _wallet import format: <a class="reference external" href="https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format">https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format</a></p>
 </div>
 </div>
 </div>
@@ -269,7 +309,7 @@ want to force the use of a particular class, you can do this:</p>
 <li class="toctree-l2"><a class="reference internal" href="#creation">Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#public-point">Public Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#public-key">Public Key</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#address">Address</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#addresses">Addresses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#formats">Formats</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#wif">WIF</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#hex">Hex</a></li>

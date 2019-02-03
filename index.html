@@ -83,7 +83,8 @@ effortless to use, and have readable source code. It is heavily inspired by
 <li>Optimal transaction fee API, with optional caching</li>
 <li>Compressed public keys by default</li>
 <li>Multiple representations of private keys; WIF, PEM, DER, etc.</li>
-<li>Standard P2PKH transactions</li>
+<li>Legacy P2PKH and Segwit nested-P2WPKH transactions</li>
+<li>Legacy P2SH and Segwit nested-P2WSH transactions for multisignature</li>
 </ul>
 <p>If you are intrigued, continue reading. If not, continue all the same!</p>
 </div>
@@ -111,7 +112,7 @@ of best practices.</p>
 <li class="toctree-l2"><a class="reference internal" href="guide/keys.html#creation">Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/keys.html#public-point">Public Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/keys.html#public-key">Public Key</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#address">Address</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/keys.html#addresses">Addresses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/keys.html#formats">Formats</a></li>
 </ul>
 </li>
@@ -123,7 +124,8 @@ of best practices.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="guide/transactions.html">Transactions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#outputs">Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#creating-and-signing">Creating and Signing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#batching">Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#output-format">Output Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#change-address">Change Address</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/transactions.html#fee">Fee</a></li>
@@ -147,7 +149,7 @@ of best practices.</p>
 <li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#blockchain-storage">Blockchain Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#services-timeout">Services Timeout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#cache-times">Cache Times</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#hex-to-wif">Hex to WIF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/advanced.html#bytes-to-wif">Bytes to WIF</a></li>
 </ul>
 </li>
 </ul>

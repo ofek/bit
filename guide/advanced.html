@@ -43,7 +43,7 @@ servers, you don’t have to use any of our network capabilities.</p>
 <a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a></li>
 <li>Supply <a class="reference internal" href="transactions.html#unspentparam"><span class="std std-ref">your own UTXOs</span></a></li>
 <li>Set <a class="reference internal" href="transactions.html#feeparam"><span class="std std-ref">your own fee</span></a></li>
-<li>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Outputs</span></a> only use these currencies: satoshi, ubtc,
+<li>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Creating and Signing</span></a> only use these currencies: satoshi, ubtc,
 mbtc, or btc.</li>
 </ul>
 </div>
@@ -108,17 +108,18 @@ or recommended fees (10 minutes):</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="hex-to-wif">
-<span id="hextowif"></span><h2>Hex to WIF<a class="headerlink" href="#hex-to-wif" title="Permalink to this headline">¶</a></h2>
-<p>If you store your keys as hex instead of WIF you lose the ability to retain
-metadata. To convert your hex keys to WIF to use certain properties, do this:</p>
+<div class="section" id="bytes-to-wif">
+<span id="bytestowif"></span><h2>Bytes to WIF<a class="headerlink" href="#bytes-to-wif" title="Permalink to this headline">¶</a></h2>
+<p>If you store your keys as bytes (or hex) instead of WIF you lose the ability to
+retain metadata. To convert your bytes keys to WIF to use certain properties,
+do this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">Key</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">hex_to_wif</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit.format</span> <span class="kn">import</span> <span class="n">bytes_to_wif</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compressed by default</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key1</span> <span class="o">=</span> <span class="n">Key</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">wif</span> <span class="o">=</span> <span class="n">hex_to_wif</span><span class="p">(</span><span class="n">key1</span><span class="o">.</span><span class="n">to_hex</span><span class="p">(),</span> <span class="n">compressed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wif</span> <span class="o">=</span> <span class="n">bytes_to_wif</span><span class="p">(</span><span class="n">key1</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(),</span> <span class="n">compressed</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key2</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">wif</span><span class="p">)</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Same point on curve</span>
@@ -207,7 +208,7 @@ metadata. To convert your hex keys to WIF to use certain properties, do this:</p
 <li class="toctree-l2"><a class="reference internal" href="#blockchain-storage">Blockchain Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#services-timeout">Services Timeout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cache-times">Cache Times</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#hex-to-wif">Hex to WIF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bytes-to-wif">Bytes to WIF</a></li>
 </ul>
 </li>
 </ul>

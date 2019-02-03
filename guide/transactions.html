@@ -40,12 +40,59 @@ transaction and returns the aforementioned transaction in hex, and a
 <a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a> method that does the same thing but will
 attempt to broadcast the transaction, returning instead the transaction id
 for future lookup. Both methods take the exact same arguments.</p>
-<div class="section" id="outputs">
-<span id="outputsparam"></span><h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
-<p>The only required argument is a list of outputs.</p>
+<p>For multisignature keys it is very similar, but due to the nature of requiring
+more signatures a single multisignature key can typically not create a fully
+valid transaction with the <a class="reference internal" href="../dev/api.html#bit.MultiSig.create_transaction" title="bit.MultiSig.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a> method.
+A raw partially signed transaction can be passed as hex to
+<a class="reference internal" href="../dev/api.html#bit.MultiSig.sign_transaction" title="bit.MultiSig.sign_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">sign_transaction()</span></code></a>, adding the signature of the private
+key that multisignature key encapsulates.
+Bit allows for cross-operation between the way Bitcoin Core handles raw
+partially signed transactions.</p>
+<p>Note: <a class="reference internal" href="../dev/api.html#bit.MultiSig" title="bit.MultiSig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiSig</span></code></a> and <a class="reference internal" href="../dev/api.html#bit.MultiSigTestnet" title="bit.MultiSigTestnet"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiSigTestnet</span></code></a> do not have a
+function <cite>send()</cite>.</p>
+<p>To send a fully signed and serialized transaction in hex please use
+<a class="reference internal" href="../dev/api.html#bit.network.NetworkAPI.broadcast_tx" title="bit.network.NetworkAPI.broadcast_tx"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadcast_tx()</span></code></a> for mainnet or
+<a class="reference internal" href="../dev/api.html#bit.network.NetworkAPI.broadcast_tx_testnet" title="bit.network.NetworkAPI.broadcast_tx_testnet"><code class="xref py py-func docutils literal notranslate"><span class="pre">broadcast_tx_testnet()</span></code></a> for testnet directly.</p>
+<div class="section" id="creating-and-signing">
+<span id="outputsparam"></span><h2>Creating and Signing<a class="headerlink" href="#creating-and-signing" title="Permalink to this headline">¶</a></h2>
+<p>The only required argument to create a transaction is a list of outputs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([(</span><span class="s1">&#39;1Archive1n2C579dMsAu3iC6tWzuQJz8dN&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
 </pre></div>
 </div>
+<p>In the same way we can also create transactions from a multisignature key, which
+will be signed by the private key it encapsulates and returned as hex:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_1</span> <span class="o">=</span> <span class="n">multisig1</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([(</span><span class="s1">&#39;1Archive1n2C579dMsAu3iC6tWzuQJz8dN&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">,</span> <span class="s1">&#39;jpy&#39;</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>However, unless the multisignature contract only requires a single signature the
+resulting transaction will only be “partially signed” and not pass validation of
+the Bitcoin network.</p>
+<p>To add a signature from another private key to a partially signed transaction,
+the transaction can be passed to <a class="reference internal" href="../dev/api.html#bit.MultiSig.sign_transaction" title="bit.MultiSig.sign_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">sign_transaction()</span></code></a> of
+another instance of a multisignature key, which encapsulates that private key.
+The return value will be a serialization of the transaction in hex containing
+now two signatures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_2</span> <span class="o">=</span> <span class="n">multisig2</span><span class="o">.</span><span class="n">sign_transaction</span><span class="p">(</span><span class="n">tx_1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The order in which the different multisignature keys sign the raw transaction
+does not matter. Bit is able to append the signatures in accordance to the
+multisignature contract definition.</p>
+<p>When all required signatures have been added the returned raw transaction in hex
+will pass validation of the Bitcoin network.</p>
+</div>
+<div class="section" id="batching">
+<h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
+<p>Batching transactions allows adding multiple unspents from diferent keys to a
+single transaction. This can be done with Bit in the following way:</p>
+<p>It is possible to manually provide <cite>~bit.network.meta.Unspent</cite> objects when
+calling <code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code> on any key object. If provided with unspents
+that do not belong to the key that calls <code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code>, then those
+unspents will still be added to the transaction without being signed.</p>
+<p>Likewise, the transaction with some unsigned inputs left can be passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">sign_transaction()</span></code> of an instance of a key object that can sign an
+input and the signature will be added, similar to how multisignature inputs are
+signed.</p>
 </div>
 <div class="section" id="output-format">
 <h2>Output Format<a class="headerlink" href="#output-format" title="Permalink to this headline">¶</a></h2>
@@ -64,8 +111,9 @@ entirety.</p>
 <p>If you wanted to use 35000 satoshi to buy ice cream, you need to use all 55000
 satoshi in the transaction. How this works is whatever is left over you send
 back to yourself as change.</p>
-<p>By default Bit will send any change to the same address you sent from. You
-can specify where leftover funds go like this:</p>
+<p>By default, if spending any unspent from a Segwit address then Bit will send any
+change to its Segwit address you sent from, otherwise choose the legacy address.
+But you can also manually specify where leftover funds go:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -87,6 +135,12 @@ will allow your transaction to be confirmed as soon as possible.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">70</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>It is also possible to specify an absolute fee value instead. This is done by
+activating the absolute fee flag and re-purposing the fee parameter with the
+absolute fee value of e.g. 150 satoshis for the transaction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">absolute_fee</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>For more information about transaction fees <a class="reference external" href="https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care">read this</a>.</p>
 </div>
 <div class="section" id="unspent-consolidation">
@@ -97,27 +151,34 @@ smaller and therefore reduce fees.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For example, if your had the following UTXOs available:</p>
+<p>If the consolidation is disabled, Bit will use the <a class="reference external" href="http://murch.one/wp-content/uploads/2016/11/erhardt2016coinselection.pdf">Branch-and-Bound</a> algorithm
+to try to find a perfect match of unspents with as fall-back using Single Random
+Draw of unspents.</p>
+<p>As an example, assume you had the following UTXOs available:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 <span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 <span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Forgetting about fees for the moment, assume you want to spend 150 satoshi. If
+<p>Ignoring fees for the moment and say you want to spend 150 satoshi. If
 you combine all funds, you’d be left with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>If you don’t, you’d be left with:</p>
+<p>If you don’t, you could be left with e.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 <span class="n">Unspent</span><span class="p">(</span><span class="n">amount</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>The exact unspents you would be left with when consolidation is turned off will
+depend both on the amount you want to send and the available unspents. If no
+exact match can be found then due to the Single Random Draw the unspents you
+will be left with will not be deterministic.</p>
 </div>
 <div class="section" id="transfer-funds">
 <h2>Transfer Funds<a class="headerlink" href="#transfer-funds" title="Permalink to this headline">¶</a></h2>
 <p>If you want to send all available funds to another address or wish to simply
-move your coins, you can specify a leftover address and zero outputs like so:</p>
+move your coins, you can specify a leftover address and zero outputs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">([],</span> <span class="n">leftover</span><span class="o">=</span><span class="s1">&#39;some_address&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -204,7 +265,8 @@ supply your own list of unspent transaction outputs by doing either:</p>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Transactions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-and-signing">Creating and Signing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#batching">Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#output-format">Output Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#change-address">Change Address</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fee">Fee</a></li>
