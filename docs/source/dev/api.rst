@@ -22,6 +22,16 @@ Keys
     :undoc-members:
     :inherited-members:
 
+.. autoclass:: bit.MultiSig
+    :members:
+    :undoc-members:
+    :inherited-members:
+
+.. autoclass:: bit.MultiSigTestnet
+    :members:
+    :undoc-members:
+    :inherited-members:
+
 .. autoclass:: bit.wallet.BaseKey
     :members:
     :undoc-members:

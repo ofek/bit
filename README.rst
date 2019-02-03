@@ -65,7 +65,8 @@ Features
 - Optimal transaction fee API, with optional caching
 - Compressed public keys by default
 - Multiple representations of private keys; WIF, PEM, DER, etc.
-- Standard P2PKH transactions
+- Legacy P2PKH and Segwit nested-P2WPKH transactions
+- Legacy P2SH and Segwit nested-P2WSH transactions
 
 If you are intrigued, continue reading. If not, continue all the same!
 

@@ -4,8 +4,8 @@ from bit.crypto import ECPrivateKey, ripemd160_sha256, sha256
 from bit.curve import Point
 from bit.format import (
     bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes,
-    address_to_public_key_hash, multisig_to_address, multisig_to_redeemscript,
-    public_key_to_segwit_address, multisig_to_segwit_address
+    multisig_to_address, multisig_to_redeemscript, public_key_to_segwit_address,
+    multisig_to_segwit_address
 )
 from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
 from bit.network.meta import Unspent
@@ -15,7 +15,7 @@ from bit.transaction import (
 )
 from bit.constants import OP_0, OP_PUSH_20, OP_PUSH_32
 
-from bit.utils import bytes_to_hex, int_to_varint
+from bit.utils import hex_to_bytes, bytes_to_hex, int_to_varint
 
 
 def wif_to_key(wif):
@@ -872,9 +872,12 @@ class MultiSig:
     :param private_key: A class representing a private key.
     :type private_key: ``PrivateKey``
     :raises TypeError: If ``private_key`` is not a ``PrivateKey``.
-    :param public_keys: A list of public keys encoded as hex assigned
-                        to the multi-signature contract.
-    :type public_keys: ``list`` of ``str``
+    :param public_keys: A list or set of public keys encoded as hex assigned
+                        to the multi-signature contract. If using a list, then
+                        the order of the public keys will be used in the
+                        contract. If using a set, then Bit will order the
+                        public keys according to lexicographical order.
+    :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
                        key corresponding to the private key used in this class.
     :param m: The number of required signatures to spend from this multi-
@@ -888,18 +891,24 @@ class MultiSig:
             raise TypeError('MultiSig only accepts a PrivateKey class to '
                             'assign a private key.')
 
-        if bytes_to_hex(private_key.public_key) not in public_keys:
+        if (bytes_to_hex(private_key.public_key) not in public_keys
+                and private_key.public_key not in public_keys):
             raise TypeError('Private key does not match any provided public key.')
+
+        if type(public_keys) not in (list, set):
+            raise TypeError('The public keys must be provided in a list or set.')
 
         self.version = 'main'
         self.instance = 'MultiSig'
 
         self._pk = private_key
         self.public_key = private_key.public_key
-        self.public_keys = public_keys
+        if type(public_keys) == set:
+            public_keys = sorted(public_keys)
+        self.public_keys = list(map(lambda k: k if type(k) == bytes else hex_to_bytes(k), public_keys))
         self.m = m
-        self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
-        self.is_compressed = all(len(p) == 66 for p in public_keys)
+        self.redeemscript = multisig_to_redeemscript(self.public_keys, self.m)
+        self.is_compressed = all(len(p) == 33 for p in self.public_keys)
 
         self._address = None
         self._segwit_address = None
@@ -983,7 +992,7 @@ class MultiSig:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(self.redeemscript))
+        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(len(self.redeemscript)))
                           + len(self.public_keys) * 34)
         add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
 
@@ -1063,56 +1072,6 @@ class MultiSig:
         )
 
         return create_new_transaction(self, unspents, outputs)
-
-    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):  # pragma: no cover
-        """Creates a signed P2SH transaction and attempts to broadcast it on
-        the blockchain. This accepts the same arguments as
-        :func:`~bit.PrivateKey.create_transaction`.
-
-        :param outputs: A sequence of outputs you wish to send in the form
-                        ``(destination, amount, currency)``. The amount can
-                        be either an int, float, or string as long as it is
-                        a valid input to ``decimal.Decimal``. The currency
-                        must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple``
-        :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
-                    that will allow your transaction to be confirmed as soon as
-                    possible.
-        :type fee: ``int``
-        :param leftover: The destination that will receive any change from the
-                         transaction. By default Bit will send any change to
-                         the same address you sent from.
-        :type leftover: ``str``
-        :param combine: Whether or not Bit should use all available UTXOs to
-                        make future transactions smaller and therefore reduce
-                        fees. By default Bit will consolidate UTXOs.
-        :type combine: ``bool``
-        :param message: A message to include in the transaction. This will be
-                        stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
-        :type message: ``str``
-        :param unspents: The UTXOs to use as the inputs. By default Bit will
-                         communicate with the blockchain itself.
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
-        :returns: The transaction ID.
-        :rtype: ``str``
-        """
-
-        tx_hex = self.create_transaction(
-            outputs,
-            fee=fee,
-            absolute_fee=absolute_fee,
-            leftover=leftover,
-            combine=combine,
-            message=message,
-            unspents=unspents
-        )
-
-        NetworkAPI.broadcast_tx(tx_hex)
-
-        return calc_txid(tx_hex)
 
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
@@ -1203,6 +1162,9 @@ class MultiSig:
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)
 
+    def __repr__(self):
+        return '<MultiSig: {}>'.format(self.address)
+
 
 class MultiSigTestnet:
     """This class represents a testnet Bitcoin multisignature contract.
@@ -1211,9 +1173,12 @@ class MultiSigTestnet:
     :param private_key: A class representing a testnet private key.
     :type private_key: ``PrivateKeyTestnet``
     :raises TypeError: If ``private_key`` is not a ``PrivateKeyTestnet``.
-    :param public_keys: A list of public keys encoded as hex assigned
-                        to the multi-signature contract.
-    :type public_keys: ``list`` of ``str``
+    :param public_keys: A list or set of public keys encoded as hex assigned
+                        to the multi-signature contract. If using a list, then
+                        the order of the public keys will be used in the
+                        contract. If using a set, then Bit will order the
+                        public keys according to lexicographical order.
+    :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
                        key corresponding to the private key used in this class.
     :param m: The number of required signatures to spend from this multi-
@@ -1227,7 +1192,8 @@ class MultiSigTestnet:
             raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet '
                             'class to assign a private key.')
 
-        if bytes_to_hex(private_key.public_key) not in public_keys:
+        if (bytes_to_hex(private_key.public_key) not in public_keys
+                and private_key.public_key not in public_keys):
             raise TypeError('Private key does not match any provided public key.')
 
         self.version = 'test'
@@ -1235,10 +1201,12 @@ class MultiSigTestnet:
 
         self._pk = private_key
         self.public_key = private_key.public_key
-        self.public_keys = public_keys
+        if type(public_keys) == set:
+            public_keys = sorted(public_keys)
+        self.public_keys = list(map(lambda k: k if type(k) == bytes else hex_to_bytes(k), public_keys))
         self.m = m
-        self.redeemscript = multisig_to_redeemscript(public_keys, self.m)
-        self.is_compressed = all(len(p) == 66 for p in public_keys)
+        self.redeemscript = multisig_to_redeemscript(self.public_keys, self.m)
+        self.is_compressed = all(len(p) == 33 for p in self.public_keys)
 
         self._address = None
         self._segwit_address = None
@@ -1322,7 +1290,7 @@ class MultiSigTestnet:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(self.redeemscript))
+        add_p2sh_vsize = (self.m * 73 + len(int_to_varint(len(self.redeemscript)))
                           + len(self.public_keys) * 34)
         add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
 
@@ -1403,56 +1371,6 @@ class MultiSigTestnet:
         )
 
         return create_new_transaction(self, unspents, outputs)
-
-    def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):  # pragma: no cover
-        """Creates a signed P2SH transaction and attempts to broadcast it on
-        the blockchain. This accepts the same arguments as
-        :func:`~bit.PrivateKey.create_transaction`.
-
-        :param outputs: A sequence of outputs you wish to send in the form
-                        ``(destination, amount, currency)``. The amount can
-                        be either an int, float, or string as long as it is
-                        a valid input to ``decimal.Decimal``. The currency
-                        must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple``
-        :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
-                    that will allow your transaction to be confirmed as soon as
-                    possible.
-        :type fee: ``int``
-        :param leftover: The destination that will receive any change from the
-                         transaction. By default Bit will send any change to
-                         the same address you sent from.
-        :type leftover: ``str``
-        :param combine: Whether or not Bit should use all available UTXOs to
-                        make future transactions smaller and therefore reduce
-                        fees. By default Bit will consolidate UTXOs.
-        :type combine: ``bool``
-        :param message: A message to include in the transaction. This will be
-                        stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
-        :type message: ``str``
-        :param unspents: The UTXOs to use as the inputs. By default Bit will
-                         communicate with the blockchain itself.
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
-        :returns: The transaction ID.
-        :rtype: ``str``
-        """
-
-        tx_hex = self.create_transaction(
-            outputs,
-            fee=fee,
-            absolute_fee=absolute_fee,
-            leftover=leftover,
-            combine=combine,
-            message=message,
-            unspents=unspents
-        )
-
-        NetworkAPI.broadcast_tx_testnet(tx_hex)
-
-        return calc_txid(tx_hex)
 
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
@@ -1542,3 +1460,6 @@ class MultiSigTestnet:
 
             tx_data = deserialize(tx_data)
             return sign_tx(self, tx_data, unspents=unspents)
+
+    def __repr__(self):
+        return '<MultiSigTestnet: {}>'.format(self.address)

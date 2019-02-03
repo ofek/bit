@@ -8,13 +8,19 @@ from bit.crypto import ECPrivateKey
 from bit.curve import Point
 from bit.format import verify_sig
 from bit.network import NetworkAPI
-from bit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
+from bit.wallet import (
+    BaseKey, Key, PrivateKey, PrivateKeyTestnet, MultiSig, MultiSigTestnet,
+    wif_to_key
+)
 from .samples import (
-    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
+    BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, BITCOIN_ADDRESS_P2SH_MULTISIG,
+    BITCOIN_ADDRESS_NP2SH_MULTISIG, BITCOIN_ADDRESS_TEST_P2SH_MULTISIG,
+    BITCOIN_ADDRESS_TEST_NP2SH_MULTISIG, PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,
     PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_X,
     PUBLIC_KEY_Y, WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
-    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_MAIN_1, WALLET_FORMAT_MAIN_2,
+    WALLET_FORMAT_TEST, WALLET_FORMAT_TEST_1, WALLET_FORMAT_TEST_2
 )
 
 TRAVIS = 'TRAVIS' in os.environ
@@ -132,7 +138,7 @@ class TestPrivateKey:
     def test_address(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
         assert private_key.address == BITCOIN_ADDRESS
-        assert private_key.address == BITCOIN_ADDRESS
+        assert private_key.segwit_address is None
 
     def test_to_wif(self):
         private_key = PrivateKey(WALLET_FORMAT_MAIN)
@@ -192,7 +198,7 @@ class TestPrivateKeyTestnet:
     def test_address(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
         assert private_key.address == BITCOIN_ADDRESS_TEST
-        assert private_key.address == BITCOIN_ADDRESS_TEST
+        assert private_key.segwit_address is None
 
     def test_to_wif(self):
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
@@ -287,3 +293,95 @@ class TestPrivateKeyTestnet:
 
     def test_repr(self):
         assert repr(PrivateKeyTestnet(WALLET_FORMAT_MAIN)) == '<PrivateKeyTestnet: mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS>'
+
+
+class TestMultiSig:
+    def test_init_default(self):
+        key1 = PrivateKey()
+        key2 = PrivateKey()
+        multisig = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        assert multisig._address is None
+        assert multisig.balance == 0
+        assert multisig.unspents == []
+        assert multisig.transactions == []
+        assert multisig.m == 2
+
+    def test_address(self):
+        key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
+        key2 = PrivateKey(WALLET_FORMAT_MAIN_2)
+        multisig = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        assert multisig.address == BITCOIN_ADDRESS_P2SH_MULTISIG
+        assert multisig.segwit_address == BITCOIN_ADDRESS_NP2SH_MULTISIG
+
+    def test_get_balance(self):
+        key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
+        key2 = PrivateKey(WALLET_FORMAT_MAIN_2)
+        multisig = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        balance = int(multisig.get_balance())
+        assert balance == multisig.balance
+
+    def test_get_unspent(self):
+        key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
+        key2 = PrivateKey(WALLET_FORMAT_MAIN_2)
+        multisig = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        unspent = multisig.get_unspents()
+        assert unspent == multisig.unspents
+
+    def test_get_transactions(self):
+        key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
+        key2 = PrivateKey(WALLET_FORMAT_MAIN_2)
+        multisig = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        transactions = multisig.get_transactions()
+        assert transactions == multisig.transactions
+
+    def test_repr(self):
+        key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
+        key2 = PrivateKey(WALLET_FORMAT_MAIN_2)
+        multisig = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        assert repr(multisig) == '<MultiSig: {}>'.format(BITCOIN_ADDRESS_P2SH_MULTISIG)
+
+
+class TestMultiSigTestnet:
+    def test_init_default(self):
+        key1 = PrivateKeyTestnet()
+        key2 = PrivateKeyTestnet()
+        multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
+        assert multisig._address is None
+        assert multisig.balance == 0
+        assert multisig.unspents == []
+        assert multisig.transactions == []
+        assert multisig.m == 2
+
+    def test_address(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_2)
+        multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
+        assert multisig.address == BITCOIN_ADDRESS_TEST_P2SH_MULTISIG
+        assert multisig.segwit_address == BITCOIN_ADDRESS_TEST_NP2SH_MULTISIG
+
+    def test_get_balance(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_2)
+        multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
+        balance = int(multisig.get_balance())
+        assert balance == multisig.balance
+
+    def test_get_unspent(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_2)
+        multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
+        unspent = multisig.get_unspents()
+        assert unspent == multisig.unspents
+
+    def test_get_transactions(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_2)
+        multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
+        transactions = multisig.get_transactions()
+        assert transactions == multisig.transactions
+
+    def test_repr(self):
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_2)
+        multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
+        assert repr(multisig) == '<MultiSigTestnet: {}>'.format(BITCOIN_ADDRESS_TEST_P2SH_MULTISIG)
