@@ -70,15 +70,15 @@ both `key1` and `key2` to spend from:
     >>> key2 = Key()
     >>> multisig = MultiSig(key1, {key1.public_key, key2.public_key}, 2)
 
-IMPORTANT:
+**IMPORTANT:**
 
 When providing as argument public keys with a set such as above, then Bit will
 sort the public keys internally in lexicographical order similar to how
 `Electrum`_ behaves.
 If the public keys are provided with a list, then the ordering of the public
 keys of that list are used, similar to how Bitcoin Core behaves.
-Calling `~bit.MultiSig.public_keys` will always output a list with the public
-keys in the order they are being used by in Bit.
+Calling :param:`~bit.MultiSig.public_keys` will always return a list with the
+public keys in the order they are being used by in the multisignature contract.
 
 Public Point
 ------------
@@ -261,6 +261,6 @@ Export:
 .. _elliptic curve: https://en.wikipedia.org/wiki/Elliptic_curve
 .. _SEC: https://en.wikipedia.org/wiki/SECG
 .. _secp256k1: https://en.bitcoin.it/wiki/Secp256k1
-:: _multisignature: https://en.bitcoin.it/wiki/Multisignature
+.. _multisignature: https://en.bitcoin.it/wiki/Multisignature
 .. _Electrum: https://electrum.org
 .. _wallet import format: https://en.bitcoin.it/wiki/Private_key#Base58_Wallet_Import_format
