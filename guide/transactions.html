@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Transactions &#8212; Bit 0.4.3 documentation</title>
+    <title>Transactions &#8212; Bit 0.5.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -85,11 +85,11 @@ will pass validation of the Bitcoin network.</p>
 <h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
 <p>Batching transactions allows adding multiple unspents from diferent keys to a
 single transaction. This can be done with Bit in the following way:</p>
-<p>It is possible to manually provide <cite>~bit.network.meta.Unspent</cite> objects when
+<p>It is possible to manually provide <a class="reference internal" href="../dev/api.html#bit.network.meta.Unspent" title="bit.network.meta.Unspent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unspent</span></code></a> objects when
 calling <code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code> on any key object. If provided with unspents
 that do not belong to the key that calls <code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code>, then those
 unspents will still be added to the transaction without being signed.</p>
-<p>Likewise, the transaction with some unsigned inputs left can be passed to
+<p>Likewise, a transaction with some unsigned inputs left can be passed to
 <code class="xref py py-func docutils literal notranslate"><span class="pre">sign_transaction()</span></code> of an instance of a key object that can sign an
 input and the signature will be added, similar to how multisignature inputs are
 signed.</p>

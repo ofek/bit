@@ -71,12 +71,12 @@ Batching
 Batching transactions allows adding multiple unspents from diferent keys to a
 single transaction. This can be done with Bit in the following way:
 
-It is possible to manually provide `~bit.network.meta.Unspent` objects when
+It is possible to manually provide :class:`~bit.network.meta.Unspent` objects when
 calling :func:`create_transaction` on any key object. If provided with unspents
 that do not belong to the key that calls :func:`create_transaction`, then those
 unspents will still be added to the transaction without being signed.
 
-Likewise, the transaction with some unsigned inputs left can be passed to
+Likewise, a transaction with some unsigned inputs left can be passed to
 :func:`sign_transaction` of an instance of a key object that can sign an
 input and the signature will be added, similar to how multisignature inputs are
 signed.
