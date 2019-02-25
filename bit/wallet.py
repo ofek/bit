@@ -235,10 +235,11 @@ class PrivateKey(BaseKey):
                                  'p2pkh-uncompressed'),
             NetworkAPI.get_unspent(self.address)
         ))
-        self.unspents += list(map(
-            lambda u: u.set_type('np2wkh'),
-            NetworkAPI.get_unspent(self.segwit_address)
-        ))
+        if self.segwit_address:
+            self.unspents += list(map(
+                lambda u: u.set_type('np2wkh'),
+                NetworkAPI.get_unspent(self.segwit_address)
+            ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -600,10 +601,11 @@ class PrivateKeyTestnet(BaseKey):
                                  'p2pkh-uncompressed'),
             NetworkAPI.get_unspent_testnet(self.address)
         ))
-        self.unspents += list(map(
-            lambda u: u.set_type('np2wkh'),
-            NetworkAPI.get_unspent_testnet(self.segwit_address)
-        ))
+        if self.segwit_address:
+            self.unspents += list(map(
+                lambda u: u.set_type('np2wkh'),
+                NetworkAPI.get_unspent_testnet(self.segwit_address)
+            ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -1000,10 +1002,11 @@ class MultiSig:
             lambda u: u.set_type('p2sh', add_p2sh_vsize+46),
             NetworkAPI.get_unspent(self.address)
         ))
-        self.unspents += list(map(
-            lambda u: u.set_type('np2wsh', add_np2wsh_vsize+75),
-            NetworkAPI.get_unspent(self.segwit_address)
-        ))
+        if self.segwit_address:
+            self.unspents += list(map(
+                lambda u: u.set_type('np2wsh', add_np2wsh_vsize+75),
+                NetworkAPI.get_unspent(self.segwit_address)
+            ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -1013,7 +1016,8 @@ class MultiSig:
         :rtype: ``list`` of ``str`` transaction IDs
         """
         self.transactions[:] = NetworkAPI.get_transactions(self.address)
-        self.transactions += NetworkAPI.get_transactions(self.segwit_address)
+        if self.segwit_address:
+            self.transactions += NetworkAPI.get_transactions(self.segwit_address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
@@ -1298,11 +1302,11 @@ class MultiSigTestnet:
             lambda u: u.set_type('p2sh', add_p2sh_vsize+46),
             NetworkAPI.get_unspent_testnet(self.address)
         ))
-        self.unspents += list(map(
-            lambda u: u.set_type('np2wsh', add_np2wsh_vsize+75),
-            NetworkAPI.get_unspent_testnet(self.segwit_address)
-        ))
-
+        if self.segwit_address:
+            self.unspents += list(map(
+                lambda u: u.set_type('np2wsh', add_np2wsh_vsize+75),
+                NetworkAPI.get_unspent_testnet(self.segwit_address)
+            ))
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
@@ -1312,7 +1316,8 @@ class MultiSigTestnet:
         :rtype: ``list`` of ``str`` transaction IDs
         """
         self.transactions[:] = NetworkAPI.get_transactions_testnet(self.address)
-        self.transactions += NetworkAPI.get_transactions_testnet(self.segwit_address)
+        if self.segwit_address:
+            self.transactions += NetworkAPI.get_transactions_testnet(self.segwit_address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
