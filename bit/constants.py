@@ -19,7 +19,7 @@ OP_PUSH_32 = b'\x20'
 OP_RETURN = b'\x6a'
 OP_EQUAL = b'\x87'
 
-MESSAGE_LIMIT = 40
+MESSAGE_LIMIT = 80
 
 # Address formats:
 BECH32_VERSION_SET = ('bc', 'tb', 'bcrt')
