@@ -43,7 +43,7 @@ class InsightAPI:
             return None
         if r.status_code != 200: #pragma: no cover
             raise ConnectionError
-        return deserialize(r.json()["rawtx"])
+        return r.json()["rawtx"]
 
     @classmethod
     def get_unspent(cls, address):
@@ -101,7 +101,7 @@ class BitpayAPI(InsightAPI):
             return None
         if r.status_code != 200: #pragma: no cover
             raise ConnectionError
-        return deserialize(r.json()["rawtx"])
+        return r.json()["rawtx"]
 
     @classmethod
     def get_unspent_testnet(cls, address):
@@ -168,7 +168,7 @@ class BlockchainAPI:
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return deserialize(r.text)
+        return r.text
 
     @classmethod
     def get_unspent(cls, address):
@@ -199,12 +199,12 @@ class SmartbitAPI:
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/unspent'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'pushtx'
-    MAIN_TX_API = MAIN_ENDPOINT + 'tx/'
+    MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}/hex'
     TEST_ENDPOINT = 'https://testnet-api.smartbit.com.au/v1/blockchain/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/unspent'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'pushtx'
-    TEST_TX_API = TEST_ENDPOINT + 'tx/'
+    TEST_TX_API = TEST_ENDPOINT + 'tx/{}/hex'
     TX_PUSH_PARAM = 'hex'
 
     @classmethod
@@ -238,12 +238,12 @@ class SmartbitAPI:
 
     @classmethod
     def get_transaction_by_id(cls, txid):
-        r = requests.get(cls.MAIN_TX_API + txid+ '/hex?limit=1000', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.MAIN_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
         if r.status_code == 400:
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return deserialize(r.json()['hex'][0]['hex'])
+        return r.json()['hex'][0]['hex']
 
     @classmethod
     def get_transactions_testnet(cls, address):
@@ -262,12 +262,12 @@ class SmartbitAPI:
 
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
-        r = requests.get(cls.TEST_TX_API + txid+ '/hex?limit=1000', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TEST_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
         if r.status_code == 400:
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return deserialize(r.json()['hex'][0]['hex'])
+        return r.json()['hex'][0]['hex']
 
     @classmethod
     def get_unspent(cls, address):
