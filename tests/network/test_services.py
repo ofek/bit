@@ -8,6 +8,8 @@ from tests.utils import (
     catch_errors_raise_warnings, decorate_methods, raise_connection_error
 )
 
+from bit.transaction import calc_txid
+
 MAIN_ADDRESS_USED1 = '1L2JsXHPMYuAa9ugvHGLwkdstCPUDemNCf'
 MAIN_ADDRESS_USED2 = '17SkEw2md5avVNyYgj6RiXuQKNwkXaxFyQ'
 MAIN_ADDRESS_UNUSED = '1DvnoW4vsXA1H9KDgNiMqY7iNkzC187ve1'
@@ -16,9 +18,9 @@ TEST_ADDRESS_USED2 = 'mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5'
 TEST_ADDRESS_USED3 = 'mpnrLMH4m4e6dS8Go84P1r2hWwTiFTXmtW'
 TEST_ADDRESS_UNUSED = 'mp1xDKvvZ4yd8h9mLC4P76syUirmxpXhuk'
 
-MAIN_TX_VALID = '' #TODO
+MAIN_TX_VALID = '6e05c708d88cc5bf0f1533938c969de2cc48f438b0ae28ce89fefbaa1938185a'
 TEST_TX_VALID = 'ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93292'
-TX_INVALID = 'xxx'
+TX_INVALID = 'ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93290'
 
 def all_items_common(seq):
     initial_set = set(seq[0])
@@ -135,14 +137,13 @@ class TestBitpayAPI:
         assert len(BitpayAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_valid(self):
-        assert True #TODO
-        #assert BitpayAPI.get_transaction_by_id(TEST_TX_VALID)['txid'] == TEST_TX_VALID
+        assert calc_txid(BitpayAPI.get_transaction_by_id(MAIN_TX_VALID).to_hex()) == MAIN_TX_VALID
 
     def test_get_transaction_by_id_invalid(self):
-        assert BitpayAPI.get_transaction_by_id(TEST_TX_VALID) == None
+        assert BitpayAPI.get_transaction_by_id(TX_INVALID) == None
 
     def test_get_transaction_by_id_test_valid(self):
-        assert BitpayAPI.get_transaction_by_id_testnet(TEST_TX_VALID)['txid'] == TEST_TX_VALID
+        assert calc_txid(BitpayAPI.get_transaction_by_id_testnet(TEST_TX_VALID).to_hex()) == TEST_TX_VALID
 
     def test_get_transaction_by_id_test_invalid(self):
         assert BitpayAPI.get_transaction_by_id_testnet(TX_INVALID) == None
@@ -184,11 +185,10 @@ class TestBlockchainAPI:
         assert len(BlockchainAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_valid(self):
-        assert True #TODO
-        #assert BlockchainAPI.get_transaction_by_id(TEST_TX_VALID)['hash'] == TEST_TX_VALID
+        assert calc_txid(BlockchainAPI.get_transaction_by_id(MAIN_TX_VALID).to_hex()) == MAIN_TX_VALID
 
     def test_get_transaction_by_id_invalid(self):
-        assert BlockchainAPI.get_transaction_by_id(TEST_TX_VALID) == None
+        assert BlockchainAPI.get_transaction_by_id(TX_INVALID) == None
 
     def test_get_unspent_return_type(self):
         assert iter(BlockchainAPI.get_unspent(MAIN_ADDRESS_USED1))
@@ -233,14 +233,13 @@ class TestSmartbitAPI:
         assert len(SmartbitAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_valid(self):
-        assert True #TODO
-        #assert SmartbitAPI.get_transaction_by_id(TEST_TX_VALID)['txid'] == TEST_TX_VALID
+        assert calc_txid(SmartbitAPI.get_transaction_by_id(MAIN_TX_VALID).to_hex()) == MAIN_TX_VALID
 
     def test_get_transaction_by_id_invalid(self):
-        assert SmartbitAPI.get_transaction_by_id(TEST_TX_VALID) == None
+        assert SmartbitAPI.get_transaction_by_id(TX_INVALID) == None
 
     def test_get_transaction_by_id_test_valid(self):
-        assert SmartbitAPI.get_transaction_by_id_testnet(TEST_TX_VALID)['txid'] == TEST_TX_VALID
+        assert calc_txid(SmartbitAPI.get_transaction_by_id_testnet(TEST_TX_VALID).to_hex()) == TEST_TX_VALID
 
     def test_get_transaction_by_id_test_invalid(self):
         assert SmartbitAPI.get_transaction_by_id_testnet(TX_INVALID) == None

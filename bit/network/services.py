@@ -3,6 +3,8 @@ import requests
 from bit.network import currency_to_satoshi
 from bit.network.meta import Unspent
 
+from bit.transaction import deserialize
+
 DEFAULT_TIMEOUT = 10
 
 
@@ -37,9 +39,11 @@ class InsightAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API + txid, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:
+            return None
         if r.status_code != 200: #pragma: no cover
             raise ConnectionError
-        return r.json() #TODO Needs common return type
+        return deserialize(r.json()["rawtx"])
 
     @classmethod
     def get_unspent(cls, address):
@@ -67,13 +71,13 @@ class BitpayAPI(InsightAPI):
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
-    MAIN_TX_API = MAIN_ENDPOINT + 'tx/'
+    MAIN_TX_API = MAIN_ENDPOINT + 'rawtx/'
     TEST_ENDPOINT = 'https://test-insight.bitpay.com/api/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
     TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
-    TEST_TX_API = TEST_ENDPOINT + 'tx/'
+    TEST_TX_API = TEST_ENDPOINT + 'rawtx/'
     TX_PUSH_PARAM = 'rawtx'
 
     @classmethod
@@ -93,9 +97,11 @@ class BitpayAPI(InsightAPI):
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
         r = requests.get(cls.TEST_TX_API + txid, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:
+            return None
         if r.status_code != 200: #pragma: no cover
             raise ConnectionError
-        return r.json() #TODO Needs common return type
+        return deserialize(r.json()["rawtx"])
 
     @classmethod
     def get_unspent_testnet(cls, address):
@@ -157,10 +163,12 @@ class BlockchainAPI:
 
     @classmethod
     def get_transaction_by_id(cls, txid):
-        r = requests.get(cls.TX_API + txid + '&limit=0', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TX_API + txid + '?limit=0&format=hex', timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 500 and r.text == 'Transaction not found':
+            return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json() #TODO Needs common return type
+        return deserialize(r.text)
 
     @classmethod
     def get_unspent(cls, address):
@@ -230,10 +238,12 @@ class SmartbitAPI:
 
     @classmethod
     def get_transaction_by_id(cls, txid):
-        r = requests.get(cls.MAIN_TX_API + txid + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.MAIN_TX_API + txid+ '/hex?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 400:
+            return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()['transaction'] #TODO Needs common return type
+        return deserialize(r.json()['hex'][0]['hex'])
 
     @classmethod
     def get_transactions_testnet(cls, address):
@@ -252,10 +262,12 @@ class SmartbitAPI:
 
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
-        r = requests.get(cls.TEST_TX_API + txid + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TEST_TX_API + txid+ '/hex?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 400:
+            return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return r.json()['transaction'] #TODO Needs common return type
+        return deserialize(r.json()['hex'][0]['hex'])
 
     @classmethod
     def get_unspent(cls, address):
@@ -409,12 +421,12 @@ class NetworkAPI:
         :param txid: The id of the transaction
         :type txid: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: TODO
+        :rtype: ``TxObj``
         """
 
         for api_call in cls.GET_TRANSACTIONS_BY_ID_MAIN:
             try:
-                return api_call(txid)
+                return deserialize(api_call(txid))
             except cls.IGNORED_ERRORS:
                 pass
 
@@ -427,7 +439,7 @@ class NetworkAPI:
         :param txid: The id of the transaction
         :type txid: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: TODO
+        :rtype: ``TxObj``
         """
 
         for api_call in cls.GET_TRANSACTIONS_BY_ID_TEST:
