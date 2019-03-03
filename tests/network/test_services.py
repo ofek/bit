@@ -32,7 +32,6 @@ def all_items_equal(seq):
     initial_item = seq[0]
     return all(item == initial_item for item in seq if item is not None)
 
-
 def test_set_service_timeout():
     original = bit.network.services.DEFAULT_TIMEOUT
     set_service_timeout(3)
@@ -48,9 +47,11 @@ class MockBackend(NetworkAPI):
     IGNORED_ERRORS = NetworkAPI.IGNORED_ERRORS
     GET_BALANCE_MAIN = [raise_connection_error]
     GET_TRANSACTIONS_MAIN = [raise_connection_error]
+    GET_TRANSACTIONS_BY_ID_MAIN = [raise_connection_error]
     GET_UNSPENT_MAIN = [raise_connection_error]
     GET_BALANCE_TEST = [raise_connection_error]
     GET_TRANSACTIONS_TEST = [raise_connection_error]
+    GET_TRANSACTIONS_BY_ID_TEST = [raise_connection_error]
     GET_UNSPENT_TEST = [raise_connection_error]
 
 
@@ -79,13 +80,21 @@ class TestNetworkAPI:
         with pytest.raises(ConnectionError):
             MockBackend.get_transactions(MAIN_ADDRESS_USED1)
 
-    def test_get_transactions_test_equal(self):
-        results = [call(TEST_ADDRESS_USED2)[:100] for call in NetworkAPI.GET_TRANSACTIONS_TEST]
-        assert all_items_common(results)
+    def test_get_transaction_by_id_main_equal(self):
+        results = [calc_txid(call(MAIN_TX_VALID)) for call in NetworkAPI.GET_TRANSACTION_BY_ID_MAIN]
+        assert all_items_equal(results)
 
-    def test_get_transactions_test_failure(self):
+    def test_get_transaction_by_id_main_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_transactions_testnet(TEST_ADDRESS_USED2)
+            MockBackend.get_transactions(MAIN_TX_VALID)
+
+    def test_get_transaction_by_id_test_equal(self):
+        results = [calc_txid(call(TEST_TX_VALID)) for call in NetworkAPI.GET_TRANSACTION_BY_ID_TEST]
+        assert all_items_equal(results)
+
+    def test_get_transaction_by_id_test_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_transactions_testnet(TEST_TX_VALID)
 
     def test_get_unspent_main_equal(self):
         results = [call(MAIN_ADDRESS_USED2) for call in NetworkAPI.GET_UNSPENT_MAIN]
@@ -137,13 +146,15 @@ class TestBitpayAPI:
         assert len(BitpayAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_valid(self):
-        assert calc_txid(BitpayAPI.get_transaction_by_id(MAIN_TX_VALID)) == MAIN_TX_VALID
+        tx = BitpayAPI.get_transaction_by_id(MAIN_TX_VALID)
+        assert calc_txid(tx) == MAIN_TX_VALID
 
     def test_get_transaction_by_id_invalid(self):
         assert BitpayAPI.get_transaction_by_id(TX_INVALID) == None
 
     def test_get_transaction_by_id_test_valid(self):
-        assert calc_txid(BitpayAPI.get_transaction_by_id_testnet(TEST_TX_VALID)) == TEST_TX_VALID
+        tx = BitpayAPI.get_transaction_by_id_testnet(TEST_TX_VALID)
+        assert calc_txid(tx) == TEST_TX_VALID
 
     def test_get_transaction_by_id_test_invalid(self):
         assert BitpayAPI.get_transaction_by_id_testnet(TX_INVALID) == None
@@ -185,7 +196,8 @@ class TestBlockchainAPI:
         assert len(BlockchainAPI.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_valid(self):
-        assert calc_txid(BlockchainAPI.get_transaction_by_id(MAIN_TX_VALID)) == MAIN_TX_VALID
+        tx = BlockchainAPI.get_transaction_by_id(MAIN_TX_VALID)
+        assert calc_txid(tx) == MAIN_TX_VALID
 
     def test_get_transaction_by_id_invalid(self):
         assert BlockchainAPI.get_transaction_by_id(TX_INVALID) == None
@@ -233,13 +245,15 @@ class TestSmartbitAPI:
         assert len(SmartbitAPI.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_valid(self):
-        assert calc_txid(SmartbitAPI.get_transaction_by_id(MAIN_TX_VALID)) == MAIN_TX_VALID
+        tx = SmartbitAPI.get_transaction_by_id(MAIN_TX_VALID)
+        assert calc_txid(tx) == MAIN_TX_VALID
 
     def test_get_transaction_by_id_invalid(self):
         assert SmartbitAPI.get_transaction_by_id(TX_INVALID) == None
 
     def test_get_transaction_by_id_test_valid(self):
-        assert calc_txid(SmartbitAPI.get_transaction_by_id_testnet(TEST_TX_VALID)) == TEST_TX_VALID
+        tx = SmartbitAPI.get_transaction_by_id_testnet(TEST_TX_VALID)
+        assert calc_txid(tx) == TEST_TX_VALID
 
     def test_get_transaction_by_id_test_invalid(self):
         assert SmartbitAPI.get_transaction_by_id_testnet(TX_INVALID) == None
