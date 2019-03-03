@@ -416,7 +416,7 @@ class NetworkAPI:
 
     @classmethod
     def get_transaction_by_id(cls, txid):
-        """Gets a transaction by it's txid.
+        """Gets a transaction by its transaction id (txid).
 
         :param txid: The id of the transaction
         :type txid: ``str``
@@ -434,7 +434,7 @@ class NetworkAPI:
 
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
-        """Gets a transaction by it's txid on the test.
+        """Gets a transaction by its transaction id (txid) on the test.
 
         :param txid: The id of the transaction
         :type txid: ``str``
