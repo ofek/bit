@@ -1,17 +1,20 @@
+dist: xenial
 language: python
 
 matrix:
     include:
-        - python: 3.5
-          env: TOXENV=py35
         - python: 3.6
           env: TOXENV=py36
+        - python: 3.7
+          env: TOXENV=py37
         - python: pypy3
           env: TOXENV=pypy3
+          # PyPy3 isn't yet available for Xenial
+          dist: trusty
 
 install:
   - pip install -U setuptools pip
-  - pip install tox
+  - pip install tox-travis
   - pip install codecov
   - pip install sphinx
 

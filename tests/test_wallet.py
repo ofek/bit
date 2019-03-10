@@ -223,7 +223,7 @@ class TestPrivateKeyTestnet:
         assert transactions == private_key.transactions
 
     def test_send(self):
-        if TRAVIS and sys.version_info[:2] != (3, 6):
+        if TRAVIS and sys.version_info[:2] != (3, 7):
             return
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
@@ -245,7 +245,7 @@ class TestPrivateKeyTestnet:
         assert current > initial
 
     def test_cold_storage(self):
-        if TRAVIS and sys.version_info[:2] != (3, 6):
+        if TRAVIS and sys.version_info[:2] != (3, 7):
             return
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
