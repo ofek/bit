@@ -4,13 +4,14 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
-0.5.0 (2019-02-19)
+0.5.0 (2019-03-10)
 ------------------
 
 - New :class:`~bit.MultiSig` adds support for P2SH nested m-of-n multisignature contracts
 - Support for sending to P2SH and Bech32 output addresses
 - P2SH nested segwit addresses for :class:`~bit.PrivateKey` and :class:`~bit.MultiSig`
 - Support for batching transaction inputs from different keys
+- Update transaction message length limit to 80
 
 0.4.3 (2018-03-11)
 ------------------
