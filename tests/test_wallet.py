@@ -233,7 +233,7 @@ class TestPrivateKeyTestnet:
         current = initial
         tries = 0
 
-        private_key.send([('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')])
+        private_key.send([('mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt', 1, 'jpy')])
 
         while tries < 180:  # pragma: no cover
             current = len(private_key.get_transactions())
@@ -252,7 +252,7 @@ class TestPrivateKeyTestnet:
         address = private_key.address
 
         prepared = PrivateKeyTestnet.prepare_transaction(
-            address, [('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 1, 'jpy')]
+            address, [('mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt', 1, 'jpy')]
         )
         tx_hex = private_key.sign_transaction(prepared)
 
