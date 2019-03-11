@@ -10,7 +10,7 @@ then
   exit 0
 fi
 
-if [ "$TRAVIS_PYTHON_VERSION" != "3.5" ]
+if [ "$TRAVIS_PYTHON_VERSION" != "3.7" ]
 then
   echo "This is not the designated environment to publish docs. Skipping docs publishing."
   exit 0
