@@ -94,7 +94,7 @@ class TestNetworkAPI:
 
     def test_get_transaction_by_id_main_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_transactions(MAIN_TX_VALID)
+            MockBackend.get_transaction_by_id(MAIN_TX_VALID)
 
     def test_get_transaction_by_id_test_equal(self):
         results = [calc_txid(call(TEST_TX_VALID)) for call in NetworkAPI.GET_TRANSACTION_BY_ID_TEST]
@@ -102,7 +102,7 @@ class TestNetworkAPI:
 
     def test_get_transaction_by_id_test_failure(self):
         with pytest.raises(ConnectionError):
-            MockBackend.get_transactions_testnet(TEST_TX_VALID)
+            MockBackend.get_transaction_by_id_testnet(TEST_TX_VALID)
 
     def test_get_unspent_main_equal(self):
         results = [call(MAIN_ADDRESS_USED2) for call in NetworkAPI.GET_UNSPENT_MAIN]
