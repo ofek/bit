@@ -47,11 +47,11 @@ class MockBackend(NetworkAPI):
     IGNORED_ERRORS = NetworkAPI.IGNORED_ERRORS
     GET_BALANCE_MAIN = [raise_connection_error]
     GET_TRANSACTIONS_MAIN = [raise_connection_error]
-    GET_TRANSACTIONS_BY_ID_MAIN = [raise_connection_error]
+    GET_TRANSACTION_BY_ID_MAIN = [raise_connection_error]
     GET_UNSPENT_MAIN = [raise_connection_error]
     GET_BALANCE_TEST = [raise_connection_error]
     GET_TRANSACTIONS_TEST = [raise_connection_error]
-    GET_TRANSACTIONS_BY_ID_TEST = [raise_connection_error]
+    GET_TRANSACTION_BY_ID_TEST = [raise_connection_error]
     GET_UNSPENT_TEST = [raise_connection_error]
 
 
@@ -79,6 +79,14 @@ class TestNetworkAPI:
     def test_get_transactions_main_failure(self):
         with pytest.raises(ConnectionError):
             MockBackend.get_transactions(MAIN_ADDRESS_USED1)
+
+    def test_get_transactions_test_equal(self):
+        results = [call(TEST_ADDRESS_USED2)[:100] for call in NetworkAPI.GET_TRANSACTIONS_TEST]
+        assert all_items_common(results)
+
+    def test_get_transactions_test_failure(self):
+        with pytest.raises(ConnectionError):
+            MockBackend.get_transactions_testnet(TEST_ADDRESS_USED2)
 
     def test_get_transaction_by_id_main_equal(self):
         results = [calc_txid(call(MAIN_TX_VALID)) for call in NetworkAPI.GET_TRANSACTION_BY_ID_MAIN]
