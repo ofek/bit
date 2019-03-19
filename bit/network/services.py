@@ -320,9 +320,9 @@ class NetworkAPI:
     GET_TRANSACTIONS_MAIN = [BitpayAPI.get_transactions,  # Limit 1000
                              SmartbitAPI.get_transactions,  # Limit 1000
                              BlockchainAPI.get_transactions]  # No limit, requires multiple requests
-    GET_TRANSACTION_BY_ID_MAIN = [BitpayAPI.get_transaction_by_id, # Limit 1000
-                                    SmartbitAPI.get_transaction_by_id, # Limit 1000
-                                    BlockchainAPI.get_transaction_by_id]  # No limit, requires multiple requests
+    GET_TRANSACTION_BY_ID_MAIN = [BitpayAPI.get_transaction_by_id,
+                                  SmartbitAPI.get_transaction_by_id,
+                                  BlockchainAPI.get_transaction_by_id]
     GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,  # No limit
                         SmartbitAPI.get_unspent,  # Limit 1000
                         BlockchainAPI.get_unspent]  # Limit 250
@@ -334,8 +334,8 @@ class NetworkAPI:
                         SmartbitAPI.get_balance_testnet]
     GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,  # Limit 1000
                              SmartbitAPI.get_transactions_testnet]  # Limit 1000
-    GET_TRANSACTION_BY_ID_TEST = [BitpayAPI.get_transaction_by_id_testnet, # Limit 1000
-                                    SmartbitAPI.get_transaction_by_id_testnet] # Limit 1000
+    GET_TRANSACTION_BY_ID_TEST = [BitpayAPI.get_transaction_by_id_testnet,
+                                  SmartbitAPI.get_transaction_by_id_testnet]
     GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,  # No limit
                         SmartbitAPI.get_unspent_testnet]  # Limit 1000
     BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
