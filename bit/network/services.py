@@ -416,17 +416,17 @@ class NetworkAPI:
 
     @classmethod
     def get_transaction_by_id(cls, txid):
-        """Gets a transaction by its transaction id (txid).
+        """Gets a rax transaction hex by its transaction id (txid).
 
         :param txid: The id of the transaction
         :type txid: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``TxObj``
+        :rtype: ``string``
         """
 
         for api_call in cls.GET_TRANSACTION_BY_ID_MAIN:
             try:
-                return deserialize(api_call(txid))
+                return api_call(txid)
             except cls.IGNORED_ERRORS:
                 pass
 
@@ -434,17 +434,17 @@ class NetworkAPI:
 
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
-        """Gets a transaction by its transaction id (txid) on the test.
+        """Gets a raw transaction hex by its transaction id (txid) on the test.
 
         :param txid: The id of the transaction
         :type txid: ``str``
         :raises ConnectionError: If all API services fail.
-        :rtype: ``TxObj``
+        :rtype: ``string``
         """
 
         for api_call in cls.GET_TRANSACTION_BY_ID_TEST:
             try:
-                return deserialize(api_call(txid))
+                return api_call(txid)
             except cls.IGNORED_ERRORS:
                 pass
 
