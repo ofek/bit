@@ -416,7 +416,7 @@ class NetworkAPI:
 
     @classmethod
     def get_transaction_by_id(cls, txid):
-        """Gets a rax transaction hex by its transaction id (txid).
+        """Gets a raw transaction hex by its transaction id (txid).
 
         :param txid: The id of the transaction
         :type txid: ``str``
