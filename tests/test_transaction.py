@@ -132,7 +132,7 @@ UNSPENTS_BATCH = [
             'a9146015d175e191e6e5b99211e3ffc6ea7658cb051a87',
             '37af0739136575bffa08a35269a360c047a06e5816b74383f187802c09d7dee2',
             1,
-            'np2wsh')
+            'np2wkh')
 ]
 OUTPUTS = [
     ('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 50000),
