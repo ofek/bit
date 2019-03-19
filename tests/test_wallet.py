@@ -12,6 +12,7 @@ from bit.wallet import (
     BaseKey, Key, PrivateKey, PrivateKeyTestnet, MultiSig, MultiSigTestnet,
     wif_to_key
 )
+from bit.utils import bytes_to_hex
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, BITCOIN_ADDRESS_P2SH_MULTISIG,
     BITCOIN_ADDRESS_NP2SH_MULTISIG, BITCOIN_ADDRESS_TEST_P2SH_MULTISIG,
@@ -306,6 +307,13 @@ class TestMultiSig:
         assert multisig.transactions == []
         assert multisig.m == 2
 
+        multisig2 = MultiSig(key2, [bytes_to_hex(key1.public_key), bytes_to_hex(key2.public_key)], 2)
+        assert multisig2._address is None
+        assert multisig2.balance == 0
+        assert multisig2.unspents == []
+        assert multisig2.transactions == []
+        assert multisig2.m == 2
+
     def test_address(self):
         key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
         key2 = PrivateKey(WALLET_FORMAT_MAIN_2)
@@ -351,6 +359,13 @@ class TestMultiSigTestnet:
         assert multisig.unspents == []
         assert multisig.transactions == []
         assert multisig.m == 2
+
+        multisig2 = MultiSigTestnet(key2, [bytes_to_hex(key1.public_key), bytes_to_hex(key2.public_key)], 2)
+        assert multisig2._address is None
+        assert multisig2.balance == 0
+        assert multisig2.unspents == []
+        assert multisig2.transactions == []
+        assert multisig2.m == 2
 
     def test_address(self):
         key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
