@@ -608,7 +608,7 @@ def sign_tx(private_key, tx, *, unspents):
             input_dict[tx_input] = unspent.to_dict()
     except TypeError:
         raise ValueError('Please provide as unspents at least all inputs to '
-                         'be signed with the function call.')
+                         'be signed with the function call in a list.')
 
     # Determine input indices to sign from input_dict (allows for transaction batching)
     sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid+i.txindex in input_dict]
