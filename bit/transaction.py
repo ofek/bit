@@ -643,7 +643,7 @@ def sign_tx(private_key, tx, *, unspents):
                 # For partially signed transaction we must extract the
                 # signatures:
                 input_script_field = tx.TxIn[i].witness
-            except Attributerror:
+            except AttributeError:
                 raise ValueError(
                     'Cannot sign a segwit input when the input\'s amount is '
                     'unknown. Maybe no network connection or the input is '
