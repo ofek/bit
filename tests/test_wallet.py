@@ -73,6 +73,18 @@ UNSPENTS = [
             '64064449fc2aab13316e90beb6c2a224d86a08733ff5b48e422be7688de72346',
             0,
             'np2wsh'),
+    Unspent(2000000000,
+            1,
+            'a914af192b3600e705284f1e43c3cb9fdcf9e7ebe88187',
+            '64064449fc2aab13316e90beb6c2a224d86a08733ff5b48e422be7688de72346',
+            0,
+            'p2sh'),
+    Unspent(2000000000,
+            1,
+            'a914476b78c9d6e75adb92b0739e02eae5cbb043a68f87',
+            '64064449fc2aab13316e90beb6c2a224d86a08733ff5b48e422be7688de72346',
+            0,
+            'p2sh'),
 ]
 
 TRAVIS = 'TRAVIS' in os.environ
@@ -461,6 +473,12 @@ class TestMultiSig:
         assert multisig.can_sign_unspent(UNSPENTS[3])
         assert multisig.can_sign_unspent(UNSPENTS[4])
 
+        # Non-segwit multisig:
+        key1 = PrivateKey(WALLET_FORMAT_MAIN)
+        key2 = PrivateKey(WALLET_FORMAT_MAIN_1)
+        multisig = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        assert multisig.can_sign_unspent(UNSPENTS[7])
+
     def test_scriptcode(self):
         key1 = PrivateKey()
         key2 = PrivateKey()
@@ -563,6 +581,12 @@ class TestMultiSigTestnet:
         multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
         assert multisig.can_sign_unspent(UNSPENTS[5])
         assert multisig.can_sign_unspent(UNSPENTS[6])
+
+        # Non-segwit multisig:
+        key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST)
+        key2 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
+        multisig = MultiSigTestnet(key1, [key1.public_key, key2.public_key], 2)
+        assert multisig.can_sign_unspent(UNSPENTS[8])
 
     def test_scriptcode(self):
         key1 = PrivateKeyTestnet()
