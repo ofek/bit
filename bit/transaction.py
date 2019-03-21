@@ -680,13 +680,9 @@ def sign_tx(private_key, tx, *, unspents):
                             # If we already found a valid signature for pubkey
                             # we just overwrite it and don't care.
                             sigs[pub] = sig
-                if len(sigs) == private_key.m:
+                if len(sigs) >= private_key.m:
                     raise TypeError('Transaction is already signed with '
                                     'sufficiently needed signatures.')
-                elif len(sigs) > private_key.m:
-                    raise TypeError('Transaction already contains {} '
-                                    'signatures, but only {} needed.').format(
-                                        len(sigs), private_key.m)
 
             sigs[public_key] = signature
 
