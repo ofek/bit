@@ -621,7 +621,7 @@ class PrivateKeyTestnet(BaseKey):
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):
+                           unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -677,7 +677,7 @@ class PrivateKeyTestnet(BaseKey):
         return create_new_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):
+             combine=True, message=None, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKeyTestnet.create_transaction`.
@@ -729,7 +729,7 @@ class PrivateKeyTestnet(BaseKey):
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
                             absolute_fee=False, leftover=None, combine=True,
-                            message=None, unspents=None):
+                            message=None, unspents=None):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -784,7 +784,7 @@ class PrivateKeyTestnet(BaseKey):
 
         return json.dumps(data, separators=(',', ':'))
 
-    def sign_transaction(self, tx_data, unspents=None):
+    def sign_transaction(self, tx_data, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction using previously prepared
         transaction data.
 
@@ -1022,7 +1022,7 @@ class MultiSig:
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):
+                           unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -1322,7 +1322,7 @@ class MultiSigTestnet:
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):
+                           unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
