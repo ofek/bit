@@ -958,7 +958,7 @@ class MultiSig:
         else:
             return unspent.script == script
 
-    def sign(self, data):
+    def sign(self, data):  # pragma: no cover
         """Signs some data which can be verified later by others using
         the public key.
 
@@ -1261,7 +1261,7 @@ class MultiSigTestnet:
         else:
             return unspent.script == script
 
-    def sign(self, data):
+    def sign(self, data):  # pragma: no cover
         """Signs some data which can be verified later by others using
         the public key.
 
