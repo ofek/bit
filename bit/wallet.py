@@ -895,7 +895,7 @@ class MultiSig:
 
         if (bytes_to_hex(private_key.public_key) not in public_keys
                 and private_key.public_key not in public_keys):
-            raise TypeError('Private key does not match any provided public key.')
+            raise ValueError('Private key does not match any provided public key.')
 
         if type(public_keys) not in (list, set):
             raise TypeError('The public keys must be provided in a list or set.')
@@ -1198,7 +1198,10 @@ class MultiSigTestnet:
 
         if (bytes_to_hex(private_key.public_key) not in public_keys
                 and private_key.public_key not in public_keys):
-            raise TypeError('Private key does not match any provided public key.')
+            raise ValueError('Private key does not match any provided public key.')
+
+        if type(public_keys) not in (list, set):
+            raise TypeError('The public keys must be provided in a list or set.')
 
         self.version = 'test'
         self.instance = 'MultiSigTestnet'
