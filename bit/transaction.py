@@ -592,6 +592,7 @@ def sign_tx(private_key, tx, *, unspents):
     :type tx: ``TxObj``
     :param unspents: For inputs to be signed their corresponding Unspent objects
                      must be provided.
+    :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
     :returns: The signed transaction as hex.
     :rtype: ``str``
     """
@@ -607,8 +608,8 @@ def sign_tx(private_key, tx, *, unspents):
                 unspent.txindex.to_bytes(4, byteorder='little')
             input_dict[tx_input] = unspent.to_dict()
     except TypeError:
-        raise ValueError('Please provide as unspents at least all inputs to '
-                         'be signed with the function call in a list.')
+        raise TypeError('Please provide as unspents at least all inputs to '
+                        'be signed with the function call in a list.')
 
     # Determine input indices to sign from input_dict (allows for transaction batching)
     sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid+i.txindex in input_dict]
@@ -681,8 +682,8 @@ def sign_tx(private_key, tx, *, unspents):
                             # we just overwrite it and don't care.
                             sigs[pub] = sig
                 if len(sigs) >= private_key.m:
-                    raise TypeError('Transaction is already signed with '
-                                    'sufficiently needed signatures.')
+                    raise ValueError('Transaction is already signed with '
+                                     'sufficiently needed signatures.')
 
             sigs[public_key] = signature
 
