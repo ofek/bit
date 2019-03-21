@@ -3,8 +3,6 @@ import requests
 from bit.network import currency_to_satoshi
 from bit.network.meta import Unspent
 
-from bit.transaction import deserialize
-
 DEFAULT_TIMEOUT = 10
 
 
