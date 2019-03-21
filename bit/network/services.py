@@ -17,6 +17,7 @@ class InsightAPI:
     MAIN_BALANCE_API = ''
     MAIN_UNSPENT_API = ''
     MAIN_TX_PUSH_API = ''
+    MAIN_TX_API = ''
     TX_PUSH_PARAM = ''
 
     @classmethod
@@ -32,6 +33,15 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
+    
+    @classmethod
+    def get_transaction_by_id(cls, txid):
+        r = requests.get(cls.MAIN_TX_API + txid, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:
+            return None
+        if r.status_code != 200: #pragma: no cover
+            raise ConnectionError
+        return r.json()["rawtx"]
 
     @classmethod
     def get_unspent(cls, address):
@@ -59,11 +69,13 @@ class BitpayAPI(InsightAPI):
     MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
+    MAIN_TX_API = MAIN_ENDPOINT + 'rawtx/'
     TEST_ENDPOINT = 'https://test-insight.bitpay.com/api/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
     TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
+    TEST_TX_API = TEST_ENDPOINT + 'rawtx/'
     TX_PUSH_PARAM = 'rawtx'
 
     @classmethod
@@ -79,6 +91,15 @@ class BitpayAPI(InsightAPI):
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
+    
+    @classmethod
+    def get_transaction_by_id_testnet(cls, txid):
+        r = requests.get(cls.TEST_TX_API + txid, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:
+            return None
+        if r.status_code != 200: #pragma: no cover
+            raise ConnectionError
+        return r.json()["rawtx"]
 
     @classmethod
     def get_unspent_testnet(cls, address):
@@ -99,12 +120,12 @@ class BitpayAPI(InsightAPI):
         r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
-
 class BlockchainAPI:
     ENDPOINT = 'https://blockchain.info/'
     ADDRESS_API = ENDPOINT + 'address/{}?format=json'
     UNSPENT_API = ENDPOINT + 'unspent?active='
     TX_PUSH_API = ENDPOINT + 'pushtx'
+    TX_API = ENDPOINT + 'rawtx/'
     TX_PUSH_PARAM = 'tx'
 
     @classmethod
@@ -139,6 +160,15 @@ class BlockchainAPI:
         return transactions
 
     @classmethod
+    def get_transaction_by_id(cls, txid):
+        r = requests.get(cls.TX_API + txid + '?limit=0&format=hex', timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 500 and r.text == 'Transaction not found':
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.text
+
+    @classmethod
     def get_unspent(cls, address):
         r = requests.get(cls.UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
 
@@ -167,10 +197,12 @@ class SmartbitAPI:
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
     MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/unspent'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'pushtx'
+    MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}/hex'
     TEST_ENDPOINT = 'https://testnet-api.smartbit.com.au/v1/blockchain/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
     TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/unspent'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'pushtx'
+    TEST_TX_API = TEST_ENDPOINT + 'tx/{}/hex'
     TX_PUSH_PARAM = 'hex'
 
     @classmethod
@@ -203,6 +235,15 @@ class SmartbitAPI:
         return transactions
 
     @classmethod
+    def get_transaction_by_id(cls, txid):
+        r = requests.get(cls.MAIN_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 400:
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()['hex'][0]['hex']
+
+    @classmethod
     def get_transactions_testnet(cls, address):
         r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
@@ -216,6 +257,15 @@ class SmartbitAPI:
             transactions.extend(t['hash'] for t in data['transactions'])
 
         return transactions
+
+    @classmethod
+    def get_transaction_by_id_testnet(cls, txid):
+        r = requests.get(cls.TEST_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 400:
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()['hex'][0]['hex']
 
     @classmethod
     def get_unspent(cls, address):
@@ -268,6 +318,9 @@ class NetworkAPI:
     GET_TRANSACTIONS_MAIN = [BitpayAPI.get_transactions,  # Limit 1000
                              SmartbitAPI.get_transactions,  # Limit 1000
                              BlockchainAPI.get_transactions]  # No limit, requires multiple requests
+    GET_TRANSACTION_BY_ID_MAIN = [BitpayAPI.get_transaction_by_id,
+                                  SmartbitAPI.get_transaction_by_id,
+                                  BlockchainAPI.get_transaction_by_id]
     GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,  # No limit
                         SmartbitAPI.get_unspent,  # Limit 1000
                         BlockchainAPI.get_unspent]  # Limit 250
@@ -279,6 +332,8 @@ class NetworkAPI:
                         SmartbitAPI.get_balance_testnet]
     GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,  # Limit 1000
                              SmartbitAPI.get_transactions_testnet]  # Limit 1000
+    GET_TRANSACTION_BY_ID_TEST = [BitpayAPI.get_transaction_by_id_testnet,
+                                  SmartbitAPI.get_transaction_by_id_testnet]
     GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,  # No limit
                         SmartbitAPI.get_unspent_testnet]  # Limit 1000
     BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
@@ -352,6 +407,42 @@ class NetworkAPI:
         for api_call in cls.GET_TRANSACTIONS_TEST:
             try:
                 return api_call(address)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def get_transaction_by_id(cls, txid):
+        """Gets a raw transaction hex by its transaction id (txid).
+
+        :param txid: The id of the transaction
+        :type txid: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``string``
+        """
+
+        for api_call in cls.GET_TRANSACTION_BY_ID_MAIN:
+            try:
+                return api_call(txid)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def get_transaction_by_id_testnet(cls, txid):
+        """Gets a raw transaction hex by its transaction id (txid) on the test.
+
+        :param txid: The id of the transaction
+        :type txid: ``str``
+        :raises ConnectionError: If all API services fail.
+        :rtype: ``string``
+        """
+
+        for api_call in cls.GET_TRANSACTION_BY_ID_TEST:
+            try:
+                return api_call(txid)
             except cls.IGNORED_ERRORS:
                 pass
 
