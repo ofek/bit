@@ -874,10 +874,10 @@ class MultiSig:
     :param private_key: A class representing a private key.
     :type private_key: ``PrivateKey``
     :raises TypeError: If ``private_key`` is not a ``PrivateKey``.
-    :param public_keys: A list or set of public keys encoded as hex assigned
-                        to the multi-signature contract. If using a list, then
-                        the order of the public keys will be used in the
-                        contract. If using a set, then Bit will order the
+    :param public_keys: A list or set of public keys encoded as hex or bytes
+                        assigned to the multi-signature contract. If using a
+                        list, then the order of the public keys will be used in
+                        the contract. If using a set, then Bit will order the
                         public keys according to lexicographical order.
     :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
@@ -1177,10 +1177,10 @@ class MultiSigTestnet:
     :param private_key: A class representing a testnet private key.
     :type private_key: ``PrivateKeyTestnet``
     :raises TypeError: If ``private_key`` is not a ``PrivateKeyTestnet``.
-    :param public_keys: A list or set of public keys encoded as hex assigned
-                        to the multi-signature contract. If using a list, then
-                        the order of the public keys will be used in the
-                        contract. If using a set, then Bit will order the
+    :param public_keys: A list or set of public keys encoded as hex or bytes
+                        assigned to the multi-signature contract. If using a
+                        list, then the order of the public keys will be used in
+                        the contract. If using a set, then Bit will order the
                         public keys according to lexicographical order.
     :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
