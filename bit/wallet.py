@@ -944,6 +944,7 @@ class MultiSig:
         self._scriptcode = self.redeemscript
         return self._scriptcode
 
+    @property
     def segwit_scriptcode(self):
         self._segwit_scriptcode = (OP_0 + OP_PUSH_32
                                    + sha256(self.redeemscript))
