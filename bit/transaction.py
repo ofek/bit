@@ -240,7 +240,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False,
     COST_OF_OVERHEAD = (8 + sum(output_size[:-1]) + 1) * fee
 
     def branch_and_bound(d, selected_coins, effective_value, target, fee,
-                         sorted_unspents):
+                         sorted_unspents):  # pragma: no cover
 
         nonlocal COST_OF_OVERHEAD, BNB_TRIES
         BNB_TRIES -= 1
