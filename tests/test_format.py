@@ -3,7 +3,8 @@ import pytest
 from bit.format import (
     address_to_public_key_hash, bytes_to_wif, coords_to_public_key,
     get_version, point_to_public_key, public_key_to_coords,
-    public_key_to_address, verify_sig, wif_checksum_check, wif_to_bytes
+    public_key_to_address, verify_sig, wif_checksum_check, wif_to_bytes,
+    public_key_to_segwit_address, multisig_to_redeemscript
 )
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_COMPRESSED, BITCOIN_ADDRESS_PAY2SH,
@@ -13,7 +14,8 @@ from .samples import (
     PUBKEY_HASH_COMPRESSED, PUBLIC_KEY_COMPRESSED, PUBLIC_KEY_UNCOMPRESSED,
     PUBLIC_KEY_X, PUBLIC_KEY_Y,
     WALLET_FORMAT_COMPRESSED_MAIN, WALLET_FORMAT_COMPRESSED_TEST,
-    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST
+    WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST,
+    BITCOIN_ADDRESS_NP2WKH, BITCOIN_ADDRESS_TEST_NP2WKH
 )
 
 VALID_SIGNATURE = (b'0E\x02!\x00\xd7y\xe0\xa4\xfc\xea\x88\x18sDit\x9d\x01\xf3'
@@ -135,6 +137,54 @@ class TestPublicKeyToAddress:
 
     def test_public_key_to_address_test_uncompressed(self):
         assert public_key_to_address(PUBLIC_KEY_UNCOMPRESSED, version='test') == BITCOIN_ADDRESS_TEST
+
+
+class TestPublicKeyToSegwitAddress:
+    def test_public_key_to_segwit_address(self):
+        assert public_key_to_segwit_address(PUBLIC_KEY_COMPRESSED) == BITCOIN_ADDRESS_NP2WKH
+
+    def test_public_key_to_segwit_address_incorrect_length(self):
+        with pytest.raises(ValueError):
+            public_key_to_segwit_address(PUBLIC_KEY_COMPRESSED[:-1])
+        with pytest.raises(ValueError):
+            public_key_to_segwit_address(PUBLIC_KEY_UNCOMPRESSED)
+
+    def test_public_key_to_segwit_address_test(self):
+        assert public_key_to_segwit_address(PUBLIC_KEY_COMPRESSED, version='test') == BITCOIN_ADDRESS_TEST_NP2WKH
+
+
+class TestMultiSigToRedeemScript:
+    def test_multisig_to_redeemscript(self):
+        public_keys = [b'\x00'*33, b'\x00'*33]
+        assert multisig_to_redeemscript(public_keys, 2) == b'R!' + b'!'.join(public_keys) + b'R\xae'
+
+        public_keys = [b'\x00'*65, b'\x00'*65]
+        assert multisig_to_redeemscript(public_keys, 2) == b'RA' + b'A'.join(public_keys) + b'R\xae'
+
+    def test_multisig_to_redeemscript_wrong_m(self):
+        public_keys_invalid = [b'\x00'*33, b'\x00'*33]
+        with pytest.raises(ValueError):
+            multisig_to_redeemscript(public_keys_invalid, 3)
+
+    def test_multisig_to_redeemscript_incorrect_length(self):
+        public_keys_invalid = [b'\x00'*32, b'\x00'*33]
+        with pytest.raises(ValueError):
+            multisig_to_redeemscript(public_keys_invalid, 2)
+
+        public_keys_invalid = [b'\x00'*66, b'\x00'*65]
+        with pytest.raises(ValueError):
+            multisig_to_redeemscript(public_keys_invalid, 2)
+
+    def test_multisig_to_redeemscript_too_long(self):
+        # Maximum is 15 compressed keys in a multisig:
+        public_keys = [b'\x00'*33]*16
+        with pytest.raises(ValueError):
+            multisig_to_redeemscript(public_keys, 1)
+
+        # Maximum is 7 uncompressed keys in a multisig
+        public_keys = [b'\x00'*65]*8
+        with pytest.raises(ValueError):
+            multisig_to_redeemscript(public_keys, 1)
 
 
 class TestCoordsToPublicKey:
