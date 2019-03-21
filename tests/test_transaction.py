@@ -1,14 +1,16 @@
 import pytest
+import copy
 
+from bit.constants import HASH_TYPE
 from bit.exceptions import InsufficientFunds
 from bit.network.meta import Unspent
 from bit.transaction import (
     TxIn, TxOut, TxObj, calc_txid, create_new_transaction,
     construct_outputs, deserialize, estimate_tx_fee, sanitize_tx_data,
-    select_coins
+    select_coins, address_to_scriptpubkey, calculate_preimages, sign_tx
 )
 from bit.utils import hex_to_bytes, get_signatures_from_script
-from bit.wallet import PrivateKey, PrivateKeyTestnet, MultiSigTestnet
+from bit.wallet import PrivateKey, PrivateKeyTestnet, MultiSigTestnet, MultiSig
 from .samples import (
     WALLET_FORMAT_MAIN, WALLET_FORMAT_TEST_1,
     WALLET_FORMAT_TEST_2, BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST,
@@ -16,7 +18,8 @@ from .samples import (
     BITCOIN_SEGWIT_ADDRESS, BITCOIN_SEGWIT_ADDRESS_PAY2SH,
     BITCOIN_SEGWIT_HASH, BITCOIN_SEGWIT_HASH_PAY2SH, BITCOIN_SEGWIT_ADDRESS_TEST,
     BITCOIN_SEGWIT_ADDRESS_TEST_PAY2SH, BITCOIN_SEGWIT_HASH_TEST,
-    BITCOIN_SEGWIT_HASH_TEST_PAY2SH, PAY2SH_HASH, PAY2SH_TEST_HASH
+    BITCOIN_SEGWIT_HASH_TEST_PAY2SH, PAY2SH_HASH, PAY2SH_TEST_HASH,
+    BITCOIN_ADDRESS_COMPRESSED, BITCOIN_ADDRESS_TEST_COMPRESSED
 )
 
 
@@ -295,6 +298,21 @@ class TestTxObj:
                                          b'witness',
                                          b'\x00\x00\x00\x00'])
 
+    def test_is_segwit(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        assert not TxObj.is_segwit(txobj)
+        assert not TxObj.is_segwit(bytes(txobj))
+        assert not TxObj.is_segwit(bytes(txobj).hex())
+
+        txin = [TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        assert TxObj.is_segwit(txobj)
+        assert TxObj.is_segwit(bytes(txobj))
+        assert TxObj.is_segwit(bytes(txobj).hex())
+
 
 class TestSanitizeTxData:
     def test_no_input(self):
@@ -552,6 +570,210 @@ class TestGetSignaturesFromScript:
             assert sigs[0][:4] == hex_to_bytes('30440220')
             assert sigs[0][-4:] == hex_to_bytes('b3ecf201')
 
+
+class TestAddressToScriptPubKey:
+    def test_address_to_scriptpubkey_legacy(self):
+        want = b'v\xa9\x14\x92F\x1b\xdeb\x83\xb4a\xec\xe7\xdd\xf4\xdb\xf1\xe0\xa4\x8b\xd1\x13\xd8\x88\xac'
+        assert address_to_scriptpubkey(BITCOIN_ADDRESS) == want
+
+        want = b'v\xa9\x14\x99\x0e\xf6\rc\xb5\xb5\x96J\x1c"\x82\x06\x1a\xf4Q#\xe9?\xcb\x88\xac'
+        assert address_to_scriptpubkey(BITCOIN_ADDRESS_COMPRESSED) == want
+
+    def test_address_to_scriptpubkey_legacy_p2sh(self):
+        want = b'\xa9\x14U\x13\x1e\xfbz\x0e\xddLv\xcc;\xbe\x83;\xfcY\xa6\xf7<k\x87'
+        assert address_to_scriptpubkey(BITCOIN_ADDRESS_PAY2SH) == want
+
+    def test_address_to_scriptpubkey_bech32(self):
+        want = b'\x00\x14\xe8\xdf\x01\x8c~2l\xc2S\xfa\xac~F\xcd\xc5\x1ehT,B'
+        assert address_to_scriptpubkey(BITCOIN_SEGWIT_ADDRESS) == want
+
+    def test_address_to_scriptpubkey_bech32_p2sh(self):
+        want = b'\x00 \xc7\xa1\xf1\xa4\xd6\xb4\xc1\x80*Yc\x19f\xa1\x83Y\xdew\x9e\x8aje\x9775\xa3\xcc\xdf\xda\xbc@}'
+        assert address_to_scriptpubkey(BITCOIN_SEGWIT_ADDRESS_PAY2SH) == want
+
+    def test_address_to_scriptpubkey_legacy_test(self):
+        want = b'v\xa9\x14\x92F\x1b\xdeb\x83\xb4a\xec\xe7\xdd\xf4\xdb\xf1\xe0\xa4\x8b\xd1\x13\xd8\x88\xac'
+        assert address_to_scriptpubkey(BITCOIN_ADDRESS_TEST) == want
+
+        want = b'v\xa9\x14\x99\x0e\xf6\rc\xb5\xb5\x96J\x1c"\x82\x06\x1a\xf4Q#\xe9?\xcb\x88\xac'
+        assert address_to_scriptpubkey(BITCOIN_ADDRESS_TEST_COMPRESSED) == want
+
+    def test_address_to_scriptpubkey_legacy_p2sh_test(self):
+        want = b'\xa9\x14\xf2&\x1e\x95d\xc9\xdf\xff\xa8\x15\x05\xc1S\xfb\x95\xbf\x93\x99C\x08\x87'
+        assert address_to_scriptpubkey(BITCOIN_ADDRESS_TEST_PAY2SH) == want
+
+    def test_address_to_scriptpubkey_bech32_test(self):
+        want = b'\x00\x14u\x1ev\xe8\x19\x91\x96\xd4T\x94\x1cE\xd1\xb3\xa3#\xf1C;\xd6'
+        assert address_to_scriptpubkey(BITCOIN_SEGWIT_ADDRESS_TEST.lower()) == want
+        assert address_to_scriptpubkey(BITCOIN_SEGWIT_ADDRESS_TEST.upper()) == want
+
+    def test_address_to_scriptpubkey_bech32_p2sh_test(self):
+        want = b"\x00 \x18c\x14<\x14\xc5\x16h\x04\xbd\x19 3V\xda\x13l\x98Vx\xcdM'\xa1\xb8\xc62\x96\x04\x902b"
+        assert address_to_scriptpubkey(BITCOIN_SEGWIT_ADDRESS_TEST_PAY2SH.lower()) == want
+        assert address_to_scriptpubkey(BITCOIN_SEGWIT_ADDRESS_TEST_PAY2SH.upper()) == want
+
+    def test_address_to_scriptpubkey_invalid_checksum(self):
+        address_invalid = BITCOIN_ADDRESS[:6] + "error" + BITCOIN_ADDRESS[11:]
+        with pytest.raises(ValueError):
+            address_to_scriptpubkey(address_invalid)
+
+        address_invalid = BITCOIN_ADDRESS_PAY2SH[:6] + "error" + BITCOIN_ADDRESS_PAY2SH[11:]
+        with pytest.raises(ValueError):
+            address_to_scriptpubkey(address_invalid)
+
+        address_invalid = BITCOIN_SEGWIT_ADDRESS[:6] + "error" + BITCOIN_SEGWIT_ADDRESS[11:]
+        with pytest.raises(ValueError):
+            address_to_scriptpubkey(address_invalid)
+
+    def test_address_to_scriptpubkey_invalid_address(self):
+        address_invalid = "X" + BITCOIN_ADDRESS[1:]
+        with pytest.raises(ValueError):
+            address_to_scriptpubkey(address_invalid)
+
+        address_invalid = "X" + BITCOIN_ADDRESS_PAY2SH[1:]
+        with pytest.raises(ValueError):
+            address_to_scriptpubkey(address_invalid)
+
+        address_invalid = "X" + BITCOIN_SEGWIT_ADDRESS[1:]
+        with pytest.raises(ValueError):
+            address_to_scriptpubkey(address_invalid)
+
+
+class TestCalculatePreimages:
+    def test_calculate_preimages(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        want = b'yI\x8d\x99H\xcb\xe3\x88\xce\x83}\xc1\xfc\xaf\xf7\xd5\\\xf67\x93\x86\xb5\xc7M\xd1\xdb\xd2LyJ`<'
+        assert calculate_preimages(txobj, [(0, HASH_TYPE, False)])[0] == want
+
+        want = b'\xed\x85\xc1\x0f\xc2\xb1\xc9\x05\xbf\xa6S\x15\xba$\x84\xad\x14\x8dni\x17\x1eD\xd6\xf7e\xd8\x0e\xfb\x05\x93\x1a'
+        assert calculate_preimages(txobj, [(0, HASH_TYPE, True)])[0] == want
+
+    def test_calculate_preimages_unsupported_hashtypes(self):
+        txin = [TxIn(b'script', b'txid', b'\x04', b'witness', sequence=b'\xff\xff\xff\xff')]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        with pytest.raises(ValueError):
+            calculate_preimages(txobj, [(0, b'\x02\x00\x00\x00', False)])
+
+        with pytest.raises(ValueError):
+            calculate_preimages(txobj, [(0, b'\x03\x00\x00\x00', False)])
+
+        with pytest.raises(ValueError):
+            calculate_preimages(txobj, [(0, b'\x81\x00\x00\x00', False)])
+
+        with pytest.raises(ValueError):
+            calculate_preimages(txobj, [(0, b'\x04\x00\x00\x00', False)])
+
+
+class TestSignTx:
+    def test_sign_tx(self):
+        key = PrivateKey(WALLET_FORMAT_TEST_1)
+        txin = [
+            TxIn(b'',
+                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=False),
+            TxIn(b'',
+                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=True)
+        ]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        want = '0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c9577e4d7fc707771229cf0000000006b483045022100883b5a2327f213054a10616b3a548125c3795d6b0fcd96a15184166f90ad5527022025b736b884d3979fabf77460eebb4ad176046fdfaa6ce89c98e7dfa86833c4a30121021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb7ffffffffcbd4b41660d8d348c15fc430deb5fd55d62cb756b36d1c5b9f3c5af9e14e2cf40000000000ffffffff0188130000000000000d7363726970745f7075626b6579000000000000'
+        assert sign_tx(key, txobj, unspents=[UNSPENTS_SEGWIT[0]]) == want
+
+    def test_sign_tx_segwit(self):
+        key = PrivateKey(WALLET_FORMAT_TEST_1)
+        txin = [
+            TxIn(b'',
+                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=False),
+            TxIn(b'',
+                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=True)
+        ]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+
+        want = '0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c9577e4d7fc707771229cf00000000000ffffffffcbd4b41660d8d348c15fc430deb5fd55d62cb756b36d1c5b9f3c5af9e14e2cf40000000017160014905aa72f3d1747094a24d3adbc38905bb451ffc8ffffffff0188130000000000000d7363726970745f7075626b65790002483045022100d6cdcd5aa775bde4048b3aefffd3d0227e680a343a7fd87fec6fe658de6bb1ef022033827ca037ddcce908fcfc68fc4068d9c3687af24ccfdcc59d3e4afe60b2d5f80121021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb700000000'
+        assert sign_tx(key, txobj, unspents=[UNSPENTS_SEGWIT[1]]) == want
+
+    def test_sign_tx_multisig(self):
+        key1 = PrivateKey(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKey(WALLET_FORMAT_TEST_2)
+        multi = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        txin = [
+            TxIn(b'',
+                 b'F#\xe7\x8dh\xe7+B\x8e\xb4\xf5?s\x08j\xd8$\xa2\xc2\xb6\xbe\x90n1\x13\xab*\xfcID\x06d',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=True)
+        ]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        want = '010000000001014623e78d68e72b428eb4f53f73086ad824a2c2b6be906e3113ab2afc494406640000000023220020d3a4db6921782f78eb4f158f73adde471629dd5aca41c14a5bfc2ec2a8f39202ffffffff0188130000000000000d7363726970745f7075626b657904004830450221009e39ab109e7a4cba547b106efbb8ba7761fa8c2f6ae587fb8ed935f5262f9519022016fac137e8d5581a39a0a04a219d911631f5cb5ac9244748586a08ea0bea6a470100475221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f52ae00000000'
+        assert sign_tx(multi, txobj, unspents=UNSPENTS_BATCH) == want
+
+    def test_sign_tx_invalid_unspents(self):
+        key = PrivateKey(WALLET_FORMAT_TEST_1)
+        txin = [
+            TxIn(b'',
+                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=False),
+            TxIn(b'',
+                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=True)
+        ]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        with pytest.raises(TypeError):
+            # Unspents must be presented as list:
+            sign_tx(key, txobj, unspents=UNSPENTS_SEGWIT[1])
+
+    def test_sign_tx_invalid_segwit_no_amount(self):
+        key = PrivateKey(WALLET_FORMAT_TEST_1)
+        txin = [
+            TxIn(b'',
+                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=False),
+            TxIn(b'',
+                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
+                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
+                 segwit_input=True)
+        ]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        unspents = copy.deepcopy(UNSPENTS_SEGWIT)
+        unspents[1].amount = None
+        with pytest.raises(ValueError):
+            sign_tx(key, txobj, unspents=unspents)
+
+    def test_sign_tx_invalid_multisig_already_fully_signed(self):
+        key1 = PrivateKey(WALLET_FORMAT_TEST_1)
+        key2 = PrivateKey(WALLET_FORMAT_TEST_2)
+        multi = MultiSig(key1, [key1.public_key, key2.public_key], 2)
+        txin = [
+            TxIn(b'"\x00 \xd3\xa4\xdbi!x/x\xebO\x15\x8fs\xad\xdeG\x16)\xddZ\xcaA\xc1J[\xfc.\xc2\xa8\xf3\x92\x02',
+                 b'F#\xe7\x8dh\xe7+B\x8e\xb4\xf5?s\x08j\xd8$\xa2\xc2\xb6\xbe\x90n1\x13\xab*\xfcID\x06d',
+                 b'\x00\x00\x00\x00',
+                 b'\x04\x00H0E\x02!\x00\x9e9\xab\x10\x9ezL\xbaT{\x10n\xfb\xb8\xbawa\xfa\x8c/j\xe5\x87\xfb\x8e\xd95\xf5&/\x95\x19\x02 \x16\xfa\xc17\xe8\xd5X\x1a9\xa0\xa0J!\x9d\x91\x161\xf5\xcbZ\xc9$GHXj\x08\xea\x0b\xeajG\x01H0E\x02!\x00\x8a\xb1\x87\x1f\x1b.f\xfbEH\xbc.s5X\n\x1e\xad\xfa\x94J\xfe)-3\xf2\x16\xe5\x0ex8\xe7\x02 R\x04\xdb\x97\x9a\xb5m\x8f\xe5\x89\x98F$\x7fb\x89\xb8_>W;hS=*\xcdd+@\xb5\xcc\x1a\x01GR!\x02\x18\x162]\x19\xfd4\xfd\x87\xa09\xe8>5\xfc\x9d\xe3\xc9\xded\xa5\x01\xa6hK\x9b\xf9\x94cd\xfb\xb7!\x03}ih\x86\x86E\t\xedc\x04M\x8f\x1b\xcdS\xb8\xde\xf1${\xd2\xbb\xe0V\xff\x81\xb2>\x8c\t(\x0fR\xae',
+                 sequence=b'\xff\xff\xff\xff',
+                 segwit_input=True)
+        ]
+        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
+        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        with pytest.raises(ValueError):
+            sign_tx(multi, txobj, unspents=UNSPENTS_BATCH)
 
 
 class TestEstimateTxFee:
