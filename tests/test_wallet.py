@@ -337,13 +337,22 @@ class TestPrivateKeyTestnet:
             return
 
         private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+
+        # Monkey pathing:
+        # Ensures get_unspents() retrieves only non-segwit unspents.
+        # Note: Necessary since Insight (Bitpay) testnet API does not support
+        # pushing segwit transactions
+        class _MonkeyPrivateKeyTestnet(PrivateKeyTestnet):
+            segwit_address = None
+        private_key.__class__ = _MonkeyPrivateKeyTestnet
+
         private_key.get_unspents()
 
         initial = len(private_key.get_transactions())
         current = initial
         tries = 0
 
-        private_key.send([('mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt', 1, 'jpy')])
+        private_key.send([('mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt', 1, 'jpy')], leftover=private_key.address)
 
         while tries < 180:  # pragma: no cover
             current = len(private_key.get_transactions())
