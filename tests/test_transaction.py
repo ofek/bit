@@ -549,26 +549,26 @@ class TestGetSignaturesFromScript:
         assert sigs[1][:4] == hex_to_bytes('30450221')
         assert sigs[1][-4:] == hex_to_bytes('6a0ac901')
 
-        def test_get_signatures_2(self):
-            script = hex_to_bytes(
-                  '0047304402200b526cf17f86891a62f4bd27745494005682d650c27dda87'
-                  '7f35b0161c38bc9002204674a0be6275ce948812c200251802d15eaa1953'
-                  '3d864d64b83b992c10b3ecf201'
-                  '00'
-                  '695221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9b'
-                  'f9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bb'
-                  'e056ff81b23e8c09280f21033dc7fb58b701fc0af63ee3a8b72ebbeed04a'
-                  '1c006b50007f32ec6a33a56213f853ae0400483045022100f686296df668'
-                  '17198feead5fa24f3f04cb7e6780187e73fc8c531254fd002c13022044ef'
-                  'e2ea00f31de395376d83cb122bd708116d151bdf2de61107d77447b475c6'
-                  '0100695221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a668'
-                  '4b9bf9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247b'
-                  'd2bbe056ff81b23e8c09280f21033dc7fb58b701fc0af63ee3a8b72ebbee'
-                  'd04a1c006b50007f32ec6a33a56213f853ae')
-            sigs = get_signatures_from_script(script)
-            assert len(sigs) == 1
-            assert sigs[0][:4] == hex_to_bytes('30440220')
-            assert sigs[0][-4:] == hex_to_bytes('b3ecf201')
+    def test_get_signatures_2(self):
+        script = hex_to_bytes(
+              '0047304402200b526cf17f86891a62f4bd27745494005682d650c27dda87'
+              '7f35b0161c38bc9002204674a0be6275ce948812c200251802d15eaa1953'
+              '3d864d64b83b992c10b3ecf201'
+              '00'
+              '695221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9b'
+              'f9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bb'
+              'e056ff81b23e8c09280f21033dc7fb58b701fc0af63ee3a8b72ebbeed04a'
+              '1c006b50007f32ec6a33a56213f853ae0400483045022100f686296df668'
+              '17198feead5fa24f3f04cb7e6780187e73fc8c531254fd002c13022044ef'
+              'e2ea00f31de395376d83cb122bd708116d151bdf2de61107d77447b475c6'
+              '0100695221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a668'
+              '4b9bf9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247b'
+              'd2bbe056ff81b23e8c09280f21033dc7fb58b701fc0af63ee3a8b72ebbee'
+              'd04a1c006b50007f32ec6a33a56213f853ae')
+        sigs = get_signatures_from_script(script)
+        assert len(sigs) == 1
+        assert sigs[0][:4] == hex_to_bytes('30440220')
+        assert sigs[0][-4:] == hex_to_bytes('b3ecf201')
 
 
 class TestAddressToScriptPubKey:
