@@ -48,6 +48,14 @@ SEGWIT_TX_1 = ('010000000001021f9c125fc1c14ef7f4b03b4b7dad7be4c3b054d7c266689a45
                '27f741f9fc93e6280dac991c364ee578eafb3348db662339000121037d69688686'
                '4509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f00000000')
 
+UNSIGNED_TX_SEGWIT = (
+    '0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c9577e4d7fc70777122'
+    '9cf00000000000ffffffffcbd4b41660d8d348c15fc430deb5fd55d62cb756b36d1c5b9f3c'
+    '5af9e14e2cf40000000000ffffffff0280f0fa020000000017a914ea654a94b18eb41ce290'
+    'c135cccf9f348e7856a28770aaf0080000000017a9146015d175e191e6e5b99211e3ffc6ea'
+    '7658cb051a87000000000000'
+)
+
 FINAL_TX_SEGWIT = ('0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c95'
                    '77e4d7fc707771229cf0000000006b4830450221008dd5c2feb30d40dd'
                    '621afef413d3abc285d39aa0716233d7ccbc56a50678ebc4022005be97'
@@ -62,6 +70,14 @@ FINAL_TX_SEGWIT = ('0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c95'
                    '77da30ba022004a47a760b6bc68e99b88c1febfd8620d6bfd4f609b83e'
                    'e1c39f77f4689f69a20121021816325d19fd34fd87a039e83e35fc9de3'
                    'c9de64a501a6684b9bf9946364fbb700000000')
+
+UNSIGNED_TX_BATCH = (
+    '010000000001024623e78d68e72b428eb4f53f73086ad824a2c2b6be906e3113ab2afc4944'
+    '06640000000000ffffffffe2ded7092c8087f18343b716586ea047c060a36952a308fabf75'
+    '65133907af370100000000ffffffff0200286bee000000001600140ee268c86d05f290add1'
+    'bfc9bdfc3992d785bce2505c9a3b0000000017a914d35515db546bb040e61651150343a218'
+    'c87b471e87000000000000'
+)
 
 FINAL_TX_BATCH = ('010000000001024623e78d68e72b428eb4f53f73086ad824a2c2b6be90'
                   '6e3113ab2afc494406640000000023220020d3a4db6921782f78eb4f15'
@@ -670,89 +686,35 @@ class TestCalculatePreimages:
 
 
 class TestSignTx:
-    def test_sign_tx(self):
+    def test_sign_tx_legacy_input(self):
         key = PrivateKey(WALLET_FORMAT_TEST_1)
-        txin = [
-            TxIn(b'',
-                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=False),
-            TxIn(b'',
-                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=True)
-        ]
-        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
-        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
-
-        want = '0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c9577e4d7fc707771229cf0000000006b483045022100883b5a2327f213054a10616b3a548125c3795d6b0fcd96a15184166f90ad5527022025b736b884d3979fabf77460eebb4ad176046fdfaa6ce89c98e7dfa86833c4a30121021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb7ffffffffcbd4b41660d8d348c15fc430deb5fd55d62cb756b36d1c5b9f3c5af9e14e2cf40000000000ffffffff0188130000000000000d7363726970745f7075626b6579000000000000'
-        assert sign_tx(key, txobj, unspents=[UNSPENTS_SEGWIT[0]]) == want
+        txobj = deserialize(UNSIGNED_TX_SEGWIT)
+        tx = sign_tx(key, txobj, unspents=[UNSPENTS_SEGWIT[0]])
+        assert tx[:380] == FINAL_TX_SEGWIT[:380]
 
     def test_sign_tx_segwit(self):
         key = PrivateKey(WALLET_FORMAT_TEST_1)
-        txin = [
-            TxIn(b'',
-                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=False),
-            TxIn(b'',
-                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=True)
-        ]
-        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
-        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
-
-        want = '0100000000010288d3b28dbb7d24dd4ff292534dec44bdb9eca73c3c9577e4d7fc707771229cf00000000000ffffffffcbd4b41660d8d348c15fc430deb5fd55d62cb756b36d1c5b9f3c5af9e14e2cf40000000017160014905aa72f3d1747094a24d3adbc38905bb451ffc8ffffffff0188130000000000000d7363726970745f7075626b65790002483045022100d6cdcd5aa775bde4048b3aefffd3d0227e680a343a7fd87fec6fe658de6bb1ef022033827ca037ddcce908fcfc68fc4068d9c3687af24ccfdcc59d3e4afe60b2d5f80121021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb700000000'
-        assert sign_tx(key, txobj, unspents=[UNSPENTS_SEGWIT[1]]) == want
+        txobj = deserialize(UNSIGNED_TX_SEGWIT)
+        assert sign_tx(key, txobj, unspents=UNSPENTS_SEGWIT) == FINAL_TX_SEGWIT
 
     def test_sign_tx_multisig(self):
         key1 = PrivateKey(WALLET_FORMAT_TEST_1)
         key2 = PrivateKey(WALLET_FORMAT_TEST_2)
         multi = MultiSig(key1, [key1.public_key, key2.public_key], 2)
-        txin = [
-            TxIn(b'',
-                 b'F#\xe7\x8dh\xe7+B\x8e\xb4\xf5?s\x08j\xd8$\xa2\xc2\xb6\xbe\x90n1\x13\xab*\xfcID\x06d',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=True)
-        ]
-        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
-        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
-        want = '010000000001014623e78d68e72b428eb4f53f73086ad824a2c2b6be906e3113ab2afc494406640000000023220020d3a4db6921782f78eb4f158f73adde471629dd5aca41c14a5bfc2ec2a8f39202ffffffff0188130000000000000d7363726970745f7075626b657904004830450221009e39ab109e7a4cba547b106efbb8ba7761fa8c2f6ae587fb8ed935f5262f9519022016fac137e8d5581a39a0a04a219d911631f5cb5ac9244748586a08ea0bea6a470100475221021816325d19fd34fd87a039e83e35fc9de3c9de64a501a6684b9bf9946364fbb721037d696886864509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f52ae00000000'
-        assert sign_tx(multi, txobj, unspents=UNSPENTS_BATCH) == want
+        txobj = deserialize(UNSIGNED_TX_BATCH)
+        tx = sign_tx(multi, txobj, unspents=[UNSPENTS_BATCH[0]])
+        assert tx[:238] == FINAL_TX_BATCH[:238]
 
     def test_sign_tx_invalid_unspents(self):
         key = PrivateKey(WALLET_FORMAT_TEST_1)
-        txin = [
-            TxIn(b'',
-                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=False),
-            TxIn(b'',
-                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=True)
-        ]
-        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
-        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        txobj = deserialize(UNSIGNED_TX_SEGWIT)
         with pytest.raises(TypeError):
             # Unspents must be presented as list:
-            sign_tx(key, txobj, unspents=UNSPENTS_SEGWIT[1])
+            sign_tx(key, txobj, unspents=UNSPENTS_SEGWIT[0])
 
     def test_sign_tx_invalid_segwit_no_amount(self):
         key = PrivateKey(WALLET_FORMAT_TEST_1)
-        txin = [
-            TxIn(b'',
-                 b'\x88\xd3\xb2\x8d\xbb}$\xddO\xf2\x92SM\xecD\xbd\xb9\xec\xa7<<\x95w\xe4\xd7\xfcpwq"\x9c\xf0',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=False),
-            TxIn(b'',
-                 b'\xcb\xd4\xb4\x16`\xd8\xd3H\xc1_\xc40\xde\xb5\xfdU\xd6,\xb7V\xb3m\x1c[\x9f<Z\xf9\xe1N,\xf4',
-                 b'\x00\x00\x00\x00', b'\x00', sequence=b'\xff\xff\xff\xff',
-                 segwit_input=True)
-        ]
-        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
-        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        txobj = deserialize(UNSIGNED_TX_SEGWIT)
         unspents = copy.deepcopy(UNSPENTS_SEGWIT)
         unspents[1].amount = None
         with pytest.raises(ValueError):
@@ -762,18 +724,9 @@ class TestSignTx:
         key1 = PrivateKey(WALLET_FORMAT_TEST_1)
         key2 = PrivateKey(WALLET_FORMAT_TEST_2)
         multi = MultiSig(key1, [key1.public_key, key2.public_key], 2)
-        txin = [
-            TxIn(b'"\x00 \xd3\xa4\xdbi!x/x\xebO\x15\x8fs\xad\xdeG\x16)\xddZ\xcaA\xc1J[\xfc.\xc2\xa8\xf3\x92\x02',
-                 b'F#\xe7\x8dh\xe7+B\x8e\xb4\xf5?s\x08j\xd8$\xa2\xc2\xb6\xbe\x90n1\x13\xab*\xfcID\x06d',
-                 b'\x00\x00\x00\x00',
-                 b'\x04\x00H0E\x02!\x00\x9e9\xab\x10\x9ezL\xbaT{\x10n\xfb\xb8\xbawa\xfa\x8c/j\xe5\x87\xfb\x8e\xd95\xf5&/\x95\x19\x02 \x16\xfa\xc17\xe8\xd5X\x1a9\xa0\xa0J!\x9d\x91\x161\xf5\xcbZ\xc9$GHXj\x08\xea\x0b\xeajG\x01H0E\x02!\x00\x8a\xb1\x87\x1f\x1b.f\xfbEH\xbc.s5X\n\x1e\xad\xfa\x94J\xfe)-3\xf2\x16\xe5\x0ex8\xe7\x02 R\x04\xdb\x97\x9a\xb5m\x8f\xe5\x89\x98F$\x7fb\x89\xb8_>W;hS=*\xcdd+@\xb5\xcc\x1a\x01GR!\x02\x18\x162]\x19\xfd4\xfd\x87\xa09\xe8>5\xfc\x9d\xe3\xc9\xded\xa5\x01\xa6hK\x9b\xf9\x94cd\xfb\xb7!\x03}ih\x86\x86E\t\xedc\x04M\x8f\x1b\xcdS\xb8\xde\xf1${\xd2\xbb\xe0V\xff\x81\xb2>\x8c\t(\x0fR\xae',
-                 sequence=b'\xff\xff\xff\xff',
-                 segwit_input=True)
-        ]
-        txout = [TxOut(b'\x88\x13\x00\x00\x00\x00\x00\x00', b'script_pubkey')]
-        txobj = TxObj(b'\x01\x00\x00\x00', txin, txout, b'\x00\x00\x00\x00')
+        txobj = deserialize(FINAL_TX_BATCH)
         with pytest.raises(ValueError):
-            sign_tx(multi, txobj, unspents=UNSPENTS_BATCH)
+            sign_tx(multi, txobj, unspents=[UNSPENTS_BATCH[0]])
 
 
 class TestEstimateTxFee:
