@@ -177,11 +177,23 @@ class TestMultiSigToRedeemScript:
 
     def test_multisig_to_redeemscript_too_long(self):
         # Maximum is 15 compressed keys in a multisig:
+        try:
+            public_keys = [b'\x00'*33]*15
+            multisig_to_redeemscript(public_keys, 1)
+        except ValueError:
+            pytest.fail("multisig_to_redeemscript did not accept 15 compressed public keys.")
+
         public_keys = [b'\x00'*33]*16
         with pytest.raises(ValueError):
             multisig_to_redeemscript(public_keys, 1)
 
         # Maximum is 7 uncompressed keys in a multisig
+        try:
+            public_keys = [b'\x00'*65]*7
+            multisig_to_redeemscript(public_keys, 1)
+        except ValueError:
+            pytest.fail("multisig_to_redeemscript did not accept 7 uncompressed public keys.")
+
         public_keys = [b'\x00'*65]*8
         with pytest.raises(ValueError):
             multisig_to_redeemscript(public_keys, 1)
