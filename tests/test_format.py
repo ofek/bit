@@ -180,7 +180,7 @@ class TestMultiSigToRedeemScript:
         try:
             public_keys = [b'\x00'*33]*15
             multisig_to_redeemscript(public_keys, 1)
-        except ValueError:
+        except ValueError:  # pragma: no cover
             pytest.fail("multisig_to_redeemscript did not accept 15 compressed public keys.")
 
         public_keys = [b'\x00'*33]*16
@@ -191,7 +191,7 @@ class TestMultiSigToRedeemScript:
         try:
             public_keys = [b'\x00'*65]*7
             multisig_to_redeemscript(public_keys, 1)
-        except ValueError:
+        except ValueError:  # pragma: no cover
             pytest.fail("multisig_to_redeemscript did not accept 7 uncompressed public keys.")
 
         public_keys = [b'\x00'*65]*8
