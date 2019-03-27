@@ -28,3 +28,34 @@ class TestUnspent:
         assert repr(unspent) == ("Unspent(amount=10000, confirmations=7, "
                                  "script='script', txid='txid', txindex=0, "
                                  "segwit=False)")
+
+    def test_set_type(self):
+        unspent = Unspent(10000, 7, 'script', 'txid', 0)
+
+        unspent.set_type('p2pkh-uncompressed')
+        assert unspent.segwit is False
+        assert unspent.vsize == 180
+
+        unspent.set_type('p2pkh')
+        assert unspent.segwit is False
+        assert unspent.vsize == 148
+
+        unspent.set_type('p2sh')
+        assert unspent.segwit is False
+        assert unspent.vsize == 292
+
+        unspent.set_type('np2wkh')
+        assert unspent.segwit is True
+        assert unspent.vsize == 90
+
+        unspent.set_type('np2wsh')
+        assert unspent.segwit is True
+        assert unspent.vsize == 139
+
+        unspent.set_type('p2wkh')
+        assert unspent.segwit is True
+        assert unspent.vsize == 67
+
+        unspent.set_type('p2wsh')
+        assert unspent.segwit is True
+        assert unspent.vsize == 104
