@@ -381,11 +381,11 @@ class TestPrivateKeyTestnet:
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
 
-        while tries < 15:  # pragma: no cover
+        while tries < 180:  # pragma: no cover
             current = len(private_key.get_transactions())
             if current > initial:
                 break
-            time.sleep(5)
+            time.sleep(6)
             tries += 1
 
         assert current > initial
