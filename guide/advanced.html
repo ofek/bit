@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Advanced &#8212; Bit 0.5.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -39,12 +37,12 @@
 <p>If you only want to use Bit for its raw speed to lessen the load on your
 servers, you don’t have to use any of our network capabilities.</p>
 <ul class="simple">
-<li>Use <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a> instead of
-<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a></li>
-<li>Supply <a class="reference internal" href="transactions.html#unspentparam"><span class="std std-ref">your own UTXOs</span></a></li>
-<li>Set <a class="reference internal" href="transactions.html#feeparam"><span class="std std-ref">your own fee</span></a></li>
-<li>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Creating and Signing</span></a> only use these currencies: satoshi, ubtc,
-mbtc, or btc.</li>
+<li><p>Use <a class="reference internal" href="../dev/api.html#bit.PrivateKey.create_transaction" title="bit.PrivateKey.create_transaction"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_transaction()</span></code></a> instead of
+<a class="reference internal" href="../dev/api.html#bit.PrivateKey.send" title="bit.PrivateKey.send"><code class="xref py py-func docutils literal notranslate"><span class="pre">send()</span></code></a></p></li>
+<li><p>Supply <a class="reference internal" href="transactions.html#unspentparam"><span class="std std-ref">your own UTXOs</span></a></p></li>
+<li><p>Set <a class="reference internal" href="transactions.html#feeparam"><span class="std std-ref">your own fee</span></a></p></li>
+<li><p>Make sure all <a class="reference internal" href="transactions.html#outputsparam"><span class="std std-ref">Creating and Signing</span></a> only use these currencies: satoshi, ubtc,
+mbtc, or btc.</p></li>
 </ul>
 </div>
 <div class="section" id="offline-transactions">
@@ -247,8 +245,6 @@ do this:</p>
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>

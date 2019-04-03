@@ -1,12 +1,10 @@
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Index &#8212; Bit 0.5.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -353,6 +351,30 @@
 </li>
       <li><a href="dev/api.html#bit.network.get_fee_cached">get_fee_cached() (in module bit.network)</a>
 </li>
+      <li><a href="dev/api.html#bit.network.NetworkAPI.get_transaction_by_id">get_transaction_by_id() (bit.network.NetworkAPI class method)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transaction_by_id">(bit.network.services.BitpayAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_transaction_by_id">(bit.network.services.BlockchainAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_transaction_by_id">(bit.network.services.SmartbitAPI class method)</a>
+</li>
+      </ul></li>
+      <li><a href="dev/api.html#bit.network.NetworkAPI.GET_TRANSACTION_BY_ID_MAIN">GET_TRANSACTION_BY_ID_MAIN (bit.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bit.network.NetworkAPI.GET_TRANSACTION_BY_ID_TEST">GET_TRANSACTION_BY_ID_TEST (bit.network.NetworkAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bit.network.NetworkAPI.get_transaction_by_id_testnet">get_transaction_by_id_testnet() (bit.network.NetworkAPI class method)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transaction_by_id_testnet">(bit.network.services.BitpayAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_transaction_by_id_testnet">(bit.network.services.SmartbitAPI class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.MultiSig.get_transactions">get_transactions() (bit.MultiSig method)</a>
 
       <ul>
@@ -371,8 +393,6 @@
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_transactions">(bit.network.services.SmartbitAPI class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.network.NetworkAPI.GET_TRANSACTIONS_MAIN">GET_TRANSACTIONS_MAIN (bit.network.NetworkAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bit.network.NetworkAPI.GET_TRANSACTIONS_TEST">GET_TRANSACTIONS_TEST (bit.network.NetworkAPI attribute)</a>
@@ -523,6 +543,12 @@
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.MAIN_ENDPOINT">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
+      <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_TX_API">MAIN_TX_API (bit.network.services.BitpayAPI attribute)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.network.services.SmartbitAPI.MAIN_TX_API">(bit.network.services.SmartbitAPI attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_TX_PUSH_API">MAIN_TX_PUSH_API (bit.network.services.BitpayAPI attribute)</a>
@@ -671,16 +697,16 @@
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_address">(bit.PrivateKeyTestnet attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.MultiSigTestnet.segwit_scriptcode">segwit_scriptcode (bit.MultiSigTestnet attribute)</a>
+      <li><a href="dev/api.html#bit.MultiSig.segwit_scriptcode">segwit_scriptcode (bit.MultiSig attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.MultiSigTestnet.segwit_scriptcode">(bit.MultiSigTestnet attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.PrivateKey.segwit_scriptcode">(bit.PrivateKey attribute)</a>
 </li>
         <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_scriptcode">(bit.PrivateKeyTestnet attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.MultiSig.segwit_scriptcode">segwit_scriptcode() (bit.MultiSig method)</a>
-</li>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.SEK_RATES">SEK_RATES (bit.network.rates.RatesAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bit.network.rates.BitpayRates.sek_to_satoshi">sek_to_satoshi() (bit.network.rates.BitpayRates class method)</a>
@@ -761,6 +787,12 @@
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TEST_ENDPOINT">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
+      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_TX_API">TEST_TX_API (bit.network.services.BitpayAPI attribute)</a>
+
+      <ul>
+        <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TEST_TX_API">(bit.network.services.SmartbitAPI attribute)</a>
+</li>
+      </ul></li>
       <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_TX_PUSH_API">TEST_TX_PUSH_API (bit.network.services.BitpayAPI attribute)</a>
 
       <ul>
@@ -801,6 +833,8 @@
       </ul></li>
       <li><a href="dev/api.html#bit.network.meta.Unspent.to_dict">to_dict() (bit.network.meta.Unspent method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.PrivateKey.to_hex">to_hex() (bit.PrivateKey method)</a>
 
       <ul>
@@ -809,8 +843,6 @@
         <li><a href="dev/api.html#bit.wallet.BaseKey.to_hex">(bit.wallet.BaseKey method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.PrivateKey.to_int">to_int() (bit.PrivateKey method)</a>
 
       <ul>
@@ -843,6 +875,8 @@
         <li><a href="dev/api.html#bit.network.rates.RatesAPI.twd_to_satoshi">(bit.network.rates.RatesAPI class method)</a>
 </li>
       </ul></li>
+      <li><a href="dev/api.html#bit.network.services.BlockchainAPI.TX_API">TX_API (bit.network.services.BlockchainAPI attribute)</a>
+</li>
       <li><a href="dev/api.html#bit.network.services.BlockchainAPI.TX_PUSH_API">TX_PUSH_API (bit.network.services.BlockchainAPI attribute)</a>
 </li>
       <li><a href="dev/api.html#bit.network.services.BitpayAPI.TX_PUSH_PARAM">TX_PUSH_PARAM (bit.network.services.BitpayAPI attribute)</a>
@@ -994,8 +1028,6 @@
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
