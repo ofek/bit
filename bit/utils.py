@@ -78,8 +78,6 @@ def read_var_string(stream):
 
 
 def read_var_int(stream):
-    if len(stream) == 0:
-        return 0, stream
     val = int(bytes_to_hex(stream[0:1]), base=16)
     if val < 253:
         return val, stream[1:]

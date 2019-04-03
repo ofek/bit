@@ -23,9 +23,8 @@
 
 """Reference tests for segwit adresses"""
 
-import binascii
-import unittest
 import bit.base32 as segwit_addr
+from bit.utils import hex_to_bytes
 
 
 def segwit_scriptpubkey(witver, witprog):
@@ -87,35 +86,35 @@ INVALID_ADDRESS_ENC = [
 ]
 
 
-class TestSegwitAddress(unittest.TestCase):
+class TestSegwitAddress:
     """Unit test class for segwit addressess."""
 
     def test_valid_checksum(self):
         """Test checksum creation and validation."""
         for test in VALID_CHECKSUM:
             hrp, _ = segwit_addr.bech32_decode(test)
-            self.assertIsNotNone(hrp)
+            assert hrp is not None
             pos = test.rfind('1')
             test = test[:pos+1] + chr(ord(test[pos + 1]) ^ 1) + test[pos+2:]
             hrp, _ = segwit_addr.bech32_decode(test)
-            self.assertIsNone(hrp)
+            assert hrp is None
 
     def test_invalid_checksum(self):
         """Test validation of invalid checksums."""
         for test in INVALID_CHECKSUM:
             hrp, _ = segwit_addr.bech32_decode(test)
-            self.assertIsNone(hrp)
+            assert hrp is None
 
     def test_valid_address(self):
         """Test whether valid addresses decode to the correct output."""
         for (address, hexscript) in VALID_ADDRESS:
             witver, witprog = segwit_addr.decode(address)
-            self.assertIsNotNone(witver)
+            assert witver is not None
             scriptpubkey = segwit_scriptpubkey(witver, witprog)
-            self.assertEqual(scriptpubkey, binascii.unhexlify(hexscript))
+            assert scriptpubkey == hex_to_bytes(hexscript)
             hrp = address[:2].lower()
             addr = segwit_addr.encode(hrp, witver, witprog)
-            self.assertEqual(address.lower(), addr)
+            assert address.lower() == addr
 
     def test_invalid_address(self):
         """Test whether invalid addresses fail to decode."""
@@ -123,15 +122,12 @@ class TestSegwitAddress(unittest.TestCase):
             #witver, _ = segwit_addr.decode("bc", test)
             witver, _ = segwit_addr.decode(test)
             print(witver)
-            self.assertIsNone(witver)
+            assert witver is None
             # witver, _ = segwit_addr.decode("tb", test)
-            # self.assertIsNone(witver)
+            # assert witver is None
 
     def test_invalid_address_enc(self):
         """Test whether address encoding fails on invalid input."""
         for hrp, version, length in INVALID_ADDRESS_ENC:
             code = segwit_addr.encode(hrp, version, [0] * length)
-            self.assertIsNone(code)
-
-if __name__ == "__main__":
-    unittest.main()
+            assert code is None

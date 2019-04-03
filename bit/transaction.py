@@ -240,7 +240,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False,
     COST_OF_OVERHEAD = (8 + sum(output_size[:-1]) + 1) * fee
 
     def branch_and_bound(d, selected_coins, effective_value, target, fee,
-                         sorted_unspents):
+                         sorted_unspents):  # pragma: no cover
 
         nonlocal COST_OF_OVERHEAD, BNB_TRIES
         BNB_TRIES -= 1
@@ -460,11 +460,10 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
     # Sanity check: If spending from main-/testnet, then all output addresses must also be for main-/testnet.
     for output in outputs:
         dest, amount = output
-        if amount:  # ``dest`` could be a text to be stored in the blockchain; but only if ``amount`` is exactly zero.
-            vs = get_version(dest)
-            if vs and vs != version:
-                raise ValueError('Cannot send to ' + vs + 'net address when '
-                                 'spending from a ' + version + 'net address.')
+        vs = get_version(dest)
+        if vs and vs != version:
+            raise ValueError('Cannot send to ' + vs + 'net address when '
+                             'spending from a ' + version + 'net address.')
 
     outputs.extend(messages)
 
@@ -593,6 +592,7 @@ def sign_tx(private_key, tx, *, unspents):
     :type tx: ``TxObj``
     :param unspents: For inputs to be signed their corresponding Unspent objects
                      must be provided.
+    :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
     :returns: The signed transaction as hex.
     :rtype: ``str``
     """
@@ -608,8 +608,8 @@ def sign_tx(private_key, tx, *, unspents):
                 unspent.txindex.to_bytes(4, byteorder='little')
             input_dict[tx_input] = unspent.to_dict()
     except TypeError:
-        raise ValueError('Please provide as unspents at least all inputs to '
-                         'be signed with the function call.')
+        raise TypeError('Please provide as unspents at least all inputs to '
+                        'be signed with the function call in a list.')
 
     # Determine input indices to sign from input_dict (allows for transaction batching)
     sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid+i.txindex in input_dict]
@@ -643,7 +643,7 @@ def sign_tx(private_key, tx, *, unspents):
                 # For partially signed transaction we must extract the
                 # signatures:
                 input_script_field = tx.TxIn[i].witness
-            except Attributerror:
+            except AttributeError:
                 raise ValueError(
                     'Cannot sign a segwit input when the input\'s amount is '
                     'unknown. Maybe no network connection or the input is '
@@ -681,13 +681,9 @@ def sign_tx(private_key, tx, *, unspents):
                             # If we already found a valid signature for pubkey
                             # we just overwrite it and don't care.
                             sigs[pub] = sig
-                if len(sigs) == private_key.m:
-                    raise TypeError('Transaction is already signed with '
-                                    'sufficiently needed signatures.')
-                elif len(sigs) > private_key.m:
-                    raise TypeError('Transaction already contains {} '
-                                    'signatures, but only {} needed.').format(
-                                        len(sigs), private_key.m)
+                if len(sigs) >= private_key.m:
+                    raise ValueError('Transaction is already signed with '
+                                     'sufficiently needed signatures.')
 
             sigs[public_key] = signature
 

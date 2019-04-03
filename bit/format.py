@@ -134,8 +134,8 @@ def public_key_to_segwit_address(public_key, version='main'):
 
 def multisig_to_redeemscript(public_keys, m):
 
-    if m > 16:
-        raise ValueError('More than the allowed maximum of 16 public keys cannot be used.')
+    if m > len(public_keys):
+        raise ValueError('Required signatures cannot be more than the total number of public keys.')
 
     redeemscript = int_to_unknown_bytes(m + 80)
 

@@ -621,7 +621,7 @@ class PrivateKeyTestnet(BaseKey):
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):
+                           unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -677,7 +677,7 @@ class PrivateKeyTestnet(BaseKey):
         return create_new_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):
+             combine=True, message=None, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKeyTestnet.create_transaction`.
@@ -729,7 +729,7 @@ class PrivateKeyTestnet(BaseKey):
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
                             absolute_fee=False, leftover=None, combine=True,
-                            message=None, unspents=None):
+                            message=None, unspents=None):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -784,7 +784,7 @@ class PrivateKeyTestnet(BaseKey):
 
         return json.dumps(data, separators=(',', ':'))
 
-    def sign_transaction(self, tx_data, unspents=None):
+    def sign_transaction(self, tx_data, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction using previously prepared
         transaction data.
 
@@ -874,10 +874,10 @@ class MultiSig:
     :param private_key: A class representing a private key.
     :type private_key: ``PrivateKey``
     :raises TypeError: If ``private_key`` is not a ``PrivateKey``.
-    :param public_keys: A list or set of public keys encoded as hex assigned
-                        to the multi-signature contract. If using a list, then
-                        the order of the public keys will be used in the
-                        contract. If using a set, then Bit will order the
+    :param public_keys: A list or set of public keys encoded as hex or bytes
+                        assigned to the multi-signature contract. If using a
+                        list, then the order of the public keys will be used in
+                        the contract. If using a set, then Bit will order the
                         public keys according to lexicographical order.
     :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
@@ -895,7 +895,7 @@ class MultiSig:
 
         if (bytes_to_hex(private_key.public_key) not in public_keys
                 and private_key.public_key not in public_keys):
-            raise TypeError('Private key does not match any provided public key.')
+            raise ValueError('Private key does not match any provided public key.')
 
         if type(public_keys) not in (list, set):
             raise TypeError('The public keys must be provided in a list or set.')
@@ -944,6 +944,7 @@ class MultiSig:
         self._scriptcode = self.redeemscript
         return self._scriptcode
 
+    @property
     def segwit_scriptcode(self):
         self._segwit_scriptcode = (OP_0 + OP_PUSH_32
                                    + sha256(self.redeemscript))
@@ -957,7 +958,7 @@ class MultiSig:
         else:
             return unspent.script == script
 
-    def sign(self, data):
+    def sign(self, data):  # pragma: no cover
         """Signs some data which can be verified later by others using
         the public key.
 
@@ -1022,7 +1023,7 @@ class MultiSig:
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):
+                           unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -1177,10 +1178,10 @@ class MultiSigTestnet:
     :param private_key: A class representing a testnet private key.
     :type private_key: ``PrivateKeyTestnet``
     :raises TypeError: If ``private_key`` is not a ``PrivateKeyTestnet``.
-    :param public_keys: A list or set of public keys encoded as hex assigned
-                        to the multi-signature contract. If using a list, then
-                        the order of the public keys will be used in the
-                        contract. If using a set, then Bit will order the
+    :param public_keys: A list or set of public keys encoded as hex or bytes
+                        assigned to the multi-signature contract. If using a
+                        list, then the order of the public keys will be used in
+                        the contract. If using a set, then Bit will order the
                         public keys according to lexicographical order.
     :type public_keys: ``list`` or ``set`` of ``str`` or ``bytes``
     :raises TypeError: When the list ``public_keys`` does not include the public
@@ -1198,7 +1199,10 @@ class MultiSigTestnet:
 
         if (bytes_to_hex(private_key.public_key) not in public_keys
                 and private_key.public_key not in public_keys):
-            raise TypeError('Private key does not match any provided public key.')
+            raise ValueError('Private key does not match any provided public key.')
+
+        if type(public_keys) not in (list, set):
+            raise TypeError('The public keys must be provided in a list or set.')
 
         self.version = 'test'
         self.instance = 'MultiSigTestnet'
@@ -1257,7 +1261,7 @@ class MultiSigTestnet:
         else:
             return unspent.script == script
 
-    def sign(self, data):
+    def sign(self, data):  # pragma: no cover
         """Signs some data which can be verified later by others using
         the public key.
 
@@ -1322,7 +1326,7 @@ class MultiSigTestnet:
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):
+                           unspents=None):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
