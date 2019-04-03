@@ -5,8 +5,9 @@ from time import time
 import requests
 from requests.exceptions import ConnectionError, HTTPError, Timeout
 
-DEFAULT_FEE_FAST = 220
-DEFAULT_FEE_HOUR = 160
+# Default fees last updated 2019-04-02
+DEFAULT_FEE_FAST = 72
+DEFAULT_FEE_HOUR = 62
 DEFAULT_CACHE_TIME = 60 * 10
 URL = 'https://bitcoinfees.earn.com/api/v1/fees/recommended'
 
