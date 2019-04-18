@@ -104,8 +104,7 @@ class BitpayRates:
     @classmethod
     def currency_to_satoshi(cls, currency):
         r = requests.get(cls.SINGLE_RATE + currency)
-        if r.status_code != 200:
-            raise requests.exceptions.ConnectionError
+        r.raise_for_status()
         rate = r.json()['rate']
         return int(ONE / Decimal(rate) * BTC)
 
@@ -200,8 +199,7 @@ class BlockchainRates:
     @classmethod
     def currency_to_satoshi(cls, currency):
         r = requests.get(cls.SINGLE_RATE.format(currency))
-        if r.status_code != 200:
-            raise requests.exceptions.ConnectionError
+        r.raise_for_status()
         rate = r.text
         return int(Decimal(rate) * BTC)
 
@@ -295,6 +293,7 @@ class RatesAPI:
     number of satoshi.
     """
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
+                      requests.exceptions.HTTPError,
                       requests.exceptions.Timeout)
 
     USD_RATES = [BitpayRates.usd_to_satoshi, BlockchainRates.usd_to_satoshi]
