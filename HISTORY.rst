@@ -4,6 +4,13 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.5.1 (2019-04-19
+-----------------
+
+- New: Add `get_transaction_by_id()` calls
+- Update default fees
+- Multisig improvements
+
 0.5.0 (2019-03-10)
 ------------------
 
