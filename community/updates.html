@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Stay Informed &#8212; Bit 0.5.0 documentation</title>
+    <title>Stay Informed &#8212; Bit 0.5.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -50,7 +50,21 @@ Twitter for occasional updates.</p>
 <h2>Unreleased (see <a class="reference external" href="https://github.com/ofek/bit">master</a>)<a class="headerlink" href="#unreleased-see-master" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="id1">
-<h2>0.5.0 (2019-03-10)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>0.5.2 (2019-05-16)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Fixed a subtle bug when signing a multisig transaction over multiple inputs</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>0.5.1 (2019-04-19)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>New: Add <cite>get_transaction_by_id()</cite> calls</p></li>
+<li><p>Update default fees</p></li>
+<li><p>Multisig improvements</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2>0.5.0 (2019-03-10)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>New <a class="reference internal" href="../dev/api.html#bit.MultiSig" title="bit.MultiSig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiSig</span></code></a> adds support for P2SH nested m-of-n multisignature contracts</p></li>
 <li><p>Support for sending to P2SH and Bech32 output addresses</p></li>
@@ -59,29 +73,29 @@ Twitter for occasional updates.</p>
 <li><p>Update transaction message length limit to 80</p></li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>0.4.3 (2018-03-11)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>0.4.3 (2018-03-11)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Fixed fee calculation when <a href="#id3"><span class="problematic" id="id4">``</span></a>combine=False`</p></li>
+<li><p>Fixed fee calculation when <a href="#id5"><span class="problematic" id="id6">``</span></a>combine=False`</p></li>
 <li><p><strong>Breaking:</strong> Exceptions will now be raised when using pay2sh addresses (until implemented)</p></li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h2>0.4.2 (2017-12-09)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>0.4.2 (2017-12-09)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Optimized network API priorities</p></li>
 <li><p>Fixed Smartbit pushtx usage</p></li>
 <li><p>Updated <a class="reference external" href="https://www.21.co">21.co</a> to <a class="reference external" href="https://www.earn.com">earn.com</a></p></li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>0.4.1 (2017-11-01)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>0.4.1 (2017-11-01)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Removed <code class="docutils literal notranslate"><span class="pre">blockr.io</span></code> network backend as <a class="reference external" href="https://www.coinbase.com">Coinbase</a> has shut it down.</p></li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h2>0.4.0 (2017-04-19)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>0.4.0 (2017-04-19)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed elliptic curve backend from OpenSSL to libsecp256k1. This results
 in an order of magnitude faster key creation and signing/verifying.</p></li>
@@ -92,31 +106,31 @@ signatures instead of raising an exception. Also, <code class="docutils literal 
 a parameter as BIP-62 compliance is now required.</p></li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h2>0.3.1 (2017-03-21)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h2>0.3.1 (2017-03-21)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Fixed</strong> <a class="reference internal" href="../guide/advanced.html#coldstorage"><span class="std std-ref">cold storage</span></a> workflow.</p></li>
 <li><p>Improved performance of private key instantiation.</p></li>
 </ul>
 </div>
-<div class="section" id="id9">
-<h2>0.3.0 (2017-03-20)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h2>0.3.0 (2017-03-20)<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Implemented a way to use private keys in <a class="reference internal" href="../guide/advanced.html#coldstorage"><span class="std std-ref">cold storage</span></a>.</p></li>
 <li><p>Changed the default timeout of services from 5 to 10 seconds.</p></li>
 <li><p>Fixed network service redundancy by failing if response code is not 200.</p></li>
 </ul>
 </div>
-<div class="section" id="id10">
-<h2>0.2.0 (2017-03-17)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h2>0.2.0 (2017-03-17)<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Improved stability of network tests.</p></li>
 <li><p>Added <a class="reference internal" href="../dev/api.html#bit.verify_sig" title="bit.verify_sig"><code class="xref py py-func docutils literal notranslate"><span class="pre">verify_sig()</span></code></a>.</p></li>
 <li><p>Refactored crypto to yield over an order of magnitude faster hashing.</p></li>
 </ul>
 </div>
-<div class="section" id="id11">
-<h2>0.1.0 (2017-03-15)<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h2>0.1.0 (2017-03-15)<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Initial release.</p></li>
 </ul>
@@ -205,15 +219,17 @@ a parameter as BIP-62 compliance is now required.</p></li>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#release-history">Release History</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#unreleased-see-master">Unreleased (see master)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">0.5.0 (2019-03-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">0.4.3 (2018-03-11)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">0.4.2 (2017-12-09)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">0.4.1 (2017-11-01)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">0.4.0 (2017-04-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id8">0.3.1 (2017-03-21)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id9">0.3.0 (2017-03-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id10">0.2.0 (2017-03-17)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id11">0.1.0 (2017-03-15)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">0.5.2 (2019-05-16)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">0.5.1 (2019-04-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">0.5.0 (2019-03-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">0.4.3 (2018-03-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">0.4.2 (2017-12-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">0.4.1 (2017-11-01)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">0.4.0 (2017-04-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">0.3.1 (2017-03-21)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">0.3.0 (2017-03-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">0.2.0 (2017-03-17)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">0.1.0 (2017-03-15)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
