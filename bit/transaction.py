@@ -621,13 +621,19 @@ def sign_tx(private_key, tx, *, unspents):
 
     # Make input parameters for preimage calculation
     inputs_parameters = []
+
+    # The TxObj in `tx` will below be modified to contain the scriptCodes used
+    # for the transaction structure to be signed
+
+    # `input_script_field` copies the scriptSigs for partially signed
+    # transactions to later extract signatures from it:
+    input_script_field = [tx.TxIn[i].script_sig for i in range(len(tx.TxIn))]
+
     for i in sign_inputs:
         # Create transaction object for preimage calculation
         tx_input = tx.TxIn[i].txid + tx.TxIn[i].txindex
         segwit_input = input_dict[tx_input]['segwit']
         tx.TxIn[i].segwit_input = segwit_input
-        # For partially signed transaction we must extract the signatures:
-        input_script_field = tx.TxIn[i].script_sig
 
         script_code = private_key.scriptcode
         script_code_len = int_to_varint(len(script_code))
@@ -640,9 +646,10 @@ def sign_tx(private_key, tx, *, unspents):
             try:
                 tx.TxIn[i].script_sig += input_dict[tx_input]['amount']\
                                          .to_bytes(8, byteorder='little')
-                # For partially signed transaction we must extract the
-                # signatures:
-                input_script_field = tx.TxIn[i].witness
+
+                # For partially signed Segwit transactions the signatures must
+                # be extracted from the witnessScript field:
+                input_script_field[i] = tx.TxIn[i].witness
             except AttributeError:
                 raise ValueError(
                     'Cannot sign a segwit input when the input\'s amount is '
@@ -666,8 +673,8 @@ def sign_tx(private_key, tx, *, unspents):
             sigs = {}
             # Initial number of witness items (OP_0 + one signature + redeemscript).
             witness_count = 3
-            if input_script_field:
-                sig_list = get_signatures_from_script(input_script_field)
+            if input_script_field[i]:
+                sig_list = get_signatures_from_script(input_script_field[i])
                 # Bitcoin Core convention: Every missing signature is denoted
                 # by 0x00. Only used for already partially-signed scriptSigs:
                 script_blob += b'\x00' * (private_key.m - len(sig_list)-1)
