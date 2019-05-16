@@ -4,8 +4,13 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
-0.5.1 (2019-04-19
------------------
+0.5.2 (2019-05-16)
+------------------
+
+- Fixed a subtle bug when signing a multisig transaction over multiple inputs
+
+0.5.1 (2019-04-19)
+------------------
 
 - New: Add `get_transaction_by_id()` calls
 - Update default fees
