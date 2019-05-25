@@ -1,7 +1,9 @@
 import requests
+import json
 
 from bit.network import currency_to_satoshi
 from bit.network.meta import Unspent
+from bit.exceptions import BitcoinNodeException
 
 DEFAULT_TIMEOUT = 10
 
@@ -9,6 +11,101 @@ DEFAULT_TIMEOUT = 10
 def set_service_timeout(seconds):
     global DEFAULT_TIMEOUT
     DEFAULT_TIMEOUT = seconds
+
+
+class RPCHost:
+    def __init__(self, user, password, host, port, use_https):
+        self._session = requests.Session()
+        self._url = "http{s}://{user}:{password}@{host}:{port}/".format(
+            s="s" if use_https else "",
+            user=user,
+            password=password,
+            host=host,
+            port=port,
+        )
+        self._headers = {"content-type": "application/json"}
+
+    def __getattr__(self, rpc_method):
+        return RPCMethod(rpc_method, self)
+
+    def get_balance(self, address):
+        return self.getreceivedbyaddress(address, 0)
+
+    def get_balance_testnet(self, address):
+        return self.get_balance(address)
+
+    def get_transactions(self, address):
+        r = self.listreceivedbyaddress(0, True, True, address)
+        if len(r) > 0:
+            r = r[0]["txids"]
+        return r
+
+    def get_transactions_testnet(self, address):
+        return self.get_transactions(address)
+
+    def get_transaction_by_id(self, txid):
+        return self.getrawtransaction(txid, False)
+
+    def get_transaction_by_id_testnet(self, txid):
+        return self.get_transaction_by_id(txid)
+
+    def get_unspent(self, address):
+        r = self.listunspent(0, 9999999, [address])
+        return [
+            Unspent(
+                currency_to_satoshi(tx["amount"], "btc"),
+                tx["confirmations"],
+                tx["scriptPubKey"],
+                tx["txid"],
+                tx["vout"],
+            )
+            for tx in r
+        ]
+
+    def get_unspent_testnet(self, address):
+        return self.get_unspent(address)
+
+    def broadcast_tx(self, tx_hex):
+        try:
+            _ = self.sendrawtransaction(tx_hex)
+        except BitcoinNodeException:
+            return False
+        return True
+
+    def broadcast_tx_testnet(self, tx_hex):
+        return self.broadcast_tx(tx_hex)
+
+
+class RPCMethod:
+    def __init__(self, rpc_method, host):
+        self._rpc_method = rpc_method
+        self._host = host
+
+    def __getattr__(self, rpc_method):
+        new_method = '{}.{}'.format(self._rpc_method, rpc_method)
+        return RPCMethod(new_method, self._host)
+
+    def __call__(self, *args):
+        payload = json.dumps(
+            {"method": self._rpc_method, "params": list(args), "jsonrpc": "2.0"}
+        )
+        try:
+            response = self._host._session.post(
+                self._host._url, headers=self._host._headers, data=payload
+            )
+        except requests.exceptions.ConnectionError:
+            raise ConnectionError
+        if response.status_code not in (200, 500):
+            raise BitcoinNodeException(
+                "RPC connection failure: "
+                + str(response.status_code)
+                + " "
+                + response.reason
+            )
+        responseJSON = response.json()
+        if "error" in responseJSON and responseJSON["error"] is not None:
+            raise BitcoinNodeException("Error in RPC call: " + str(responseJSON["error"]))
+        return responseJSON["result"]
 
 
 class InsightAPI:
@@ -33,7 +130,7 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
-    
+
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API + txid, timeout=DEFAULT_TIMEOUT)
@@ -91,7 +188,7 @@ class BitpayAPI(InsightAPI):
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['transactions']
-    
+
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
         r = requests.get(cls.TEST_TX_API + txid, timeout=DEFAULT_TIMEOUT)
@@ -119,6 +216,7 @@ class BitpayAPI(InsightAPI):
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
         r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
+
 
 class BlockchainAPI:
     ENDPOINT = 'https://blockchain.info/'
@@ -338,6 +436,41 @@ class NetworkAPI:
                         SmartbitAPI.get_unspent_testnet]  # Limit 1000
     BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
                          SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
+
+    @classmethod
+    def connect_to_node(cls, user, password, host='localhost', port=8332,
+                        use_https=False, testnet=False):
+        """Connect to a remote Bitcoin node instead of using web APIs.
+        Allows to connect to a testnet and mainnet Bitcoin node simultaneously.
+
+        :param user: The RPC user to a Bitcoin node
+        :type user: ``str``
+        :param password: The RPC password to a Bitcoin node
+        :type password: ``str``
+        :param host: The host to a Bitcoin node
+        :type host: ``str``
+        :param port: The port to a Bitcoin node
+        :type port: ``int``
+        :param use_https: Connect to the Bitcoin node via HTTPS
+        :type use_https: ``bool``
+        :param testnet: Defines if the node should be used for testnet
+        :type testnet: ``bool``
+        """
+        node = RPCHost(user=user, password=password, host=host, port=port, use_https=use_https)
+
+        # Inject remote node into NetworkAPI
+        if testnet is False:
+            cls.GET_BALANCE_MAIN = [node.get_balance]
+            cls.GET_TRANSACTIONS_MAIN = [node.get_transactions]
+            cls.GET_TRANSACTION_BY_ID_MAIN = [node.get_transaction_by_id]
+            cls.GET_UNSPENT_MAIN = [node.get_unspent]
+            cls.BROADCAST_TX_MAIN = [node.broadcast_tx]
+        else:
+            cls.GET_BALANCE_TEST = [node.get_balance_testnet]
+            cls.GET_TRANSACTIONS_TEST = [node.get_transactions_testnet]
+            cls.GET_TRANSACTION_BY_ID_TEST = [node.get_transaction_by_id_testnet]
+            cls.GET_UNSPENT_TEST = [node.get_unspent_testnet]
+            cls.BROADCAST_TX_TEST = [node.broadcast_tx_testnet]
 
     @classmethod
     def get_balance(cls, address):
