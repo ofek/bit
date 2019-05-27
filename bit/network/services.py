@@ -24,6 +24,7 @@ class RPCHost:
             port=port,
         )
         self._headers = {"content-type": "application/json"}
+        self._verify = use_https
 
     def __getattr__(self, rpc_method):
         return RPCMethod(rpc_method, self)
@@ -91,7 +92,7 @@ class RPCMethod:
         )
         try:
             response = self._host._session.post(
-                self._host._url, headers=self._host._headers, data=payload
+                self._host._url, headers=self._host._headers, data=payload, verify=self._host._verify
             )
         except requests.exceptions.ConnectionError:
             raise ConnectionError
@@ -451,8 +452,11 @@ class NetworkAPI:
         :type host: ``str``
         :param port: The port to a Bitcoin node
         :type port: ``int``
-        :param use_https: Connect to the Bitcoin node via HTTPS
-        :type use_https: ``bool``
+        :param use_https: Connect to the Bitcoin node via HTTPS. Either a
+            boolean, in which case it controls whether we connect to the node
+            via HTTP or HTTPS, or a string, in which case we connect via HTTPS
+            and it must be a path to the CA bundle to use. Defaults to False.
+        :type use_https: ``bool`` or ``string``
         :param testnet: Defines if the node should be used for testnet
         :type testnet: ``bool``
         """
