@@ -24,7 +24,7 @@ class RPCHost:
             port=port,
         )
         self._headers = {"content-type": "application/json"}
-        self._verify = use_https
+        self._session.verify = use_https
 
     def __getattr__(self, rpc_method):
         return RPCMethod(rpc_method, self)
@@ -92,7 +92,7 @@ class RPCMethod:
         )
         try:
             response = self._host._session.post(
-                self._host._url, headers=self._host._headers, data=payload, verify=self._host._verify
+                self._host._url, headers=self._host._headers, data=payload
             )
         except requests.exceptions.ConnectionError:
             raise ConnectionError
