@@ -1,5 +1,6 @@
 import requests
 import json
+from decimal import Decimal, getcontext
 
 from bit.network import currency_to_satoshi
 from bit.network.meta import Unspent
@@ -30,7 +31,9 @@ class RPCHost:
         return RPCMethod(rpc_method, self)
 
     def get_balance(self, address):
-        return self.getreceivedbyaddress(address, 0)
+        getcontext().prec = 9
+        b = Decimal(self.getreceivedbyaddress(address, 0))
+        return int(float(str(b * 100000000)))
 
     def get_balance_testnet(self, address):
         return self.get_balance(address)
