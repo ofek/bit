@@ -43,3 +43,10 @@ PUBLIC_KEY_UNCOMPRESSED = b'\x04'
 PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
 PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
 PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
+
+# Units:
+# https://en.bitcoin.it/wiki/Units
+SATOSHI = 1
+uBTC = 10 ** 2
+mBTC = 10 ** 5
+BTC = 10 ** 8
