@@ -159,10 +159,14 @@ class MockRPCMethod(RPCMethod):
                 }]
 
         if self._rpc_method == "sendrawtransaction":
-            assert args[0] == "01000000000000000000"
+            assert args[0] == "01000000000000000000" or args[0] == "00000000000000000000"
+
+            if args[0] == "00000000000000000000":
+                raise bit.exceptions.BitcoinNodeException()
+
             return ""
 
-        raise AttributeError('called unsupported RPC method %s', self._rpc_method)
+        raise AttributeError('called unsupported RPC method %s', self._rpc_method)  # pragma: no cover
 
 
 class TestNetworkAPI:
@@ -481,11 +485,19 @@ class TestRPCHost:
 
     def test_broadcast_tx(self):
         node = MockRPCHost("user", "password", "host", 8333, True)
-        node.broadcast_tx("01000000000000000000")
+        assert node.broadcast_tx("01000000000000000000") is True
 
-    def test_broadcast_tx_testnet(self):
+    def test_broadcast_tx_fail(self):
+        node = MockRPCHost("user", "password", "host", 8333, True)
+        assert node.broadcast_tx("00000000000000000000") is False
+
+    def test_broadcast_tx_test(self):
         node = MockRPCHost("user", "password", "host", 18443, False)
-        node.broadcast_tx_testnet("01000000000000000000")
+        assert node.broadcast_tx_testnet("01000000000000000000") is True
+
+    def test_broadcast_tx_test_fail(self):
+        node = MockRPCHost("user", "password", "host", 18443, False)
+        assert node.broadcast_tx_testnet("00000000000000000000") is False
 
 
 class TestRPCMethod(unittest.TestCase):
