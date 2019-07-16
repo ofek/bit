@@ -234,6 +234,52 @@ class TestNetworkAPI:
         with pytest.raises(ConnectionError):
             MockBackend.get_unspent_testnet(TEST_ADDRESS_USED2)
 
+    def test_connect_to_node_main(self):
+        # Copy the NetworkAPI class as to not override it
+        class n(NetworkAPI):
+            pass
+
+        n.connect_to_node(user="user", password="password")
+        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_BALANCE_MAIN) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN) == 0
+        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_TRANSACTIONS_MAIN) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN) == 0
+        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 0
+        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_UNSPENT_MAIN) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN) == 0
+        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.BROADCAST_TX_MAIN) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_MAIN) == 0
+
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_TEST) == 0
+
+    def test_connect_to_node_test(self):
+        # Copy the NetworkAPI class as to not override it
+        class n(NetworkAPI):
+            pass
+
+        n.connect_to_node(user="usr", password="pass", host="host", port=18443, use_https=True, testnet=True)
+        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_BALANCE_TEST) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST) == 0
+        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_TRANSACTIONS_TEST) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST) == 0
+        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_TRANSACTION_BY_ID_TEST) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST) == 0
+        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_UNSPENT_TEST) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST) == 0
+        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.BROADCAST_TX_TEST) == 1
+        assert sum(not isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_TEST) == 0
+
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN) == 0
+        assert sum(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_MAIN) == 0
+
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)
 class TestBitpayAPI:
