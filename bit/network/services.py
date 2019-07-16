@@ -1,5 +1,6 @@
 import requests
 import json
+import logging
 from decimal import Decimal, getcontext
 
 from bit.constants import BTC
@@ -73,7 +74,8 @@ class RPCHost:
     def broadcast_tx(self, tx_hex):
         try:
             _ = self.sendrawtransaction(tx_hex)
-        except BitcoinNodeException:
+        except BitcoinNodeException as e:
+            logging.warning(e)
             return False
         return True
 
