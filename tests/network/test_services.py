@@ -542,6 +542,19 @@ class TestRPCMethod(unittest.TestCase):
         with pytest.raises(bit.exceptions.BitcoinNodeException):
             method()
 
+    @requests_mock.mock()
+    def test_call_fails_unsupported_command(self, m):
+        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False))
+        m.register_uri(
+            'POST',
+            'http://user:password@host:18443/',
+            json=json.loads('{"result": false, "error": true}'),
+            status_code=200,
+            reason="testing failing return value"
+        )
+        with pytest.raises(bit.exceptions.BitcoinNodeException):
+            method()
+
     def test_call_fails_connection(self):
         method = RPCMethod("some_rpc_method", RPCHost("user", "password", "some_invalid_host", 18443, False))
         with pytest.raises(ConnectionError):
