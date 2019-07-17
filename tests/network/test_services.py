@@ -27,6 +27,7 @@ MAIN_TX_VALID = '6e05c708d88cc5bf0f1533938c969de2cc48f438b0ae28ce89fefbaa1938185
 TEST_TX_VALID = 'ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93292'
 TX_INVALID = 'ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93290'
 
+
 def all_items_common(seq):
     initial_set = set(seq[0])
     intersection_lengths = [len(set(s) & initial_set) for s in seq]
@@ -36,6 +37,11 @@ def all_items_common(seq):
 def all_items_equal(seq):
     initial_item = seq[0]
     return all(item == initial_item for item in seq if item is not None)
+
+
+def both_rpchosts_equal(host1, host2):
+    return host1._url == host2._url and host1._headers == host2._headers
+
 
 def test_set_service_timeout():
     original = bit.network.services.DEFAULT_TIMEOUT
@@ -240,22 +246,22 @@ class TestNetworkAPI:
             pass
 
         n.connect_to_node(user="user", password="password")
-        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_BALANCE_MAIN) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN) == 0
-        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_TRANSACTIONS_MAIN) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN) == 0
-        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 0
-        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.GET_UNSPENT_MAIN) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN) == 0
-        assert sum(call.__self__ == RPCHost("user", "password", "localhost", 8332, False) for call in n.BROADCAST_TX_MAIN) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_MAIN) == 0
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_BALANCE_MAIN) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_TRANSACTIONS_MAIN) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_UNSPENT_MAIN) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.BROADCAST_TX_MAIN) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_MAIN)
 
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_TEST) == 0
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_TEST)
 
     def test_connect_to_node_test(self):
         # Copy the NetworkAPI class as to not override it
@@ -263,22 +269,22 @@ class TestNetworkAPI:
             pass
 
         n.connect_to_node(user="usr", password="pass", host="host", port=18443, use_https=True, testnet=True)
-        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_BALANCE_TEST) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST) == 0
-        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_TRANSACTIONS_TEST) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST) == 0
-        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_TRANSACTION_BY_ID_TEST) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST) == 0
-        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.GET_UNSPENT_TEST) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST) == 0
-        assert sum(call.__self__ == RPCHost("usr", "pass", "host", 18443, True) for call in n.BROADCAST_TX_TEST) == 1
-        assert sum(not isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_TEST) == 0
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_BALANCE_TEST) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_TRANSACTIONS_TEST) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_TRANSACTION_BY_ID_TEST) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_UNSPENT_TEST) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST)
+        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.BROADCAST_TX_TEST) == 1
+        assert all(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_TEST)
 
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN) == 0
-        assert sum(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_MAIN) == 0
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN)
+        assert all(not isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_MAIN)
 
 
 @decorate_methods(catch_errors_raise_warnings, NetworkAPI.IGNORED_ERRORS)

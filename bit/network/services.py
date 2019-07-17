@@ -29,11 +29,6 @@ class RPCHost:
         self._headers = {"content-type": "application/json"}
         self._session.verify = use_https
 
-    def __eq__(self, other):
-        if isinstance(other, RPCHost):
-            return self._url == other._url and self._headers == other._headers
-        return False
-
     def __getattr__(self, rpc_method):
         return RPCMethod(rpc_method, self)
 
