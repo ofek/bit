@@ -78,3 +78,33 @@ Using The Remote Bitcoin Core Node
 
 After connecting to the remote node all API calls done by
 :class:`~bit.network.services.NetworkAPI` are seamlessly redirected to it.
+
+Adding An Address To The Internal Wallet Of A Node
+--------------------------------------------------
+
+Bit will poll the node for data on an address using Bitcoin Core's internal
+wallet. An address to poll must therefore first be imported to Bitcoin Core's
+wallet.
+
+We can directly access the Bitcoin Core node's RPC and then use `importaddress`
+to import a specific address as follows:
+
+.. code-block:: python
+
+    >>> import bit
+    >>> from bit.network import NetworkAPI
+    >>> # Get the `node` object for direct access:
+    >>> node = NetworkAPI.connect_to_node(user='username', password='password', host='localhost', port=18443, use_https=False, testnet=True)
+    >>> key = bit.PrivateKeyTestnet()
+    >>> # Import an address to the node's wallet:
+    >>> node.importaddress(key.segwit_address, "optional-label", False)
+
+You can read more about the RPC `importaddress` [here](https://bitcoincore.org/en/doc/0.18.0/rpc/wallet/importaddress/).
+
+As we had just created the new address we set the last argument in
+`importaddress` to `False`, which defines that the node will not rescan the
+blockchain for the address as it will not have any transactions yet. If you are
+importing a _used_ address you must set the rescan parameter to `True`, as you
+will otherwise receive incorrect information from your node!
+
+Performing a rescan can take several minutes.

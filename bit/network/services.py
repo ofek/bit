@@ -465,6 +465,8 @@ class NetworkAPI:
         :type use_https: ``bool`` or ``string``
         :param testnet: Defines if the node should be used for testnet
         :type testnet: ``bool``
+        :returns: The node exposing its RPCs for direct interaction.
+        :rtype: ``RPCHost``
         """
         node = RPCHost(user=user, password=password, host=host, port=port, use_https=use_https)
 
@@ -481,6 +483,8 @@ class NetworkAPI:
             cls.GET_TRANSACTION_BY_ID_TEST = [node.get_transaction_by_id_testnet]
             cls.GET_UNSPENT_TEST = [node.get_unspent_testnet]
             cls.BROADCAST_TX_TEST = [node.broadcast_tx_testnet]
+
+        return node
 
     @classmethod
     def get_balance(cls, address):
