@@ -8,8 +8,8 @@ possible to connect to a remote Bitcoin Core node. Bitcoin Core however is not
 meant as a full-fledged blockchain explorer and does only keep track of
 addresses associated with its wallet.
 
-Transaction Database Index and `txindex`
-----------------------------------------
+Transaction Database Index and ``txindex``
+------------------------------------------
 
 By default Bitcoin Core does not maintain any transaction-level data except for
 those transactions
@@ -17,7 +17,7 @@ those transactions
 - pertinent to addresses in your wallet
 - pertinent to your "watch-only" addresses
 
-If querying arbitrary transactions is important then the option `txindex` must
+If querying arbitrary transactions is important then the option ``txindex`` must
 be set to true (1) inside the Bitcoin Core configuration file, see
 `Running Bitcoin`_. Setting this option does not allow querying arbitrary data
 on addresses, which are still required to be present in the wallet for Bitcoin
@@ -30,8 +30,8 @@ To use Bitcoin Core as a remote node it must accept remote procedure call (RPC)
 methods from the host running Bit. A username and password for the RPC must be
 defined inside the Bitcoin Core configuration file.
 
-Adding a RPC user and password can be done with the `rpcauth` option that uses a
-hashed password. The field comes in the format: `<USERNAME>:<SALT>$<HASH>`. A
+Adding a RPC user and password can be done with the ``rpcauth`` option that uses a
+hashed password. The field comes in the format: ``<USERNAME>:<SALT>$<HASH>``. A
 canonical python script is included inside Bitcoin Core's `share/rpcuser`_
 directory. This python script creates such a user/password combination
 (note that you are given the password, you do not get to specify it yourself).
@@ -50,10 +50,10 @@ Run the script, e.g.:
 Note that this option can be specified multiple times.
 
 Finally, make sure that Bitcoin Core will accept RPC methods from the host
-running Bit. The option `rpcallowip=<ip>` allows RPC connections from specified
+running Bit. The option ``rpcallowip=<ip>`` allows RPC connections from specified
 host IP. The default port used to listen to RPC methods can be set with the
-option `rpcport=<port>`; the default values being 8332 for mainnet, 18332 for
-testnet and 18443 for regtest.
+option ``rpcport=<port>``; the default values being ``8332`` for mainnet, ``18332`` for
+testnet and ``18443`` for regtest.
 
 A default configuration file can be found inside the Bitcoin Core directory
 under `share/examples/bitcoin.conf`_.
@@ -86,7 +86,7 @@ Bit will poll the node for data on an address using Bitcoin Core's internal
 wallet. An address to poll must therefore first be imported to Bitcoin Core's
 wallet.
 
-We can directly access the Bitcoin Core node's RPC and then use `importaddress`
+We can directly access the Bitcoin Core node's RPC and then use ``importaddress``
 to import a specific address as follows:
 
 .. code-block:: python
@@ -99,12 +99,12 @@ to import a specific address as follows:
     >>> # Import an address to the node's wallet:
     >>> node.importaddress(key.segwit_address, "optional-label", False)
 
-You can read more about the RPC `importaddress` [here](https://bitcoincore.org/en/doc/0.18.0/rpc/wallet/importaddress/).
+You can read more about the RPC ``importaddress`` `here <https://bitcoincore.org/en/doc/0.18.0/rpc/wallet/importaddress/>`_.
 
 As we had just created the new address we set the last argument in
-`importaddress` to `False`, which defines that the node will not rescan the
+``importaddress`` to ``False``, which defines that the node will not rescan the
 blockchain for the address as it will not have any transactions yet. If you are
-importing a _used_ address you must set the rescan parameter to `True`, as you
+importing a *used* address you must set the rescan parameter to ``True``, as you
 will otherwise receive incorrect information from your node!
 
 Performing a rescan can take several minutes.
