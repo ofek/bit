@@ -5,6 +5,7 @@ from time import time
 
 import requests
 
+from bit.constants import SATOSHI, uBTC, mBTC, BTC
 from bit.utils import Decimal
 
 DEFAULT_CACHE_TIME = 60
@@ -12,12 +13,6 @@ DEFAULT_CACHE_TIME = 60
 # Constant for use in deriving exchange
 # rates when given in terms of 1 BTC.
 ONE = Decimal(1)
-
-# https://en.bitcoin.it/wiki/Units
-SATOSHI = 1
-uBTC = 10 ** 2
-mBTC = 10 ** 5
-BTC = 10 ** 8
 
 SUPPORTED_CURRENCIES = OrderedDict([
     ('satoshi', 'Satoshi'),

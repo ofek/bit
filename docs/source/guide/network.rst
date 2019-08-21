@@ -115,11 +115,21 @@ Specifically, it can access:
 - `<https://blockchain.info>`_ via :class:`~bit.network.services.BlockchainAPI`
 - `<https://smartbit.com.au>`_ via :class:`~bit.network.services.SmartbitAPI`
 
+Bit can alternatively use a remote Bitcoin node to interact with the blockchain,
+see guide below.
+
 NetworkAPI
 ^^^^^^^^^^
 
 Private key network operations use :class:`~bit.network.NetworkAPI`. For each method,
 it polls a service and if an error occurs it tries another.
+
+Connect To Remote Node
+----------------------
+
+See the dedicated guide under :ref:`remote node <remotenode>` to configure Bit
+to use a remote Bitcoin node instead of relying on web APIs for blockchain
+interaction.
 
 .. _satoshi: https://en.bitcoin.it/wiki/Satoshi_(unit)
 .. _blockchain: https://en.bitcoin.it/wiki/Block_chain
