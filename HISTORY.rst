@@ -4,6 +4,12 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.6.0 (2019-09-04)
+------------------
+
+- Added support for ``NetworkAPI`` to use a remote Bitcoin node
+- Fixed usage of BitPay rates API (it was changed abruptly)
+
 0.5.2 (2019-05-16)
 ------------------
 
