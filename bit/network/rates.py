@@ -94,13 +94,19 @@ def btc_to_satoshi():
 
 
 class BitpayRates:
-    SINGLE_RATE = 'https://bitpay.com/api/rates/'
+    """
+    API Documentation:
+    https://bitpay.com/api/rates#rest-api-resources-rates
+    """
+    SINGLE_RATE = 'https://bitpay.com/rates/BTC/'
 
     @classmethod
     def currency_to_satoshi(cls, currency):
-        r = requests.get(cls.SINGLE_RATE + currency)
+        headers = {"x-accept-version": "2.0.0",
+                   "Accept": "application/json"}
+        r = requests.get(cls.SINGLE_RATE + currency, headers=headers)
         r.raise_for_status()
-        rate = r.json()['rate']
+        rate = r.json()['data']['rate']
         return int(ONE / Decimal(rate) * BTC)
 
     @classmethod
