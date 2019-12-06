@@ -766,10 +766,12 @@ class PrivateKeyTestnet(BaseKey):
         :returns: JSON storing data required to create an offline transaction.
         :rtype: ``str``
         """
+        if not isinstance(fee, (int, type(None))):
+            raise TypeError('Invalid fee type.')
         unspents, outputs = sanitize_tx_data(
             unspents or NetworkAPI.get_unspent_testnet(address),
             outputs,
-            fee or get_fee_cached(),
+            fee if isinstance(fee, int) else get_fee_cached(),
             leftover or address,
             combine=combine,
             message=message,
