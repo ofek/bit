@@ -416,7 +416,7 @@ def deserialize(tx):
 
 def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
                      message=None, compressed=True, absolute_fee=False,
-                     min_change=0, version='main'):
+                     min_change=0, version='main', is_raw=False):
     """
     sanitize_tx_data()
 
@@ -436,7 +436,10 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
     messages = []
 
     if message:
-        message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
+        if is_raw:
+            message_chunks = chunk_data(message, MESSAGE_LIMIT)
+        else:
+            message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
 
         for message in message_chunks:
             messages.append((message, 0))

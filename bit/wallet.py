@@ -255,7 +255,7 @@ class PrivateKey(BaseKey):
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):  # pragma: no cover
+                           unspents=None, is_raw=False):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -305,13 +305,14 @@ class PrivateKey(BaseKey):
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version=self.version
+            version=self.version,
+            is_raw=is_raw
         )
 
         return create_new_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):  # pragma: no cover
+             combine=True, message=None, unspents=None, is_raw=False):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKey.create_transaction`.
@@ -353,7 +354,8 @@ class PrivateKey(BaseKey):
             leftover=leftover,
             combine=combine,
             message=message,
-            unspents=unspents
+            unspents=unspents,
+            is_raw=is_raw
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -363,7 +365,7 @@ class PrivateKey(BaseKey):
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
                             absolute_fee=False, leftover=None, combine=True,
-                            message=None, unspents=None):  # pragma: no cover
+                            message=None, unspents=None, is_raw=False):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -408,7 +410,8 @@ class PrivateKey(BaseKey):
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version='main'
+            version='main',
+            is_raw=is_raw
         )
 
         data = {
@@ -621,7 +624,7 @@ class PrivateKeyTestnet(BaseKey):
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):  # pragma: no cover
+                           unspents=None, is_raw=False):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -671,13 +674,14 @@ class PrivateKeyTestnet(BaseKey):
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version=self.version
+            version=self.version,
+            is_raw=is_raw
         )
 
         return create_new_transaction(self, unspents, outputs)
 
     def send(self, outputs, fee=None, absolute_fee=False, leftover=None,
-             combine=True, message=None, unspents=None):  # pragma: no cover
+             combine=True, message=None, unspents=None, is_raw=False):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
         :func:`~bit.PrivateKeyTestnet.create_transaction`.
@@ -719,7 +723,8 @@ class PrivateKeyTestnet(BaseKey):
             leftover=leftover,
             combine=combine,
             message=message,
-            unspents=unspents
+            unspents=unspents,
+            is_raw=is_raw
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -729,7 +734,7 @@ class PrivateKeyTestnet(BaseKey):
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
                             absolute_fee=False, leftover=None, combine=True,
-                            message=None, unspents=None):  # pragma: no cover
+                            message=None, unspents=None, is_raw=False):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -774,7 +779,8 @@ class PrivateKeyTestnet(BaseKey):
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version='test'
+            version='test',
+            is_raw=is_raw
         )
 
         data = {
@@ -1023,7 +1029,7 @@ class MultiSig:
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):  # pragma: no cover
+                           unspents=None, is_raw=False):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -1073,7 +1079,8 @@ class MultiSig:
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version=self.version
+            version=self.version,
+            is_raw=is_raw
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -1081,7 +1088,7 @@ class MultiSig:
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
                             absolute_fee=False, leftover=None, combine=True,
-                            message=None, unspents=None):  # pragma: no cover
+                            message=None, unspents=None, is_raw=False):  # pragma: no cover
         """Prepares a P2SH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -1126,7 +1133,8 @@ class MultiSig:
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version='main'
+            version='main',
+            is_raw=is_raw
         )
 
         data = {
@@ -1326,7 +1334,7 @@ class MultiSigTestnet:
 
     def create_transaction(self, outputs, fee=None, absolute_fee=False,
                            leftover=None, combine=True, message=None,
-                           unspents=None):  # pragma: no cover
+                           unspents=None, is_raw=False):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
@@ -1376,7 +1384,8 @@ class MultiSigTestnet:
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version=self.version
+            version=self.version,
+            is_raw=is_raw
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -1384,7 +1393,7 @@ class MultiSigTestnet:
     @classmethod
     def prepare_transaction(cls, address, outputs, compressed=True, fee=None,
                             absolute_fee=False, leftover=None, combine=True,
-                            message=None, unspents=None):  # pragma: no cover
+                            message=None, unspents=None, is_raw=False):  # pragma: no cover
         """Prepares a P2SH transaction for offline signing.
 
         :param address: The address the funds will be sent from.
@@ -1429,7 +1438,8 @@ class MultiSigTestnet:
             combine=combine,
             message=message,
             absolute_fee=absolute_fee,
-            version='test'
+            version='test',
+            is_raw=is_raw
         )
 
         data = {
