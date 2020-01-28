@@ -335,7 +335,7 @@ class SmartbitAPI:
         transactions = []
 
         if 'transactions' in data:
-            transactions.extend(t['hash'] for t in data['transactions'])
+            transactions.extend(t['txid'] for t in data['transactions'])
 
         return transactions
 
@@ -359,7 +359,7 @@ class SmartbitAPI:
         transactions = []
 
         if 'transactions' in data:
-            transactions.extend(t['hash'] for t in data['transactions'])
+            transactions.extend(t['txid'] for t in data['transactions'])
 
         return transactions
 
