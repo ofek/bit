@@ -8,6 +8,7 @@ Unreleased (see `master <https://github.com/ofek/bit>`_)
 ------------------
 
 - Fixed Smartbit polling transaction hashes instead of ids
+- Add support for passing raw hexadecimal messages to ``send``
 
 0.6.0 (2019-09-04)
 ------------------
