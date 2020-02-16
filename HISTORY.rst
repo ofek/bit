@@ -4,6 +4,11 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.6.1 (2020-02-16)
+------------------
+
+- Fixed Smartbit polling transaction hashes instead of ids
+
 0.6.0 (2019-09-04)
 ------------------
 
