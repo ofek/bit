@@ -9,7 +9,7 @@ class Decimal(decimal.Decimal):
 
 
 def chunk_data(data, size):
-    return (data[i:i + size] for i in range(0, len(data), size))
+    return (data[i : i + size] for i in range(0, len(data), size))
 
 
 def int_to_unknown_bytes(num, byteorder='big'):
@@ -48,11 +48,11 @@ def int_to_varint(val):
     if val < 253:
         return val.to_bytes(1, 'little')
     elif val <= 65535:
-        return b'\xfd'+val.to_bytes(2, 'little')
+        return b'\xfd' + val.to_bytes(2, 'little')
     elif val <= 4294967295:
-        return b'\xfe'+val.to_bytes(4, 'little')
+        return b'\xfe' + val.to_bytes(4, 'little')
     else:
-        return b'\xff'+val.to_bytes(8, 'little')
+        return b'\xff' + val.to_bytes(8, 'little')
 
 
 def script_push(val):
@@ -60,11 +60,11 @@ def script_push(val):
     if val <= 75:
         return int_to_unknown_bytes(val)
     elif val < 256:
-        return b'\x4c'+int_to_unknown_bytes(val)
+        return b'\x4c' + int_to_unknown_bytes(val)
     elif val < 65536:
-        return b'\x4d'+val.to_bytes(2, 'little')
+        return b'\x4d' + val.to_bytes(2, 'little')
     else:
-        return b'\x4e'+val.to_bytes(4, 'little')
+        return b'\x4e' + val.to_bytes(4, 'little')
 
 
 # Slicing functions returning the byte-data-stream splitted
@@ -81,7 +81,7 @@ def read_var_int(stream):
     val = int(bytes_to_hex(stream[0:1]), base=16)
     if val < 253:
         return val, stream[1:]
-    return read_as_int(stream[1:], 2**(val-252))
+    return read_as_int(stream[1:], 2 ** (val - 252))
 
 
 def read_as_int(stream, bytes):

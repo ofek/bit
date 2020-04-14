@@ -20,11 +20,7 @@ class RPCHost:
     def __init__(self, user, password, host, port, use_https):
         self._session = requests.Session()
         self._url = "http{s}://{user}:{password}@{host}:{port}/".format(
-            s="s" if use_https else "",
-            user=user,
-            password=password,
-            host=host,
-            port=port,
+            s="s" if use_https else "", user=user, password=password, host=host, port=port,
         )
         self._headers = {"content-type": "application/json"}
         self._session.verify = use_https
@@ -93,22 +89,13 @@ class RPCMethod:
         return RPCMethod(new_method, self._host)
 
     def __call__(self, *args):
-        payload = json.dumps(
-            {"method": self._rpc_method, "params": list(args), "jsonrpc": "2.0"}
-        )
+        payload = json.dumps({"method": self._rpc_method, "params": list(args), "jsonrpc": "2.0"})
         try:
-            response = self._host._session.post(
-                self._host._url, headers=self._host._headers, data=payload
-            )
+            response = self._host._session.post(self._host._url, headers=self._host._headers, data=payload)
         except requests.exceptions.ConnectionError:
             raise ConnectionError
         if response.status_code not in (200, 500):
-            raise BitcoinNodeException(
-                "RPC connection failure: "
-                + str(response.status_code)
-                + " "
-                + response.reason
-            )
+            raise BitcoinNodeException("RPC connection failure: " + str(response.status_code) + " " + response.reason)
         responseJSON = response.json()
         if "error" in responseJSON and responseJSON["error"] is not None:
             raise BitcoinNodeException("Error in RPC call: " + str(responseJSON["error"]))
@@ -143,7 +130,7 @@ class InsightAPI:
         r = requests.get(cls.MAIN_TX_API + txid, timeout=DEFAULT_TIMEOUT)
         if r.status_code == 404:
             return None
-        if r.status_code != 200: #pragma: no cover
+        if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()["rawtx"]
 
@@ -153,11 +140,13 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
-                    tx['confirmations'],
-                    tx['scriptPubKey'],
-                    tx['txid'],
-                    tx['vout'])
+            Unspent(
+                currency_to_satoshi(tx['amount'], 'btc'),
+                tx['confirmations'],
+                tx['scriptPubKey'],
+                tx['txid'],
+                tx['vout'],
+            )
             for tx in r.json()
         ]
 
@@ -201,7 +190,7 @@ class BitpayAPI(InsightAPI):
         r = requests.get(cls.TEST_TX_API + txid, timeout=DEFAULT_TIMEOUT)
         if r.status_code == 404:
             return None
-        if r.status_code != 200: #pragma: no cover
+        if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()["rawtx"]
 
@@ -211,11 +200,13 @@ class BitpayAPI(InsightAPI):
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
-                    tx['confirmations'],
-                    tx['scriptPubKey'],
-                    tx['txid'],
-                    tx['vout'])
+            Unspent(
+                currency_to_satoshi(tx['amount'], 'btc'),
+                tx['confirmations'],
+                tx['scriptPubKey'],
+                tx['txid'],
+                tx['vout'],
+            )
             for tx in r.json()
         ]
 
@@ -258,9 +249,7 @@ class BlockchainAPI:
             total_txs -= txs_per_page
             offset += txs_per_page
             payload['offset'] = str(offset)
-            response = requests.get(endpoint.format(address),
-                                    params=payload,
-                                    timeout=DEFAULT_TIMEOUT).json()
+            response = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT).json()
 
         return transactions
 
@@ -283,11 +272,7 @@ class BlockchainAPI:
             raise ConnectionError
 
         return [
-            Unspent(tx['value'],
-                    tx['confirmations'],
-                    tx['script'],
-                    tx['tx_hash_big_endian'],
-                    tx['tx_output_n'])
+            Unspent(tx['value'], tx['confirmations'], tx['script'], tx['tx_hash_big_endian'], tx['tx_output_n'])
             for tx in r.json()['unspent_outputs']
         ][::-1]
 
@@ -378,11 +363,13 @@ class SmartbitAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['value'], 'btc'),
-                    tx['confirmations'],
-                    tx['script_pub_key']['hex'],
-                    tx['txid'],
-                    tx['n'])
+            Unspent(
+                currency_to_satoshi(tx['value'], 'btc'),
+                tx['confirmations'],
+                tx['script_pub_key']['hex'],
+                tx['txid'],
+                tx['n'],
+            )
             for tx in r.json()['unspent']
         ]
 
@@ -392,11 +379,13 @@ class SmartbitAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['value'], 'btc'),
-                    tx['confirmations'],
-                    tx['script_pub_key']['hex'],
-                    tx['txid'],
-                    tx['n'])
+            Unspent(
+                currency_to_satoshi(tx['value'], 'btc'),
+                tx['confirmations'],
+                tx['script_pub_key']['hex'],
+                tx['txid'],
+                tx['n'],
+            )
             for tx in r.json()['unspent']
         ]
 
@@ -412,41 +401,42 @@ class SmartbitAPI:
 
 
 class NetworkAPI:
-    IGNORED_ERRORS = (ConnectionError,
-                      requests.exceptions.ConnectionError,
-                      requests.exceptions.Timeout,
-                      requests.exceptions.ReadTimeout)
+    IGNORED_ERRORS = (
+        ConnectionError,
+        requests.exceptions.ConnectionError,
+        requests.exceptions.Timeout,
+        requests.exceptions.ReadTimeout,
+    )
 
-    GET_BALANCE_MAIN = [BitpayAPI.get_balance,
-                        SmartbitAPI.get_balance,
-                        BlockchainAPI.get_balance]
-    GET_TRANSACTIONS_MAIN = [BitpayAPI.get_transactions,  # Limit 1000
-                             SmartbitAPI.get_transactions,  # Limit 1000
-                             BlockchainAPI.get_transactions]  # No limit, requires multiple requests
-    GET_TRANSACTION_BY_ID_MAIN = [BitpayAPI.get_transaction_by_id,
-                                  SmartbitAPI.get_transaction_by_id,
-                                  BlockchainAPI.get_transaction_by_id]
-    GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,  # No limit
-                        SmartbitAPI.get_unspent,  # Limit 1000
-                        BlockchainAPI.get_unspent]  # Limit 250
-    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx,
-                         SmartbitAPI.broadcast_tx,  # Limit 5/minute
-                         BlockchainAPI.broadcast_tx]
+    GET_BALANCE_MAIN = [BitpayAPI.get_balance, SmartbitAPI.get_balance, BlockchainAPI.get_balance]
+    GET_TRANSACTIONS_MAIN = [
+        BitpayAPI.get_transactions,  # Limit 1000
+        SmartbitAPI.get_transactions,  # Limit 1000
+        BlockchainAPI.get_transactions,
+    ]  # No limit, requires multiple requests
+    GET_TRANSACTION_BY_ID_MAIN = [
+        BitpayAPI.get_transaction_by_id,
+        SmartbitAPI.get_transaction_by_id,
+        BlockchainAPI.get_transaction_by_id,
+    ]
+    GET_UNSPENT_MAIN = [
+        BitpayAPI.get_unspent,  # No limit
+        SmartbitAPI.get_unspent,  # Limit 1000
+        BlockchainAPI.get_unspent,
+    ]  # Limit 250
+    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx, SmartbitAPI.broadcast_tx, BlockchainAPI.broadcast_tx]  # Limit 5/minute
 
-    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
-                        SmartbitAPI.get_balance_testnet]
-    GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,  # Limit 1000
-                             SmartbitAPI.get_transactions_testnet]  # Limit 1000
-    GET_TRANSACTION_BY_ID_TEST = [BitpayAPI.get_transaction_by_id_testnet,
-                                  SmartbitAPI.get_transaction_by_id_testnet]
-    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,  # No limit
-                        SmartbitAPI.get_unspent_testnet]  # Limit 1000
-    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
-                         SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
+    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet, SmartbitAPI.get_balance_testnet]
+    GET_TRANSACTIONS_TEST = [
+        BitpayAPI.get_transactions_testnet,  # Limit 1000
+        SmartbitAPI.get_transactions_testnet,
+    ]  # Limit 1000
+    GET_TRANSACTION_BY_ID_TEST = [BitpayAPI.get_transaction_by_id_testnet, SmartbitAPI.get_transaction_by_id_testnet]
+    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet, SmartbitAPI.get_unspent_testnet]  # No limit  # Limit 1000
+    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet, SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
 
     @classmethod
-    def connect_to_node(cls, user, password, host='localhost', port=8332,
-                        use_https=False, testnet=False):
+    def connect_to_node(cls, user, password, host='localhost', port=8332, use_https=False, testnet=False):
         """Connect to a remote Bitcoin node instead of using web APIs.
         Allows to connect to a testnet and mainnet Bitcoin node simultaneously.
 
@@ -652,8 +642,7 @@ class NetworkAPI:
                 pass
 
         if success is False:
-            raise ConnectionError('Transaction broadcast failed, or '
-                                  'Unspents were already used.')
+            raise ConnectionError('Transaction broadcast failed, or ' 'Unspents were already used.')
 
         raise ConnectionError('All APIs are unreachable.')
 
@@ -677,7 +666,6 @@ class NetworkAPI:
                 pass
 
         if success is False:
-            raise ConnectionError('Transaction broadcast failed, or '
-                                  'Unspents were already used.')
+            raise ConnectionError('Transaction broadcast failed, or ' 'Unspents were already used.')
 
         raise ConnectionError('All APIs are unreachable.')

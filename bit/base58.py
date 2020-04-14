@@ -49,8 +49,7 @@ def b58decode(string):
             num *= 58
             num += alphabet_index[char]
     except KeyError:
-        raise ValueError('"{}" is an invalid base58 encoded '
-                         'character.'.format(char)) from None
+        raise ValueError('"{}" is an invalid base58 encoded ' 'character.'.format(char)) from None
 
     bytestr = int_to_unknown_bytes(num)
 
@@ -72,7 +71,9 @@ def b58decode_check(string):
     hash_checksum = double_sha256_checksum(shortened)
 
     if decoded_checksum != hash_checksum:
-        raise ValueError('Decoded checksum {} derived from "{}" is not equal to hash '
-                         'checksum {}.'.format(decoded_checksum, string, hash_checksum))
+        raise ValueError(
+            'Decoded checksum {} derived from "{}" is not equal to hash '
+            'checksum {}.'.format(decoded_checksum, string, hash_checksum)
+        )
 
     return shortened

@@ -2,9 +2,16 @@ from time import sleep, time
 
 import bit
 from bit.network.rates import (
-    RatesAPI, btc_to_satoshi, currency_to_satoshi, currency_to_satoshi_cached,
-    mbtc_to_satoshi, satoshi_to_currency, satoshi_to_currency_cached,
-    satoshi_to_satoshi, set_rate_cache_time, ubtc_to_satoshi
+    RatesAPI,
+    btc_to_satoshi,
+    currency_to_satoshi,
+    currency_to_satoshi_cached,
+    mbtc_to_satoshi,
+    satoshi_to_currency,
+    satoshi_to_currency_cached,
+    satoshi_to_satoshi,
+    set_rate_cache_time,
+    ubtc_to_satoshi,
 )
 from bit.utils import Decimal
 
@@ -61,9 +68,7 @@ def test_satoshi_to_currency_cached():
 
 
 def test_rates_close():
-    rates = sorted([
-        api_call() for api_call in RatesAPI.USD_RATES
-    ])
+    rates = sorted([api_call() for api_call in RatesAPI.USD_RATES])
     assert rates[-1] - rates[0] < 2000
 
 

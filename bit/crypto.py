@@ -18,4 +18,5 @@ def double_sha256_checksum(bytestr):
 def ripemd160_sha256(bytestr):
     return new('ripemd160', sha256(bytestr)).digest()
 
+
 hash160 = ripemd160_sha256

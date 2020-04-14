@@ -14,33 +14,35 @@ DEFAULT_CACHE_TIME = 60
 # rates when given in terms of 1 BTC.
 ONE = Decimal(1)
 
-SUPPORTED_CURRENCIES = OrderedDict([
-    ('satoshi', 'Satoshi'),
-    ('ubtc', 'Microbitcoin'),
-    ('mbtc', 'Millibitcoin'),
-    ('btc', 'Bitcoin'),
-    ('usd', 'United States Dollar'),
-    ('eur', 'Eurozone Euro'),
-    ('gbp', 'Pound Sterling'),
-    ('jpy', 'Japanese Yen'),
-    ('cny', 'Chinese Yuan'),
-    ('cad', 'Canadian Dollar'),
-    ('aud', 'Australian Dollar'),
-    ('nzd', 'New Zealand Dollar'),
-    ('rub', 'Russian Ruble'),
-    ('brl', 'Brazilian Real'),
-    ('chf', 'Swiss Franc'),
-    ('sek', 'Swedish Krona'),
-    ('dkk', 'Danish Krone'),
-    ('isk', 'Icelandic Krona'),
-    ('pln', 'Polish Zloty'),
-    ('hkd', 'Hong Kong Dollar'),
-    ('krw', 'South Korean Won'),
-    ('sgd', 'Singapore Dollar'),
-    ('thb', 'Thai Baht'),
-    ('twd', 'New Taiwan Dollar'),
-    ('clp', 'Chilean Peso')
-])
+SUPPORTED_CURRENCIES = OrderedDict(
+    [
+        ('satoshi', 'Satoshi'),
+        ('ubtc', 'Microbitcoin'),
+        ('mbtc', 'Millibitcoin'),
+        ('btc', 'Bitcoin'),
+        ('usd', 'United States Dollar'),
+        ('eur', 'Eurozone Euro'),
+        ('gbp', 'Pound Sterling'),
+        ('jpy', 'Japanese Yen'),
+        ('cny', 'Chinese Yuan'),
+        ('cad', 'Canadian Dollar'),
+        ('aud', 'Australian Dollar'),
+        ('nzd', 'New Zealand Dollar'),
+        ('rub', 'Russian Ruble'),
+        ('brl', 'Brazilian Real'),
+        ('chf', 'Swiss Franc'),
+        ('sek', 'Swedish Krona'),
+        ('dkk', 'Danish Krone'),
+        ('isk', 'Icelandic Krona'),
+        ('pln', 'Polish Zloty'),
+        ('hkd', 'Hong Kong Dollar'),
+        ('krw', 'South Korean Won'),
+        ('sgd', 'Singapore Dollar'),
+        ('thb', 'Thai Baht'),
+        ('twd', 'New Taiwan Dollar'),
+        ('clp', 'Chilean Peso'),
+    ]
+)
 
 # https://en.wikipedia.org/wiki/ISO_4217
 CURRENCY_PRECISION = {
@@ -68,7 +70,7 @@ CURRENCY_PRECISION = {
     'sgd': 2,
     'thb': 2,
     'twd': 2,
-    'clp': 0
+    'clp': 0,
 }
 
 
@@ -98,12 +100,12 @@ class BitpayRates:
     API Documentation:
     https://bitpay.com/api/rates#rest-api-resources-rates
     """
+
     SINGLE_RATE = 'https://bitpay.com/rates/BTC/'
 
     @classmethod
     def currency_to_satoshi(cls, currency):
-        headers = {"x-accept-version": "2.0.0",
-                   "Accept": "application/json"}
+        headers = {"x-accept-version": "2.0.0", "Accept": "application/json"}
         r = requests.get(cls.SINGLE_RATE + currency, headers=headers)
         r.raise_for_status()
         rate = r.json()['data']['rate']
@@ -293,9 +295,8 @@ class RatesAPI:
     """Each method converts exactly 1 unit of the currency to the equivalent
     number of satoshi.
     """
-    IGNORED_ERRORS = (requests.exceptions.ConnectionError,
-                      requests.exceptions.HTTPError,
-                      requests.exceptions.Timeout)
+
+    IGNORED_ERRORS = (requests.exceptions.ConnectionError, requests.exceptions.HTTPError, requests.exceptions.Timeout)
 
     USD_RATES = [BitpayRates.usd_to_satoshi, BlockchainRates.usd_to_satoshi]
     EUR_RATES = [BitpayRates.eur_to_satoshi, BlockchainRates.eur_to_satoshi]
@@ -576,7 +577,7 @@ EXCHANGE_RATES = {
     'sgd': RatesAPI.sgd_to_satoshi,
     'thb': RatesAPI.thb_to_satoshi,
     'twd': RatesAPI.twd_to_satoshi,
-    'clp': RatesAPI.clp_to_satoshi
+    'clp': RatesAPI.clp_to_satoshi,
 }
 
 
@@ -605,9 +606,7 @@ class CachedRate:
 def currency_to_satoshi_local_cache(f):
     start_time = time()
 
-    cached_rates = dict([
-        (currency, CachedRate(None, start_time)) for currency in EXCHANGE_RATES.keys()
-    ])
+    cached_rates = dict([(currency, CachedRate(None, start_time)) for currency in EXCHANGE_RATES.keys()])
 
     @wraps(f)
     def wrapper(amount, currency):
@@ -654,12 +653,9 @@ def satoshi_to_currency(num, currency):
     :rtype: ``str``
     """
     return '{:f}'.format(
-        Decimal(
-            num / Decimal(EXCHANGE_RATES[currency]())
-        ).quantize(
-            Decimal('0.' + '0' * CURRENCY_PRECISION[currency]),
-            rounding=ROUND_DOWN
-        ).normalize()
+        Decimal(num / Decimal(EXCHANGE_RATES[currency]()))
+        .quantize(Decimal('0.' + '0' * CURRENCY_PRECISION[currency]), rounding=ROUND_DOWN)
+        .normalize()
     )
 
 
@@ -675,10 +671,7 @@ def satoshi_to_currency_cached(num, currency):
     :rtype: ``str``
     """
     return '{:f}'.format(
-        Decimal(
-            num / Decimal(currency_to_satoshi_cached(1, currency))
-        ).quantize(
-            Decimal('0.' + '0' * CURRENCY_PRECISION[currency]),
-            rounding=ROUND_DOWN
-        ).normalize()
+        Decimal(num / Decimal(currency_to_satoshi_cached(1, currency)))
+        .quantize(Decimal('0.' + '0' * CURRENCY_PRECISION[currency]), rounding=ROUND_DOWN)
+        .normalize()
     )
