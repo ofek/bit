@@ -19,7 +19,7 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
 
     for char in prefix:
         if char not in BASE58_ALPHABET:
-            raise ValueError('{} is an invalid base58 encoded ' 'character.'.format(char))
+            raise ValueError('{} is an invalid base58 encoded character.'.format(char))
 
     if not prefix:
         return generate_key_address_pair()

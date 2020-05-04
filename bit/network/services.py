@@ -642,7 +642,7 @@ class NetworkAPI:
                 pass
 
         if success is False:
-            raise ConnectionError('Transaction broadcast failed, or ' 'Unspents were already used.')
+            raise ConnectionError('Transaction broadcast failed, or Unspents were already used.')
 
         raise ConnectionError('All APIs are unreachable.')
 
@@ -666,6 +666,6 @@ class NetworkAPI:
                 pass
 
         if success is False:
-            raise ConnectionError('Transaction broadcast failed, or ' 'Unspents were already used.')
+            raise ConnectionError('Transaction broadcast failed, or Unspents were already used.')
 
         raise ConnectionError('All APIs are unreachable.')

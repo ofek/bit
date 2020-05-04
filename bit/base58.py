@@ -49,7 +49,7 @@ def b58decode(string):
             num *= 58
             num += alphabet_index[char]
     except KeyError:
-        raise ValueError('"{}" is an invalid base58 encoded ' 'character.'.format(char)) from None
+        raise ValueError('"{}" is an invalid base58 encoded character.'.format(char)) from None
 
     bytestr = int_to_unknown_bytes(num)
 

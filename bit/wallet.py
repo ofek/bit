@@ -297,7 +297,7 @@ class PrivateKey(BaseKey):
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide ' 'the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
 
         # If at least one input is from segwit the return address is for segwit
         return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address
@@ -681,7 +681,7 @@ class PrivateKeyTestnet(BaseKey):
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide ' 'the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
 
         # If at least one input is from segwit the return address is for segwit
         return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address
@@ -933,7 +933,7 @@ class MultiSig:
     def __init__(self, private_key, public_keys, m):
 
         if private_key.instance != 'PrivateKey':
-            raise TypeError('MultiSig only accepts a PrivateKey class to ' 'assign a private key.')
+            raise TypeError('MultiSig only accepts a PrivateKey class to assign a private key.')
 
         if bytes_to_hex(private_key.public_key) not in public_keys and private_key.public_key not in public_keys:
             raise ValueError('Private key does not match any provided public key.')
@@ -1101,7 +1101,7 @@ class MultiSig:
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide ' 'the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
 
         # If at least one input is from segwit the return address is for segwit
         return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address
@@ -1245,7 +1245,7 @@ class MultiSigTestnet:
     def __init__(self, private_key, public_keys, m):
 
         if private_key.instance != 'PrivateKeyTestnet':
-            raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet ' 'class to assign a private key.')
+            raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet class to assign a private key.')
 
         if bytes_to_hex(private_key.public_key) not in public_keys and private_key.public_key not in public_keys:
             raise ValueError('Private key does not match any provided public key.')
@@ -1416,7 +1416,7 @@ class MultiSigTestnet:
         try:
             unspents = unspents or self.get_unspents()
         except ConnectionError:
-            raise ConnectionError('All APIs are unreachable. Please provide ' 'the unspents to spend from directly.')
+            raise ConnectionError('All APIs are unreachable. Please provide the unspents to spend from directly.')
 
         # If at least one input is from segwit the return address is for segwit
         return_address = self.segwit_address if any([u.segwit for u in unspents]) else self.address

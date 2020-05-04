@@ -51,7 +51,7 @@ def get_version(address):
     elif version in (TEST_PUBKEY_HASH, TEST_SCRIPT_HASH) or version in BECH32_TEST_VERSION_SET:
         return 'test'
     else:
-        raise ValueError('{} does not correspond to a mainnet nor ' 'testnet address.'.format(version))
+        raise ValueError('{} does not correspond to a mainnet nor testnet address.'.format(version))
 
 
 def bytes_to_wif(private_key, version='main', compressed=False):
@@ -82,7 +82,7 @@ def wif_to_bytes(wif):
     elif version == TEST_PRIVATE_KEY:
         version = 'test'
     else:
-        raise ValueError('{} does not correspond to a mainnet nor ' 'testnet address.'.format(version))
+        raise ValueError('{} does not correspond to a mainnet nor testnet address.'.format(version))
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:

@@ -438,7 +438,7 @@ def sanitize_tx_data(
         dest, amount = output
         vs = get_version(dest)
         if vs and vs != version:
-            raise ValueError('Cannot send to ' + vs + 'net address when ' 'spending from a ' + version + 'net address.')
+            raise ValueError('Cannot send to ' + vs + 'net address when spending from a ' + version + 'net address.')
 
     outputs.extend(messages)
 
@@ -577,7 +577,7 @@ def sign_tx(private_key, tx, *, unspents):
             input_dict[tx_input] = unspent.to_dict()
     except TypeError:
         raise TypeError(
-            'Please provide as unspents at least all inputs to ' 'be signed with the function call in a list.'
+            'Please provide as unspents at least all inputs to be signed with the function call in a list.'
         )
 
     # Determine input indices to sign from input_dict (allows for transaction batching)
@@ -657,7 +657,7 @@ def sign_tx(private_key, tx, *, unspents):
                             # we just overwrite it and don't care.
                             sigs[pub] = sig
                 if len(sigs) >= private_key.m:
-                    raise ValueError('Transaction is already signed with ' 'sufficiently needed signatures.')
+                    raise ValueError('Transaction is already signed with sufficiently needed signatures.')
 
             sigs[public_key] = signature
 
