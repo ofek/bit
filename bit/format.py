@@ -7,10 +7,18 @@ from bit.curve import x_to_y
 from bit.utils import int_to_unknown_bytes, hex_to_bytes, script_push
 from bit.base32 import bech32_decode
 from bit.constants import (
-    BECH32_MAIN_VERSION_SET, BECH32_TEST_VERSION_SET, MAIN_PUBKEY_HASH,
-    MAIN_SCRIPT_HASH, MAIN_PRIVATE_KEY, TEST_PUBKEY_HASH, TEST_SCRIPT_HASH,
-    TEST_PRIVATE_KEY, PUBLIC_KEY_UNCOMPRESSED, PUBLIC_KEY_COMPRESSED_EVEN_Y,
-    PUBLIC_KEY_COMPRESSED_ODD_Y, PRIVATE_KEY_COMPRESSED_PUBKEY
+    BECH32_MAIN_VERSION_SET,
+    BECH32_TEST_VERSION_SET,
+    MAIN_PUBKEY_HASH,
+    MAIN_SCRIPT_HASH,
+    MAIN_PRIVATE_KEY,
+    TEST_PUBKEY_HASH,
+    TEST_SCRIPT_HASH,
+    TEST_PRIVATE_KEY,
+    PUBLIC_KEY_UNCOMPRESSED,
+    PUBLIC_KEY_COMPRESSED_EVEN_Y,
+    PUBLIC_KEY_COMPRESSED_ODD_Y,
+    PRIVATE_KEY_COMPRESSED_PUBKEY,
 )
 
 
@@ -37,16 +45,13 @@ def address_to_public_key_hash(address):
 def get_version(address):
     version, _ = bech32_decode(address)
     if version is None:
-            version = b58decode_check(address)[:1]
-    if (version in (MAIN_PUBKEY_HASH, MAIN_SCRIPT_HASH) or
-        version in BECH32_MAIN_VERSION_SET):
+        version = b58decode_check(address)[:1]
+    if version in (MAIN_PUBKEY_HASH, MAIN_SCRIPT_HASH) or version in BECH32_MAIN_VERSION_SET:
         return 'main'
-    elif (version in (TEST_PUBKEY_HASH, TEST_SCRIPT_HASH) or
-          version in BECH32_TEST_VERSION_SET):
+    elif version in (TEST_PUBKEY_HASH, TEST_SCRIPT_HASH) or version in BECH32_TEST_VERSION_SET:
         return 'test'
     else:
-        raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet address.'.format(version))
+        raise ValueError('{} does not correspond to a mainnet nor testnet address.'.format(version))
 
 
 def bytes_to_wif(private_key, version='main', compressed=False):
@@ -77,8 +82,7 @@ def wif_to_bytes(wif):
     elif version == TEST_PRIVATE_KEY:
         version = 'test'
     else:
-        raise ValueError('{} does not correspond to a mainnet nor '
-                         'testnet address.'.format(version))
+        raise ValueError('{} does not correspond to a mainnet nor testnet address.'.format(version))
 
     # Remove version byte and, if present, compression flag.
     if len(wif) == 52 and private_key[-1] == 1:
@@ -127,7 +131,9 @@ def public_key_to_segwit_address(public_key, version='main'):
     length = len(public_key)
 
     if length != 33:
-        raise ValueError('{} is an invalid length for a public key. Segwit only uses compressed public keys'.format(length))
+        raise ValueError(
+            '{} is an invalid length for a public key. Segwit only uses compressed public keys'.format(length)
+        )
 
     return b58encode_check(version + ripemd160_sha256(b'\x00\x14' + ripemd160_sha256(public_key)))
 
@@ -147,7 +153,9 @@ def multisig_to_redeemscript(public_keys, m):
 
         redeemscript += script_push(length) + key
 
-    redeemscript += int_to_unknown_bytes(len(public_keys) + 80) + b'\xae'  # Only works for n = len(public_keys) < 17. OK due to P2SH script-length limitation.
+    redeemscript += (
+        int_to_unknown_bytes(len(public_keys) + 80) + b'\xae'
+    )  # Only works for n = len(public_keys) < 17. OK due to P2SH script-length limitation.
 
     if len(redeemscript) > 520:
         raise ValueError('The redeemScript exceeds the allowed 520-byte limitation with the number of public keys.')

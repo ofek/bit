@@ -57,7 +57,9 @@ def get_fee_local_cache(f):
                     fast_last_update = now
                 except (ConnectionError, HTTPError, Timeout):  # pragma: no cover
                     if cached_fee_fast is None:
-                        logging.warning('Connection to fee API failed, returning default fee (fast) of {}'.format(DEFAULT_FEE_FAST))
+                        logging.warning(
+                            'Connection to fee API failed, returning default fee (fast) of {}'.format(DEFAULT_FEE_FAST)
+                        )
                         return DEFAULT_FEE_FAST
                     else:
                         logging.warning('Connection to fee API failed, returning cached fee (fast).')
@@ -79,7 +81,9 @@ def get_fee_local_cache(f):
                     hour_last_update = now
                 except (ConnectionError, HTTPError, Timeout):  # pragma: no cover
                     if cached_fee_hour is None:
-                        logging.warning('Connection to fee API failed, returning default fee (hour) of {}'.format(DEFAULT_FEE_HOUR))
+                        logging.warning(
+                            'Connection to fee API failed, returning default fee (hour) of {}'.format(DEFAULT_FEE_HOUR)
+                        )
                         return DEFAULT_FEE_HOUR
                     else:
                         logging.warning('Connection to fee API failed, returning cached fee (hour).')

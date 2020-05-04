@@ -33,11 +33,7 @@ from bit import __version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.githubpages',
-    'sphinxcontrib.fulltoc'
-]
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.githubpages', 'sphinxcontrib.fulltoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -67,10 +63,8 @@ release = __version__
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html',
-              'hacks.html'],
-    '**': ['sidebarlogo.html', 'localtoc.html', 'relations.html',
-           'sourcelink.html', 'searchbox.html', 'hacks.html']
+    'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html', 'hacks.html'],
+    '**': ['sidebarlogo.html', 'localtoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html', 'hacks.html'],
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -81,7 +75,7 @@ html_theme_options = {
     'github_user': 'ofek',
     'github_repo': 'bit',
     'github_banner': True,
-    'show_related': False
+    'show_related': False,
 }
 
 
@@ -135,15 +129,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -153,8 +144,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Bit.tex', 'Bit Documentation',
-     'Ofek Lev', 'manual'),
+    (master_doc, 'Bit.tex', 'Bit Documentation', 'Ofek Lev', 'manual'),
 ]
 
 
@@ -162,10 +152,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'bit', 'Bit Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, 'bit', 'Bit Documentation', [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -174,10 +161,5 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Bit', 'Bit Documentation',
-     author, 'Bit', 'One line description of project.',
-     'Miscellaneous'),
+    (master_doc, 'Bit', 'Bit Documentation', author, 'Bit', 'One line description of project.', 'Miscellaneous'),
 ]
-
-
-

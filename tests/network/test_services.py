@@ -6,12 +6,15 @@ import requests_mock
 
 import bit
 from bit.network.services import (
-    RPCHost, RPCMethod, BitpayAPI, BlockchainAPI, NetworkAPI, SmartbitAPI,
-    set_service_timeout
+    RPCHost,
+    RPCMethod,
+    BitpayAPI,
+    BlockchainAPI,
+    NetworkAPI,
+    SmartbitAPI,
+    set_service_timeout,
 )
-from tests.utils import (
-    catch_errors_raise_warnings, decorate_methods, raise_connection_error
-)
+from tests.utils import catch_errors_raise_warnings, decorate_methods, raise_connection_error
 
 from bit.transaction import calc_txid
 
@@ -98,28 +101,34 @@ class MockRPCMethod(RPCMethod):
             )
 
             if args[3] == MAIN_ADDRESS_USED1:
-                return [{
-                    "involvesWatchonly": True,
-                    "address": "1L2JsXHPMYuAa9ugvHGLwkdstCPUDemNCf",
-                    "amount": 1.23456789,
-                    "confirmations": 0,
-                    "label": "",
-                    "txids": [
-                      "381f1605dd927151fbfac2e88608464414fa5b01bd6298cd1e2d9d991907aa9e",
-                      "6e05c708d88cc5bf0f1533938c969de2cc48f438b0ae28ce89fefbaa1938185a"
-                    ]}]
+                return [
+                    {
+                        "involvesWatchonly": True,
+                        "address": "1L2JsXHPMYuAa9ugvHGLwkdstCPUDemNCf",
+                        "amount": 1.23456789,
+                        "confirmations": 0,
+                        "label": "",
+                        "txids": [
+                            "381f1605dd927151fbfac2e88608464414fa5b01bd6298cd1e2d9d991907aa9e",
+                            "6e05c708d88cc5bf0f1533938c969de2cc48f438b0ae28ce89fefbaa1938185a",
+                        ],
+                    }
+                ]
             elif args[3] == TEST_ADDRESS_USED2:
-                return [{
-                    "involvesWatchonly": True,
-                    "address": "mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5",
-                    "amount": 1.23456789,
-                    "confirmations": 0,
-                    "label": "",
-                    "txids": [
-                      "ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93292",
-                      "ef9bd3ac4eacc60a16117eaca0631bbef673eb8a71084de4b9ada3317f7895e9",
-                      "ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93290"
-                    ]}]
+                return [
+                    {
+                        "involvesWatchonly": True,
+                        "address": "mmvP3mTe53qxHdPqXEvdu8WdC7GfQ2vmx5",
+                        "amount": 1.23456789,
+                        "confirmations": 0,
+                        "label": "",
+                        "txids": [
+                            "ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93292",
+                            "ef9bd3ac4eacc60a16117eaca0631bbef673eb8a71084de4b9ada3317f7895e9",
+                            "ff2b4641481f1ee553ba2c9f02f413a86f70240c35b5aee554f84e3efee93290",
+                        ],
+                    }
+                ]
             return []
 
         if self._rpc_method == "getrawtransaction":
@@ -139,30 +148,32 @@ class MockRPCMethod(RPCMethod):
 
             if args[2][0] in (MAIN_ADDRESS_UNUSED, TEST_ADDRESS_UNUSED):
                 return []
-            return [{
-                "txid": "381f1605dd927151fbfac2e88608464414fa5b01bd6298cd1e2d9d991907aa9e",
-                "vout": 0,
-                "address": MAIN_ADDRESS_USED1,
-                "label": "",
-                "scriptPubKey": "a9142df37714a79eacad089a41481a6a3e400d39a54687",
-                "amount": 1.23456789,
-                "confirmations": 0,
-                "spendable": False,
-                "solvable": False,
-                "safe": True
+            return [
+                {
+                    "txid": "381f1605dd927151fbfac2e88608464414fa5b01bd6298cd1e2d9d991907aa9e",
+                    "vout": 0,
+                    "address": MAIN_ADDRESS_USED1,
+                    "label": "",
+                    "scriptPubKey": "a9142df37714a79eacad089a41481a6a3e400d39a54687",
+                    "amount": 1.23456789,
+                    "confirmations": 0,
+                    "spendable": False,
+                    "solvable": False,
+                    "safe": True,
                 },
                 {
-                "txid": "ef9bd3ac4eacc60a16117eaca0631bbef673eb8a71084de4b9ada3317f7895e9",
-                "vout": 1,
-                "address": MAIN_ADDRESS_USED1,
-                "label": "",
-                "scriptPubKey": "a9142df37714a79eacad089a41481a6a3e400d39a54687",
-                "amount": 1.23456789,
-                "confirmations": 0,
-                "spendable": False,
-                "solvable": False,
-                "safe": True
-                }]
+                    "txid": "ef9bd3ac4eacc60a16117eaca0631bbef673eb8a71084de4b9ada3317f7895e9",
+                    "vout": 1,
+                    "address": MAIN_ADDRESS_USED1,
+                    "label": "",
+                    "scriptPubKey": "a9142df37714a79eacad089a41481a6a3e400d39a54687",
+                    "amount": 1.23456789,
+                    "confirmations": 0,
+                    "spendable": False,
+                    "solvable": False,
+                    "safe": True,
+                },
+            ]
 
         if self._rpc_method == "sendrawtransaction":
             assert args[0] == "01000000000000000000" or args[0] == "00000000000000000000"
@@ -246,15 +257,45 @@ class TestNetworkAPI:
             pass
 
         n.connect_to_node(user="user", password="password")
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_BALANCE_MAIN) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                for call in n.GET_BALANCE_MAIN
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_TRANSACTIONS_MAIN) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                for call in n.GET_TRANSACTIONS_MAIN
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_TRANSACTION_BY_ID_MAIN) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                for call in n.GET_TRANSACTION_BY_ID_MAIN
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.GET_UNSPENT_MAIN) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                for call in n.GET_UNSPENT_MAIN
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False)) for call in n.BROADCAST_TX_MAIN) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                for call in n.BROADCAST_TX_MAIN
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_MAIN)
 
         assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST)
@@ -269,15 +310,45 @@ class TestNetworkAPI:
             pass
 
         n.connect_to_node(user="usr", password="pass", host="host", port=18443, use_https=True, testnet=True)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_BALANCE_TEST) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                for call in n.GET_BALANCE_TEST
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_TRANSACTIONS_TEST) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                for call in n.GET_TRANSACTIONS_TEST
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_TRANSACTION_BY_ID_TEST) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                for call in n.GET_TRANSACTION_BY_ID_TEST
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.GET_UNSPENT_TEST) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                for call in n.GET_UNSPENT_TEST
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST)
-        assert sum(both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True)) for call in n.BROADCAST_TX_TEST) == 1
+        assert (
+            sum(
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                for call in n.BROADCAST_TX_TEST
+            )
+            == 1
+        )
         assert all(isinstance(call.__self__, RPCHost) for call in n.BROADCAST_TX_TEST)
 
         assert all(not isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN)
@@ -565,9 +636,10 @@ class TestRPCMethod(unittest.TestCase):
             'POST',
             'http://user:password@host:18443/',
             request_headers={"content-type": "application/json"},
-            additional_matcher=lambda req: req.text == json.dumps({"method": "some_rpc_method", "params": ["arg1", 2], "jsonrpc": "2.0"}),
+            additional_matcher=lambda req: req.text
+            == json.dumps({"method": "some_rpc_method", "params": ["arg1", 2], "jsonrpc": "2.0"}),
             json=json.loads('{"result": true, "error": null}'),
-            status_code=200
+            status_code=200,
         )
         self.assertEqual(method("arg1", 2), True)
 
@@ -576,9 +648,10 @@ class TestRPCMethod(unittest.TestCase):
             'POST',
             'http://user:password@host:18443/',
             request_headers={"content-type": "application/json"},
-            additional_matcher=lambda req: req.text == json.dumps({"method": "other_rpc_method", "params": [[0], "arg2", "arg3"], "jsonrpc": "2.0"}),
+            additional_matcher=lambda req: req.text
+            == json.dumps({"method": "other_rpc_method", "params": [[0], "arg2", "arg3"], "jsonrpc": "2.0"}),
             json=json.loads('{"result": true, "error": null}'),
-            status_code=500
+            status_code=500,
         )
         self.assertEqual(method([0], "arg2", "arg3"), True)
 
@@ -586,10 +659,7 @@ class TestRPCMethod(unittest.TestCase):
     def test_call_fails_status_code(self, m):
         method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False))
         m.register_uri(
-            'POST',
-            'http://user:password@host:18443/',
-            status_code=201,
-            reason="testing failing status code"
+            'POST', 'http://user:password@host:18443/', status_code=201, reason="testing failing status code"
         )
         with pytest.raises(bit.exceptions.BitcoinNodeException):
             method()
@@ -602,7 +672,7 @@ class TestRPCMethod(unittest.TestCase):
             'http://user:password@host:18443/',
             json=json.loads('{"result": false, "error": true}'),
             status_code=200,
-            reason="testing failing return value"
+            reason="testing failing return value",
         )
         with pytest.raises(bit.exceptions.BitcoinNodeException):
             method()

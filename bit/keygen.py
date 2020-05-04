@@ -19,8 +19,7 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
 
     for char in prefix:
         if char not in BASE58_ALPHABET:
-            raise ValueError('{} is an invalid base58 encoded '
-                             'character.'.format(char))
+            raise ValueError('{} is an invalid base58 encoded character.'.format(char))
 
     if not prefix:
         return generate_key_address_pair()
@@ -42,12 +41,7 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
 
     workers = []
     for _ in range(cores):
-        workers.append(
-            Process(
-                target=generate_key_address_pairs,
-                args=(prefix, counter, match, queue)
-            )
-        )
+        workers.append(Process(target=generate_key_address_pairs, args=(prefix, counter, match, queue)))
 
     for worker in workers:
         worker.start()
@@ -66,9 +60,7 @@ def generate_matching_address(prefix, cores='all'):  # pragma: no cover
         sys.stdout.flush()
 
     private_key, address = queue.get()
-    print('\n\n'
-          'WIF: {}\n'
-          'Address: {}'.format(bytes_to_wif(private_key), address))
+    print('\n\n' 'WIF: {}\n' 'Address: {}'.format(bytes_to_wif(private_key), address))
 
 
 def generate_key_address_pairs(prefix, counter, match, queue):  # pragma: no cover
@@ -83,9 +75,7 @@ def generate_key_address_pairs(prefix, counter, match, queue):  # pragma: no cov
             counter.value += 1
 
         private_key = ECPrivateKey(context=context)
-        address = b58encode_check(
-            b'\x00' + ripemd160_sha256(private_key.public_key.format())
-        )
+        address = b58encode_check(b'\x00' + ripemd160_sha256(private_key.public_key.format()))
 
         if address.startswith(prefix):
             match.set()

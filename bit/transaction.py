@@ -8,9 +8,17 @@ from bit.exceptions import InsufficientFunds
 from bit.format import address_to_public_key_hash, segwit_scriptpubkey
 from bit.network.rates import currency_to_satoshi_cached
 from bit.utils import (
-    bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes, int_to_varint,
-    script_push, get_signatures_from_script, read_bytes, read_var_int, read_var_string,
-    read_segwit_string
+    bytes_to_hex,
+    chunk_data,
+    hex_to_bytes,
+    int_to_unknown_bytes,
+    int_to_varint,
+    script_push,
+    get_signatures_from_script,
+    read_bytes,
+    read_var_int,
+    read_var_string,
+    read_segwit_string,
 )
 
 from bit.format import verify_sig, get_version
@@ -18,20 +26,33 @@ from bit.base58 import b58decode_check
 from bit.base32 import decode as segwit_decode
 
 from bit.constants import (
-    TEST_SCRIPT_HASH, MAIN_SCRIPT_HASH, TEST_PUBKEY_HASH, MAIN_PUBKEY_HASH,
-    VERSION_1, MARKER, FLAG, SEQUENCE, LOCK_TIME, HASH_TYPE,
-    OP_0, OP_CHECKLOCKTIMEVERIFY, OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY,
-    OP_HASH160, OP_PUSH_20, OP_RETURN, OP_EQUAL, MESSAGE_LIMIT
-
+    TEST_SCRIPT_HASH,
+    MAIN_SCRIPT_HASH,
+    TEST_PUBKEY_HASH,
+    MAIN_PUBKEY_HASH,
+    VERSION_1,
+    MARKER,
+    FLAG,
+    SEQUENCE,
+    LOCK_TIME,
+    HASH_TYPE,
+    OP_0,
+    OP_CHECKLOCKTIMEVERIFY,
+    OP_CHECKSIG,
+    OP_DUP,
+    OP_EQUALVERIFY,
+    OP_HASH160,
+    OP_PUSH_20,
+    OP_RETURN,
+    OP_EQUAL,
+    MESSAGE_LIMIT,
 )
 
 
 class TxIn:
-    __slots__ = ('script_sig', 'script_sig_len', 'txid', 'txindex', 'witness',
-                 'amount', 'sequence', 'segwit_input')
+    __slots__ = ('script_sig', 'script_sig_len', 'txid', 'txindex', 'witness', 'amount', 'sequence', 'segwit_input')
 
-    def __init__(self, script_sig, txid, txindex, witness=b'', amount=None,
-                 sequence=SEQUENCE, segwit_input=False):
+    def __init__(self, script_sig, txid, txindex, witness=b'', amount=None, sequence=SEQUENCE, segwit_input=False):
 
         self.script_sig = script_sig
         self.script_sig_len = int_to_varint(len(script_sig))
@@ -43,14 +64,16 @@ class TxIn:
         self.segwit_input = segwit_input
 
     def __eq__(self, other):
-        return (self.script_sig == other.script_sig and
-                self.script_sig_len == other.script_sig_len and
-                self.txid == other.txid and
-                self.txindex == other.txindex and
-                self.witness == other.witness and
-                self.amount == other.amount and
-                self.sequence == other.sequence and
-                self.segwit_input == other.segwit_input)
+        return (
+            self.script_sig == other.script_sig
+            and self.script_sig_len == other.script_sig_len
+            and self.txid == other.txid
+            and self.txindex == other.txindex
+            and self.witness == other.witness
+            and self.amount == other.amount
+            and self.sequence == other.sequence
+            and self.segwit_input == other.segwit_input
+        )
 
     def __repr__(self):
         if self.is_segwit():
@@ -61,24 +84,14 @@ class TxIn:
                 repr(self.txindex),
                 repr(self.witness),
                 repr(self.amount),
-                repr(self.sequence)
+                repr(self.sequence),
             )
         return 'TxIn({}, {}, {}, {}, {})'.format(
-            repr(self.script_sig),
-            repr(self.script_sig_len),
-            repr(self.txid),
-            repr(self.txindex),
-            repr(self.sequence)
+            repr(self.script_sig), repr(self.script_sig_len), repr(self.txid), repr(self.txindex), repr(self.sequence)
         )
 
     def __bytes__(self):
-        return b''.join([
-            self.txid,
-            self.txindex,
-            self.script_sig_len,
-            self.script_sig,
-            self.sequence
-        ])
+        return b''.join([self.txid, self.txindex, self.script_sig_len, self.script_sig, self.sequence])
 
     def is_segwit(self):
         return self.segwit_input or self.witness
@@ -96,23 +109,17 @@ class TxOut:
         self.script_pubkey_len = int_to_varint(len(script_pubkey))
 
     def __eq__(self, other):
-        return (self.amount == other.amount and
-                self.script_pubkey == other.script_pubkey and
-                self.script_pubkey_len == other.script_pubkey_len)
-
-    def __repr__(self):
-        return 'TxOut({}, {}, {})'.format(
-            repr(self.amount),
-            repr(self.script_pubkey),
-            repr(self.script_pubkey_len)
+        return (
+            self.amount == other.amount
+            and self.script_pubkey == other.script_pubkey
+            and self.script_pubkey_len == other.script_pubkey_len
         )
 
+    def __repr__(self):
+        return 'TxOut({}, {}, {})'.format(repr(self.amount), repr(self.script_pubkey), repr(self.script_pubkey_len))
+
     def __bytes__(self):
-        return b''.join([
-            self.amount,
-            self.script_pubkey_len,
-            self.script_pubkey
-        ])
+        return b''.join([self.amount, self.script_pubkey_len, self.script_pubkey])
 
 
 class TxObj:
@@ -129,42 +136,28 @@ class TxObj:
         self.locktime = locktime
 
     def __eq__(self, other):
-        return (self.version == other.version and
-                self.TxIn == other.TxIn and
-                self.TxOut == other.TxOut and
-                self.locktime == other.locktime)
+        return (
+            self.version == other.version
+            and self.TxIn == other.TxIn
+            and self.TxOut == other.TxOut
+            and self.locktime == other.locktime
+        )
 
     def __repr__(self):
         return 'TxObj({}, {}, {}, {})'.format(
-            repr(self.version),
-            repr(self.TxIn),
-            repr(self.TxOut),
-            repr(self.locktime)
+            repr(self.version), repr(self.TxIn), repr(self.TxOut), repr(self.locktime)
         )
 
     def __bytes__(self):
         inp = int_to_varint(len(self.TxIn)) + b''.join(map(bytes, self.TxIn))
         out = int_to_varint(len(self.TxOut)) + b''.join(map(bytes, self.TxOut))
         wit = b''.join([w.witness for w in self.TxIn])
-        return b''.join([
-            self.version,
-            MARKER if wit else b'',
-            FLAG if wit else b'',
-            inp,
-            out,
-            wit,
-            self.locktime
-        ])
+        return b''.join([self.version, MARKER if wit else b'', FLAG if wit else b'', inp, out, wit, self.locktime])
 
     def legacy_repr(self):
         inp = int_to_varint(len(self.TxIn)) + b''.join(map(bytes, self.TxIn))
         out = int_to_varint(len(self.TxOut)) + b''.join(map(bytes, self.TxOut))
-        return b''.join([
-            self.version,
-            inp,
-            out,
-            self.locktime
-        ])
+        return b''.join([self.version, inp, out, self.locktime])
 
     def to_hex(self):
         return bytes_to_hex(bytes(self))
@@ -203,8 +196,7 @@ def estimate_tx_fee(in_size, n_in, out_size, n_out, satoshis):
     return estimated_fee
 
 
-def select_coins(target, fee, output_size, min_change, *, absolute_fee=False,
-                 consolidate=False, unspents):
+def select_coins(target, fee, output_size, min_change, *, absolute_fee=False, consolidate=False, unspents):
     '''
     Implementation of Branch-and-Bound coin selection defined in Erhart's
     Master's thesis An Evaluation of Coin Selection Strategies here:
@@ -239,8 +231,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False,
     # COST_OF_OVERHEAD excludes the return address of output_size (last element).
     COST_OF_OVERHEAD = (8 + sum(output_size[:-1]) + 1) * fee
 
-    def branch_and_bound(d, selected_coins, effective_value, target, fee,
-                         sorted_unspents):  # pragma: no cover
+    def branch_and_bound(d, selected_coins, effective_value, target, fee, sorted_unspents):  # pragma: no cover
 
         nonlocal COST_OF_OVERHEAD, BNB_TRIES
         BNB_TRIES -= 1
@@ -270,56 +261,32 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False,
             binary_random = randint(0, 1)
             if binary_random:
                 # Explore inclusion branch first, else omission branch:
-                effective_value_new = effective_value + \
-                    sorted_unspents[d].amount - fee * sorted_unspents[d].vsize
+                effective_value_new = effective_value + sorted_unspents[d].amount - fee * sorted_unspents[d].vsize
 
                 with_this = branch_and_bound(
-                    d + 1,
-                    selected_coins + [sorted_unspents[d]],
-                    effective_value_new,
-                    target,
-                    fee,
-                    sorted_unspents
+                    d + 1, selected_coins + [sorted_unspents[d]], effective_value_new, target, fee, sorted_unspents
                 )
 
                 if with_this != []:
                     return with_this
                 else:
                     without_this = branch_and_bound(
-                        d + 1,
-                        selected_coins,
-                        effective_value,
-                        target,
-                        fee,
-                        sorted_unspents
+                        d + 1, selected_coins, effective_value, target, fee, sorted_unspents
                     )
 
                     return without_this
 
             else:
                 # As above but explore omission branch first:
-                without_this = branch_and_bound(
-                    d + 1,
-                    selected_coins,
-                    effective_value,
-                    target,
-                    fee,
-                    sorted_unspents
-                )
+                without_this = branch_and_bound(d + 1, selected_coins, effective_value, target, fee, sorted_unspents)
 
                 if without_this != []:
                     return without_this
                 else:
-                    effective_value_new = effective_value + \
-                        sorted_unspents[d].amount - fee * sorted_unspents[d].vsize
+                    effective_value_new = effective_value + sorted_unspents[d].amount - fee * sorted_unspents[d].vsize
 
                     with_this = branch_and_bound(
-                        d + 1,
-                        selected_coins + [sorted_unspents[d]],
-                        effective_value_new,
-                        target,
-                        fee,
-                        sorted_unspents
+                        d + 1, selected_coins + [sorted_unspents[d]], effective_value_new, target, fee, sorted_unspents
                     )
 
                     return with_this
@@ -330,12 +297,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False,
     if not consolidate:
         # Trying to find a perfect match using Branch-and-Bound:
         selected_coins = branch_and_bound(
-            d=0,
-            selected_coins=[],
-            effective_value=0,
-            target=target,
-            fee=fee,
-            sorted_unspents=sorted_unspents
+            d=0, selected_coins=[], effective_value=0, target=target, fee=fee, sorted_unspents=sorted_unspents
         )
         remaining = 0
 
@@ -351,21 +313,17 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False,
         while unspents:
             selected_coins.append(unspents.pop(0))
             estimated_fee = estimate_tx_fee(
-                sum(u.vsize for u in selected_coins),
-                len(selected_coins),
-                sum(output_size),
-                len(output_size),
-                fee
+                sum(u.vsize for u in selected_coins), len(selected_coins), sum(output_size), len(output_size), fee
             )
             estimated_fee = fee if absolute_fee else estimated_fee
             remaining = sum(u.amount for u in selected_coins) - target - estimated_fee
             if remaining >= min_change and (not consolidate or len(unspents) == 0):
                 break
         else:
-            raise InsufficientFunds('Balance {} is less than {} (including '
-                                    'fee).'.format(sum(
-                                        u.amount for u in selected_coins),
-                                        target + min_change + estimated_fee))
+            raise InsufficientFunds(
+                'Balance {} is less than {} (including '
+                'fee).'.format(sum(u.amount for u in selected_coins), target + min_change + estimated_fee)
+            )
 
     return selected_coins, remaining
 
@@ -414,9 +372,19 @@ def deserialize(tx):
     return txobj
 
 
-def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
-                     message=None, compressed=True, absolute_fee=False,
-                     min_change=0, version='main', message_is_hex=False):
+def sanitize_tx_data(
+    unspents,
+    outputs,
+    fee,
+    leftover,
+    combine=True,
+    message=None,
+    compressed=True,
+    absolute_fee=False,
+    min_change=0,
+    version='main',
+    message_is_hex=False,
+):
     """
     sanitize_tx_data()
 
@@ -453,8 +421,13 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
 
     # Use Branch-and-Bound for coin selection:
     unspents[:], remaining = select_coins(
-        sum_outputs, fee, output_size, min_change=min_change,
-        absolute_fee=absolute_fee, consolidate=combine, unspents=unspents
+        sum_outputs,
+        fee,
+        output_size,
+        min_change=min_change,
+        absolute_fee=absolute_fee,
+        consolidate=combine,
+        unspents=unspents,
     )
 
     if remaining > 0:
@@ -465,8 +438,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True,
         dest, amount = output
         vs = get_version(dest)
         if vs and vs != version:
-            raise ValueError('Cannot send to ' + vs + 'net address when '
-                             'spending from a ' + version + 'net address.')
+            raise ValueError('Cannot send to ' + vs + 'net address when spending from a ' + version + 'net address.')
 
     outputs.extend(messages)
 
@@ -483,13 +455,9 @@ def address_to_scriptpubkey(address):
         return segwit_scriptpubkey(witver, data)
 
     if version == MAIN_PUBKEY_HASH or version == TEST_PUBKEY_HASH:
-        return (OP_DUP + OP_HASH160 + OP_PUSH_20 +
-                address_to_public_key_hash(address) +
-                OP_EQUALVERIFY + OP_CHECKSIG)
+        return OP_DUP + OP_HASH160 + OP_PUSH_20 + address_to_public_key_hash(address) + OP_EQUALVERIFY + OP_CHECKSIG
     elif version == MAIN_SCRIPT_HASH or version == TEST_SCRIPT_HASH:
-        return (OP_HASH160 + OP_PUSH_20 +
-                address_to_public_key_hash(address) +
-                OP_EQUAL)
+        return OP_HASH160 + OP_PUSH_20 + address_to_public_key_hash(address) + OP_EQUAL
 
 
 def construct_outputs(outputs):
@@ -506,9 +474,7 @@ def construct_outputs(outputs):
 
         # Blockchain storage
         else:
-            script_pubkey = (OP_RETURN +
-                             len(dest).to_bytes(1, byteorder='little') +
-                             dest)
+            script_pubkey = OP_RETURN + len(dest).to_bytes(1, byteorder='little') + dest
 
             amount = b'\x00\x00\x00\x00\x00\x00\x00\x00'
 
@@ -538,7 +504,7 @@ def calculate_preimages(tx_obj, inputs_parameters):
     output_count = int_to_varint(len(tx_obj.TxOut))
     output_block = b''.join([bytes(o) for o in tx_obj.TxOut])
 
-    hashPrevouts = double_sha256(b''.join([i.txid+i.txindex for i in tx_obj.TxIn]))
+    hashPrevouts = double_sha256(b''.join([i.txid + i.txindex for i in tx_obj.TxIn]))
     hashSequence = double_sha256(b''.join([i.sequence for i in tx_obj.TxIn]))
     hashOutputs = double_sha256(output_block)
 
@@ -551,35 +517,35 @@ def calculate_preimages(tx_obj, inputs_parameters):
         if segwit_input:
             # BIP-143 preimage:
             hashed = sha256(
-                tx_obj.version +
-                hashPrevouts +
-                hashSequence +
-                tx_obj.TxIn[input_index].txid +
-                tx_obj.TxIn[input_index].txindex +
-                tx_obj.TxIn[input_index].script_sig_len +  # scriptCode length
-                tx_obj.TxIn[input_index].script_sig +  # scriptCode (includes amount)
-                tx_obj.TxIn[input_index].sequence +
-                hashOutputs +
-                tx_obj.locktime +
-                hash_type
+                tx_obj.version
+                + hashPrevouts
+                + hashSequence
+                + tx_obj.TxIn[input_index].txid
+                + tx_obj.TxIn[input_index].txindex
+                + tx_obj.TxIn[input_index].script_sig_len
+                + tx_obj.TxIn[input_index].script_sig  # scriptCode length
+                + tx_obj.TxIn[input_index].sequence  # scriptCode (includes amount)
+                + hashOutputs
+                + tx_obj.locktime
+                + hash_type
             )
         else:
             hashed = sha256(
-                tx_obj.version +
-                input_count +
-                b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
-                         for ti in islice(tx_obj.TxIn, input_index)) +
-                tx_obj.TxIn[input_index].txid +
-                tx_obj.TxIn[input_index].txindex +
-                tx_obj.TxIn[input_index].script_sig_len +  # scriptCode length
-                tx_obj.TxIn[input_index].script_sig +  # scriptCode
-                tx_obj.TxIn[input_index].sequence +
-                b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence
-                         for ti in islice(tx_obj.TxIn, input_index + 1, None)) +
-                output_count +
-                output_block +
-                tx_obj.locktime +
-                hash_type
+                tx_obj.version
+                + input_count
+                + b''.join(ti.txid + ti.txindex + OP_0 + ti.sequence for ti in islice(tx_obj.TxIn, input_index))
+                + tx_obj.TxIn[input_index].txid
+                + tx_obj.TxIn[input_index].txindex
+                + tx_obj.TxIn[input_index].script_sig_len
+                + tx_obj.TxIn[input_index].script_sig  # scriptCode length
+                + tx_obj.TxIn[input_index].sequence  # scriptCode
+                + b''.join(
+                    ti.txid + ti.txindex + OP_0 + ti.sequence for ti in islice(tx_obj.TxIn, input_index + 1, None)
+                )
+                + output_count
+                + output_block
+                + tx_obj.locktime
+                + hash_type
             )
         preimages.append(hashed)
     return preimages
@@ -607,15 +573,15 @@ def sign_tx(private_key, tx, *, unspents):
         for unspent in unspents:
             if not private_key.can_sign_unspent(unspent):
                 continue
-            tx_input = hex_to_bytes(unspent.txid)[::-1] + \
-                unspent.txindex.to_bytes(4, byteorder='little')
+            tx_input = hex_to_bytes(unspent.txid)[::-1] + unspent.txindex.to_bytes(4, byteorder='little')
             input_dict[tx_input] = unspent.to_dict()
     except TypeError:
-        raise TypeError('Please provide as unspents at least all inputs to '
-                        'be signed with the function call in a list.')
+        raise TypeError(
+            'Please provide as unspents at least all inputs to be signed with the function call in a list.'
+        )
 
     # Determine input indices to sign from input_dict (allows for transaction batching)
-    sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid+i.txindex in input_dict]
+    sign_inputs = [j for j, i in enumerate(tx.TxIn) if i.txid + i.txindex in input_dict]
 
     segwit_tx = TxObj.is_segwit(tx)
     public_key = private_key.public_key
@@ -647,8 +613,7 @@ def sign_tx(private_key, tx, *, unspents):
 
         if segwit_input:
             try:
-                tx.TxIn[i].script_sig += input_dict[tx_input]['amount']\
-                                         .to_bytes(8, byteorder='little')
+                tx.TxIn[i].script_sig += input_dict[tx_input]['amount'].to_bytes(8, byteorder='little')
 
                 # For partially signed Segwit transactions the signatures must
                 # be extracted from the witnessScript field:
@@ -658,7 +623,8 @@ def sign_tx(private_key, tx, *, unspents):
                     'Cannot sign a segwit input when the input\'s amount is '
                     'unknown. Maybe no network connection or the input is '
                     'already spent? Then please provide all inputs to sign as '
-                    '`Unspent` objects to the function call.')
+                    '`Unspent` objects to the function call.'
+                )
 
         inputs_parameters.append([i, hash_type, segwit_input])
     preimages = calculate_preimages(tx, inputs_parameters)
@@ -668,8 +634,7 @@ def sign_tx(private_key, tx, *, unspents):
         signature = private_key.sign(hash) + b'\x01'
 
         # ------------------------------------------------------------------
-        if (private_key.instance == 'MultiSig' or
-                private_key.instance == 'MultiSigTestnet'):
+        if private_key.instance == 'MultiSig' or private_key.instance == 'MultiSigTestnet':
             # P2(W)SH input
 
             script_blob = b''
@@ -680,7 +645,7 @@ def sign_tx(private_key, tx, *, unspents):
                 sig_list = get_signatures_from_script(input_script_field[i])
                 # Bitcoin Core convention: Every missing signature is denoted
                 # by 0x00. Only used for already partially-signed scriptSigs:
-                script_blob += b'\x00' * (private_key.m - len(sig_list)-1)
+                script_blob += b'\x00' * (private_key.m - len(sig_list) - 1)
                 # Total number of witness items when partially or fully signed:
                 witness_count = private_key.m + 2
                 # For a partially signed input make a dictionary containing
@@ -692,8 +657,7 @@ def sign_tx(private_key, tx, *, unspents):
                             # we just overwrite it and don't care.
                             sigs[pub] = sig
                 if len(sigs) >= private_key.m:
-                    raise ValueError('Transaction is already signed with '
-                                     'sufficiently needed signatures.')
+                    raise ValueError('Transaction is already signed with sufficiently needed signatures.')
 
             sigs[public_key] = signature
 
@@ -702,17 +666,17 @@ def sign_tx(private_key, tx, *, unspents):
             for pub in private_key.public_keys:
                 if pub in sigs:
                     sig = sigs[pub]
-                    length = int_to_varint(len(sig)) if segwit_input else \
-                        script_push(len(sig))
+                    length = int_to_varint(len(sig)) if segwit_input else script_push(len(sig))
                     witness += length + sig
 
             script_sig = b'\x22' + private_key.segwit_scriptcode
 
-            witness = (int_to_varint(witness_count) if segwit_input else b'') \
-                + b'\x00' + witness + script_blob
-            witness += (int_to_varint(len(private_key.redeemscript)) if
-                segwit_input else script_push(len(private_key.redeemscript))) \
-                + private_key.redeemscript
+            witness = (int_to_varint(witness_count) if segwit_input else b'') + b'\x00' + witness + script_blob
+            witness += (
+                int_to_varint(len(private_key.redeemscript))
+                if segwit_input
+                else script_push(len(private_key.redeemscript))
+            ) + private_key.redeemscript
 
             script_sig = script_sig if segwit_input else witness
             witness = witness if segwit_input else b'\x00' if segwit_tx else b''
@@ -724,12 +688,12 @@ def sign_tx(private_key, tx, *, unspents):
             script_sig = b'\x16' + private_key.segwit_scriptcode
 
             witness = (
-                      (b'\x02' if segwit_input else b'') +  # witness counter
-                      len(signature).to_bytes(1, byteorder='little') +
-                      signature +
-                      public_key_push +
-                      public_key
-                     )
+                (b'\x02' if segwit_input else b'')
+                + len(signature).to_bytes(1, byteorder='little')  # witness counter
+                + signature
+                + public_key_push
+                + public_key
+            )
 
             script_sig = script_sig if segwit_input else witness
             witness = witness if segwit_input else b'\x00' if segwit_tx else b''
@@ -755,8 +719,7 @@ def create_new_transaction(private_key, unspents, outputs):
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder='little')
         amount = int(unspent.amount).to_bytes(8, byteorder='little')
-        inputs.append(TxIn(script_sig, txid, txindex, amount=amount,
-                           segwit_input=unspent.segwit))
+        inputs.append(TxIn(script_sig, txid, txindex, amount=amount, segwit_input=unspent.segwit))
 
     tx_unsigned = TxObj(version, inputs, outputs, lock_time)
 

@@ -1,12 +1,11 @@
-
 # Transactions:
-VERSION_1 = 0x01.to_bytes(4, byteorder='little')
-VERSION_2 = 0x02.to_bytes(4, byteorder='little')
+VERSION_1 = 0x01 .to_bytes(4, byteorder='little')
+VERSION_2 = 0x02 .to_bytes(4, byteorder='little')
 MARKER = b'\x00'
 FLAG = b'\x01'
-SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
-LOCK_TIME = 0x00.to_bytes(4, byteorder='little')
-HASH_TYPE = 0x01.to_bytes(4, byteorder='little')
+SEQUENCE = 0xFFFFFFFF .to_bytes(4, byteorder='little')
+LOCK_TIME = 0x00 .to_bytes(4, byteorder='little')
+HASH_TYPE = 0x01 .to_bytes(4, byteorder='little')
 
 # Scripts:
 OP_0 = b'\x00'
