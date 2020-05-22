@@ -701,6 +701,25 @@ class PrivateKeyTestnet(BaseKey):
         return create_new_transaction(self, unspents, outputs)
 
     def calculate_trx_size(self, outputs, leftover=None, message=None, message_is_hex=False):
+        """Returns the number of bytes of the transaction.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :returns: The number of bytes of the transaction.
+        :rtype: ``int``
+        """
         messages = []
         if message:
             if message_is_hex:
