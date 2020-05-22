@@ -22,9 +22,9 @@ from bit.transaction import (
     deserialize,
     address_to_scriptpubkey,
 )
-from bit.constants import OP_0, OP_PUSH_20, OP_PUSH_32
+from bit.constants import OP_0, OP_PUSH_20, OP_PUSH_32, MESSAGE_LIMIT
 
-from bit.utils import hex_to_bytes, bytes_to_hex, int_to_varint
+from bit.utils import hex_to_bytes, bytes_to_hex, int_to_varint, int_to_unknown_bytes, chunk_data
 
 
 def wif_to_key(wif):
@@ -699,6 +699,38 @@ class PrivateKeyTestnet(BaseKey):
         )
 
         return create_new_transaction(self, unspents, outputs)
+
+    def calculate_trx_size(self, outputs, leftover=None, message=None, message_is_hex=False):
+        messages = []
+        if message:
+            if message_is_hex:
+                message_chunks = chunk_data(message, MESSAGE_LIMIT)
+            else:
+                message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
+
+            for message in message_chunks:
+                messages.append((message, 0))
+
+        unspents = self.unspents or self.get_unspents()
+
+        return_address = self.segwit_address if any(
+            [u.segwit for u in unspents]) else self.address
+
+        # Include return address in output count.
+        # Calculate output size as a list (including return address).
+        output_size = [len(address_to_scriptpubkey(o[0])) + 9 for o in outputs]
+        output_size.append(len(messages) * (MESSAGE_LIMIT + 9))
+        output_size.append(len(address_to_scriptpubkey(leftover or return_address)) + 9)
+        sum_outputs = sum(out[1] for out in outputs)
+
+        bytes_num = (
+                sum(u.vsize for u in unspents)
+                + len(int_to_unknown_bytes(len(unspents), byteorder='little'))
+                + sum(output_size)
+                + len(int_to_unknown_bytes(len(output_size), byteorder='little'))
+                + 8
+        )
+        return bytes_num
 
     def send(
         self,
