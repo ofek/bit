@@ -316,6 +316,57 @@ class PrivateKey(BaseKey):
 
         return create_new_transaction(self, unspents, outputs)
 
+    def calculate_transaction_size(self, outputs, leftover=None, message=None, message_is_hex=False):
+        """Returns the number of bytes of the transaction.
+
+        :param outputs: A sequence of outputs you wish to send in the form
+                        ``(destination, amount, currency)``. The amount can
+                        be either an int, float, or string as long as it is
+                        a valid input to ``decimal.Decimal``. The currency
+                        must be :ref:`supported <supported currencies>`.
+        :type outputs: ``list`` of ``tuple``
+        :param leftover: The destination that will receive any change from the
+                         transaction. By default Bit will send any change to
+                         the same address you sent from.
+        :type leftover: ``str``
+        :param message: A message to include in the transaction. This will be
+                        stored in the blockchain forever. Due to size limits,
+                        each message will be stored in chunks of 40 bytes.
+        :type message: ``str``
+        :returns: The number of bytes of the transaction.
+        :rtype: ``int``
+        """
+        messages = []
+        if message:
+            if message_is_hex:
+                message_chunks = chunk_data(message, MESSAGE_LIMIT)
+            else:
+                message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
+
+            for message in message_chunks:
+                messages.append((message, 0))
+
+        unspents = self.unspents or self.get_unspents()
+
+        return_address = self.segwit_address if any(
+            [u.segwit for u in unspents]) else self.address
+
+        # Include return address in output count.
+        # Calculate output size as a list (including return address).
+        output_size = [len(address_to_scriptpubkey(o[0])) + 9 for o in outputs]
+        output_size.append(len(messages) * (MESSAGE_LIMIT + 9))
+        output_size.append(len(address_to_scriptpubkey(leftover or return_address)) + 9)
+        sum_outputs = sum(out[1] for out in outputs)
+
+        bytes_num = (
+                sum(u.vsize for u in unspents)
+                + len(int_to_unknown_bytes(len(unspents), byteorder='little'))
+                + sum(output_size)
+                + len(int_to_unknown_bytes(len(output_size), byteorder='little'))
+                + 8
+        )
+        return bytes_num
+
     def send(
         self,
         outputs,
@@ -699,57 +750,6 @@ class PrivateKeyTestnet(BaseKey):
         )
 
         return create_new_transaction(self, unspents, outputs)
-
-    def calculate_transaction_size(self, outputs, leftover=None, message=None, message_is_hex=False):
-        """Returns the number of bytes of the transaction.
-
-        :param outputs: A sequence of outputs you wish to send in the form
-                        ``(destination, amount, currency)``. The amount can
-                        be either an int, float, or string as long as it is
-                        a valid input to ``decimal.Decimal``. The currency
-                        must be :ref:`supported <supported currencies>`.
-        :type outputs: ``list`` of ``tuple``
-        :param leftover: The destination that will receive any change from the
-                         transaction. By default Bit will send any change to
-                         the same address you sent from.
-        :type leftover: ``str``
-        :param message: A message to include in the transaction. This will be
-                        stored in the blockchain forever. Due to size limits,
-                        each message will be stored in chunks of 40 bytes.
-        :type message: ``str``
-        :returns: The number of bytes of the transaction.
-        :rtype: ``int``
-        """
-        messages = []
-        if message:
-            if message_is_hex:
-                message_chunks = chunk_data(message, MESSAGE_LIMIT)
-            else:
-                message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
-
-            for message in message_chunks:
-                messages.append((message, 0))
-
-        unspents = self.unspents or self.get_unspents()
-
-        return_address = self.segwit_address if any(
-            [u.segwit for u in unspents]) else self.address
-
-        # Include return address in output count.
-        # Calculate output size as a list (including return address).
-        output_size = [len(address_to_scriptpubkey(o[0])) + 9 for o in outputs]
-        output_size.append(len(messages) * (MESSAGE_LIMIT + 9))
-        output_size.append(len(address_to_scriptpubkey(leftover or return_address)) + 9)
-        sum_outputs = sum(out[1] for out in outputs)
-
-        bytes_num = (
-                sum(u.vsize for u in unspents)
-                + len(int_to_unknown_bytes(len(unspents), byteorder='little'))
-                + sum(output_size)
-                + len(int_to_unknown_bytes(len(output_size), byteorder='little'))
-                + 8
-        )
-        return bytes_num
 
     def send(
         self,
