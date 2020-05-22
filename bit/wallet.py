@@ -700,7 +700,7 @@ class PrivateKeyTestnet(BaseKey):
 
         return create_new_transaction(self, unspents, outputs)
 
-    def calculate_trx_size(self, outputs, leftover=None, message=None, message_is_hex=False):
+    def calculate_transaction_size(self, outputs, leftover=None, message=None, message_is_hex=False):
         """Returns the number of bytes of the transaction.
 
         :param outputs: A sequence of outputs you wish to send in the form
