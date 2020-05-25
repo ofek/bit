@@ -1,6 +1,7 @@
 import logging
 from collections import namedtuple
 from itertools import islice
+import math
 import re
 from random import randint, shuffle
 from bit.crypto import double_sha256, sha256
@@ -176,17 +177,19 @@ def calc_txid(tx_hex):
     return bytes_to_hex(double_sha256(tx_obj.legacy_repr())[::-1])
 
 
-def estimate_tx_fee(in_size, n_in, out_size, n_out, satoshis):
+def estimate_tx_fee(in_size, n_in, out_size, n_out, satoshis, segwit=False):
 
     if not satoshis:
         return 0
 
-    estimated_size = (
+    estimated_size = math.ceil(
         in_size
         + len(int_to_unknown_bytes(n_in, byteorder='little'))
         + out_size
         + len(int_to_unknown_bytes(n_out, byteorder='little'))
         + 8
+        # Accounting for magic header vBytes ('0001') 
+        + (0.5 if segwit else 0)
     )
 
     estimated_fee = estimated_size * satoshis
@@ -313,7 +316,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False, co
         while unspents:
             selected_coins.append(unspents.pop(0))
             estimated_fee = estimate_tx_fee(
-                sum(u.vsize for u in selected_coins), len(selected_coins), sum(output_size), len(output_size), fee
+                sum(u.vsize for u in selected_coins), len(selected_coins), sum(output_size), len(output_size), fee, any(u.segwit for u in selected_coins)
             )
             estimated_fee = fee if absolute_fee else estimated_fee
             remaining = sum(u.amount for u in selected_coins) - target - estimated_fee

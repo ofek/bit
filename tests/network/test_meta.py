@@ -42,20 +42,20 @@ class TestUnspent:
 
         unspent.set_type('p2sh')
         assert unspent.segwit is False
-        assert unspent.vsize == 292
+        assert unspent.vsize == 298
 
         unspent.set_type('np2wkh')
         assert unspent.segwit is True
-        assert unspent.vsize == 90
+        assert unspent.vsize == 91
 
         unspent.set_type('np2wsh')
         assert unspent.segwit is True
-        assert unspent.vsize == 139
+        assert unspent.vsize == 140
 
         unspent.set_type('p2wkh')
         assert unspent.segwit is True
-        assert unspent.vsize == 67
+        assert unspent.vsize == 68
 
         unspent.set_type('p2wsh')
         assert unspent.segwit is True
-        assert unspent.vsize == 104
+        assert unspent.vsize == 105
