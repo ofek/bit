@@ -9,13 +9,13 @@ UNSPENT_TYPES = {
     'unknown': {'segwit': None, 'vsize': 180},  # Unknown type
     'p2pkh-uncompressed': {'segwit': False, 'vsize': 180},  # Legacy P2PKH using  # uncompressed keys
     'p2pkh': {'segwit': False, 'vsize': 148},  # Legacy P2PKH
-    'p2sh': {'segwit': False, 'vsize': 292},  # Legacy P2SH (vsize corresponds to a 2-of-3 multisig input)
-    'np2wkh': {'segwit': True, 'vsize': 90},  # (Nested) P2SH-P2WKH
-    'np2wsh': {'segwit': True, 'vsize': 139},  # (Nested) P2SH-P2WSH (vsize corresponds to a 2-of-3 multisig input)
-    'p2wkh': {'segwit': True, 'vsize': 67},  # Bech32 P2WKH -- Not yet supported to sign
+    'p2sh': {'segwit': False, 'vsize': 298},  # Legacy P2SH (vsize corresponds to a 2-of-3 multisig input)
+    'np2wkh': {'segwit': True, 'vsize': 91},  # (Nested) P2SH-P2WKH
+    'np2wsh': {'segwit': True, 'vsize': 140},  # (Nested) P2SH-P2WSH (vsize corresponds to a 2-of-3 multisig input)
+    'p2wkh': {'segwit': True, 'vsize': 68},  # Bech32 P2WKH -- Not yet supported to sign
     'p2wsh': {
         'segwit': True,
-        'vsize': 104,
+        'vsize': 105,
     },  # Bech32 P2WSH -- Not yet supported to sign (vsize corresponds to a 2-of-3 multisig input)
 }
 

@@ -1033,15 +1033,19 @@ class MultiSig:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        add_p2sh_vsize = self.m * 73 + len(int_to_varint(len(self.redeemscript))) + len(self.public_keys) * 34
-        add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
+        # P2SH size: OP_00 + m * <SIG> + <redeemScript>:
+        p2sh_size = 1 + self.m * 74 + len(int_to_varint(len(self.redeemscript))) + len(self.redeemscript)
+        # Adding outpoint size, scriptSig size and sequence size:
+        add_p2sh_vsize = 36 + len(int_to_varint(p2sh_size)) + p2sh_size + 4
+        # Converting to vSize for Segwit: outpoint size + scriptSig size + witness vSize:
+        add_np2wsh_vsize = 36 + 40 + (1 + p2sh_size) / 4
 
         self.unspents[:] = list(
-            map(lambda u: u.set_type('p2sh', add_p2sh_vsize + 46), NetworkAPI.get_unspent(self.address))
+            map(lambda u: u.set_type('p2sh', add_p2sh_vsize), NetworkAPI.get_unspent(self.address))
         )
         if self.segwit_address:
             self.unspents += list(
-                map(lambda u: u.set_type('np2wsh', add_np2wsh_vsize + 75), NetworkAPI.get_unspent(self.segwit_address))
+                map(lambda u: u.set_type('np2wsh', add_np2wsh_vsize), NetworkAPI.get_unspent(self.segwit_address))
             )
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
@@ -1345,16 +1349,20 @@ class MultiSigTestnet:
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        add_p2sh_vsize = self.m * 73 + len(int_to_varint(len(self.redeemscript))) + len(self.public_keys) * 34
-        add_np2wsh_vsize = (add_p2sh_vsize + 6) // 4
+        # P2SH size: OP_00 + m * <SIG> + <redeemScript>:
+        p2sh_size = 1 + self.m * 74 + len(int_to_varint(len(self.redeemscript))) + len(self.redeemscript)
+        # Adding outpoint size, scriptSig size and sequence size:
+        add_p2sh_vsize = 36 + len(int_to_varint(p2sh_size)) + p2sh_size + 4
+        # Converting to vSize for Segwit: outpoint size + scriptSig size + witness vSize
+        add_np2wsh_vsize = 36 + 40 + (1 + p2sh_size) / 4
 
         self.unspents[:] = list(
-            map(lambda u: u.set_type('p2sh', add_p2sh_vsize + 46), NetworkAPI.get_unspent_testnet(self.address))
+            map(lambda u: u.set_type('p2sh', add_p2sh_vsize), NetworkAPI.get_unspent_testnet(self.address))
         )
         if self.segwit_address:
             self.unspents += list(
                 map(
-                    lambda u: u.set_type('np2wsh', add_np2wsh_vsize + 75),
+                    lambda u: u.set_type('np2wsh', add_np2wsh_vsize),
                     NetworkAPI.get_unspent_testnet(self.segwit_address),
                 )
             )
