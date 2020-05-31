@@ -4,6 +4,8 @@ import time
 
 import pytest
 
+from unittest import mock
+
 from bit.crypto import ECPrivateKey, sha256
 from bit.curve import Point
 from bit.format import verify_sig
@@ -30,10 +32,12 @@ from .samples import (
     PUBLIC_KEY_Y,
     WALLET_FORMAT_COMPRESSED_MAIN,
     WALLET_FORMAT_COMPRESSED_TEST,
+    WALLET_FORMAT_COMPRESSED_SEND_TEST,
     WALLET_FORMAT_MAIN,
     WALLET_FORMAT_MAIN_1,
     WALLET_FORMAT_MAIN_2,
     WALLET_FORMAT_TEST,
+    WALLET_FORMAT_SEND_TEST,
     WALLET_FORMAT_TEST_1,
     WALLET_FORMAT_TEST_2,
     BITCOIN_ADDRESS_NP2WKH,
@@ -365,12 +369,12 @@ class TestPrivateKeyTestnet:
         assert transactions == private_key.transactions
 
     def test_send(self):
-        if TRAVIS and sys.version_info[:2] != (3, 7):
+        if not TRAVIS or sys.version_info[:2] != (3, 7):
             return
 
-        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_TEST)
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_COMPRESSED_SEND_TEST)
 
-        # Monkey pathing:
+        # Monkey patching:
         # Ensures get_unspents() retrieves only non-segwit unspents.
         # Note: Necessary since Insight (Bitpay) testnet API does not support
         # pushing segwit transactions
@@ -385,7 +389,7 @@ class TestPrivateKeyTestnet:
         current = initial
         tries = 0
 
-        private_key.send([('mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt', 1, 'jpy')], leftover=private_key.address)
+        private_key.send([], leftover=private_key.address, fee=10)
 
         while tries < 180:  # pragma: no cover
             current = len(private_key.get_transactions())
@@ -397,13 +401,13 @@ class TestPrivateKeyTestnet:
         assert current > initial
 
     def test_cold_storage(self):
-        if TRAVIS and sys.version_info[:2] != (3, 7):
+        if not TRAVIS or sys.version_info[:2] != (3, 7):
             return
 
-        private_key = PrivateKeyTestnet(WALLET_FORMAT_TEST)
+        private_key = PrivateKeyTestnet(WALLET_FORMAT_SEND_TEST)
         address = private_key.address
 
-        prepared = PrivateKeyTestnet.prepare_transaction(address, [('mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt', 1, 'jpy')])
+        prepared = PrivateKeyTestnet.prepare_transaction(address, [], leftover=address, fee=10)
         tx_hex = private_key.sign_transaction(prepared)
 
         initial = len(private_key.get_transactions())
@@ -540,30 +544,25 @@ class TestMultiSig:
         unspent = multisig.get_unspents()
         assert unspent == multisig.unspents
 
-    def test_get_unspent_size(self):
-        # Mock NetworkAPI.get_unspent
-        networkBackup = NetworkAPI.get_unspent
-        NetworkAPI.get_unspent = lambda a: [
-            Unspent(amount=1, confirmations=1, script=b'script', txid=b'txid', 
-                txindex=0)
+    @mock.patch('bit.network.NetworkAPI.get_unspent')
+    def test_get_unspent_size(self, mock_get_unspent):
+        mock_get_unspent.return_value = yield [
+            Unspent(amount=1, confirmations=1, script=b'script', txid=b'txid', txindex=0)
         ]
 
         key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
-        multisig1 = MultiSig(key1, [key1.public_key, 33*b'\x00'], 2)
-        multisig2 = MultiSig(key1, [key1.public_key, 33*b'\x00'], 1)
-        multisig3 = MultiSig(key1, [key1.public_key, 33*b'\x00', 33*b'\x00'], 2)
+        multisig1 = MultiSig(key1, [key1.public_key, 33 * b'\x00'], 2)
+        multisig2 = MultiSig(key1, [key1.public_key, 33 * b'\x00'], 1)
+        multisig3 = MultiSig(key1, [key1.public_key, 33 * b'\x00', 33 * b'\x00'], 2)
         unspent1 = multisig1.get_unspents()
         unspent2 = multisig2.get_unspents()
         unspent3 = multisig3.get_unspents()
-        assert unspent1[0].vsize == 262    # Legacy 2-of-2
+        assert unspent1[0].vsize == 262  # Legacy 2-of-2
         assert unspent1[1].vsize == 131.5  # Nested Segwit 2-of-2
-        assert unspent2[0].vsize == 188    # Legacy 1-of-2
-        assert unspent2[1].vsize == 113    # Nested Segwit 1-of-2
-        assert unspent3[0].vsize == 298    # Legacy 2-of-3
-        assert unspent3[1].vsize == 140    # Nested Segwit 2-of-3
-
-        # Restore NetworkAPI.get_unspent
-        NetworkAPI.get_unspent = networkBackup
+        assert unspent2[0].vsize == 188  # Legacy 1-of-2
+        assert unspent2[1].vsize == 113  # Nested Segwit 1-of-2
+        assert unspent3[0].vsize == 298  # Legacy 2-of-3
+        assert unspent3[1].vsize == 140  # Nested Segwit 2-of-3
 
     def test_get_transactions(self):
         key1 = PrivateKey(WALLET_FORMAT_MAIN_1)
@@ -674,30 +673,25 @@ class TestMultiSigTestnet:
         unspent = multisig.get_unspents()
         assert unspent == multisig.unspents
 
-    def test_get_unspent_size(self):
-        # Mock NetworkAPI.get_unspent_testnet
-        networkBackup = NetworkAPI.get_unspent_testnet
-        NetworkAPI.get_unspent_testnet = lambda a: [
-            Unspent(amount=1, confirmations=1, script=b'script', txid=b'txid', 
-                txindex=0)
+    @mock.patch('bit.network.NetworkAPI.get_unspent_testnet')
+    def test_get_unspent_size(self, mock_get_unspent):
+        mock_get_unspent.return_value = yield [
+            Unspent(amount=1, confirmations=1, script=b'script', txid=b'txid', txindex=0)
         ]
 
         key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
-        multisig1 = MultiSigTestnet(key1, [key1.public_key, 33*b'\x00'], 2)
-        multisig2 = MultiSigTestnet(key1, [key1.public_key, 33*b'\x00'], 1)
-        multisig3 = MultiSigTestnet(key1, [key1.public_key, 33*b'\x00', 33*b'\x00'], 2)
+        multisig1 = MultiSigTestnet(key1, [key1.public_key, 33 * b'\x00'], 2)
+        multisig2 = MultiSigTestnet(key1, [key1.public_key, 33 * b'\x00'], 1)
+        multisig3 = MultiSigTestnet(key1, [key1.public_key, 33 * b'\x00', 33 * b'\x00'], 2)
         unspent1 = multisig1.get_unspents()
         unspent2 = multisig2.get_unspents()
         unspent3 = multisig3.get_unspents()
-        assert unspent1[0].vsize == 262    # Legacy 2-of-2
+        assert unspent1[0].vsize == 262  # Legacy 2-of-2
         assert unspent1[1].vsize == 131.5  # Nested Segwit 2-of-2
-        assert unspent2[0].vsize == 188    # Legacy 1-of-2
-        assert unspent2[1].vsize == 113    # Nested Segwit 1-of-2
-        assert unspent3[0].vsize == 298    # Legacy 2-of-3
-        assert unspent3[1].vsize == 140    # Nested Segwit 2-of-3
-
-        # Restore NetworkAPI.get_unspent_testnet
-        NetworkAPI.get_unspent_testnet = networkBackup
+        assert unspent2[0].vsize == 188  # Legacy 1-of-2
+        assert unspent2[1].vsize == 113  # Nested Segwit 1-of-2
+        assert unspent3[0].vsize == 298  # Legacy 2-of-3
+        assert unspent3[1].vsize == 140  # Nested Segwit 2-of-3
 
     def test_get_transactions(self):
         key1 = PrivateKeyTestnet(WALLET_FORMAT_TEST_1)
