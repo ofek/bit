@@ -95,3 +95,5 @@ Exceptions
 ----------
 
 .. autoexception:: bit.exceptions.InsufficientFunds
+.. autoexception:: bit.exceptions.BitcoinNodeException
+.. autoexception:: bit.exceptions.ExcessiveAddress

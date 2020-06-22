@@ -111,12 +111,11 @@ Services
 Bit communicates with the blockchain using trusted third-party APIs.
 Specifically, it can access:
 
-- `<https://insight.bitpay.com>`_ via :class:`~bit.network.services.BitpayAPI`
-- `<https://blockchain.info>`_ via :class:`~bit.network.services.BlockchainAPI`
+- `<https://blockchair.com>`_ via :class:`~bit.network.services.BlockchairAPI`
+- `<https://blockstream.info>`_ via :class:`~bit.network.services.BlockstreamAPI`
+- `<https://bitcore.io>`_ via :class:`~bit.network.services.BitcoreAPI`
 - `<https://smartbit.com.au>`_ via :class:`~bit.network.services.SmartbitAPI`
-
-Bit can alternatively use a remote Bitcoin node to interact with the blockchain,
-see guide below.
+- `<https://blockchain.info>`_ via :class:`~bit.network.services.BlockchainAPI`
 
 NetworkAPI
 ^^^^^^^^^^
@@ -124,8 +123,25 @@ NetworkAPI
 Private key network operations use :class:`~bit.network.NetworkAPI`. For each method,
 it polls a service and if an error occurs it tries another.
 
+**Note:**
+
+:class:`~bit.network.services.BlockchainAPI` does only track up to 1000 unspent 
+transaction outputs (UTXOs) and will raise :class:`~bit.exceptions.ExcessiveAddress` 
+if polling unspents on an address with 1000 or more UTXOs.
+
+:class:`~bit.network.services.BlockstreamAPI` does only track up to 50 _unconfirmed_
+transactions and will raise :class:`~bit.exceptions.ExcessiveAddress` if polling 
+unspents on an address with 50 or more unconfirmed. It may occasionally also 
+raise :class:`~bit.exceptions.ExcessiveAddress` on an address with a history of 
+many (1000+) transactions.
+
+In those cases where the API may raise errors due to :class:`~bit.exceptions.ExcessiveAddress` 
+it is advised to use your own remote Bitcoin node to poll, see below.
+
 Connect To Remote Node
 ----------------------
+
+Bit can alternatively use a remote Bitcoin node to interact with the blockchain.
 
 See the dedicated guide under :ref:`remote node <remotenode>` to configure Bit
 to use a remote Bitcoin node instead of relying on web APIs for blockchain
