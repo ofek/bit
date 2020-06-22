@@ -4,3 +4,6 @@ class InsufficientFunds(Exception):
 
 class BitcoinNodeException(Exception):
     pass
+
+class ExcessiveAddress(Exception):
+    pass

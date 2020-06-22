@@ -6,7 +6,9 @@ from decimal import Decimal, getcontext
 from bit.constants import BTC
 from bit.network import currency_to_satoshi
 from bit.network.meta import Unspent
-from bit.exceptions import BitcoinNodeException
+from bit.exceptions import BitcoinNodeException, ExcessiveAddress
+from bit.transaction import address_to_scriptpubkey
+from bit.utils import bytes_to_hex
 
 DEFAULT_TIMEOUT = 10
 
@@ -102,7 +104,412 @@ class RPCMethod:
         return responseJSON["result"]
 
 
-class InsightAPI:
+class BlockchairAPI:
+    MAIN_ENDPOINT = 'https://api.blockchair.com/bitcoin/'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'dashboards/address/{}'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'dashboards/push/transaction'
+    MAIN_TX_API = MAIN_ENDPOINT + 'raw/transaction/{}'
+    TEST_ENDPOINT = 'https://api.blockchair.com/bitcoin/testnet/'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'dashboards/address/{}'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'dashboards/push/transaction'
+    TEST_TX_API = TEST_ENDPOINT + 'raw/transaction/{}'
+    TX_PUSH_PARAM = 'data'
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()['data'][address]['address']['balance']
+
+    @classmethod
+    def get_balance_testnet(cls, address):
+        r = requests.get(cls.TEST_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.json()['data'][address]['address']['balance']
+
+    @classmethod
+    def get_transactions(cls, address):
+        endpoint = cls.MAIN_ADDRESS_API
+
+        transactions = []
+        offset = 0
+        txs_per_page = 1000
+        payload = {'offset': str(offset), 'limit': str(txs_per_page)}
+
+        r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return []
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+        response = response['data'][address]
+        total_txs = response['address']['transaction_count']
+
+        while total_txs > 0:
+            transactions.extend(tx for tx in response['transactions'])
+
+            total_txs -= txs_per_page
+            offset += txs_per_page
+            payload['offset'] = str(offset)
+            r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()['data'][address]
+
+        return transactions
+
+    @classmethod
+    def get_transactions_testnet(cls, address):
+        endpoint = cls.TEST_ADDRESS_API
+
+        transactions = []
+        offset = 0
+        txs_per_page = 1000
+        payload = {'offset': str(offset), 'limit': str(txs_per_page)}
+
+        r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return []
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+        response = response['data'][address]
+        total_txs = response['address']['transaction_count']
+
+        while total_txs > 0:
+            transactions.extend(tx for tx in response['transactions'])
+
+            total_txs -= txs_per_page
+            offset += txs_per_page
+            payload['offset'] = str(offset)
+            r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()['data'][address]
+
+        return transactions
+
+    @classmethod
+    def get_transaction_by_id(cls, txid):
+        r = requests.get(cls.MAIN_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+
+        response = r.json()['data']
+        if not response:  # pragma: no cover
+            return None
+        return response[txid]['raw_transaction']
+
+    @classmethod
+    def get_transaction_by_id_testnet(cls, txid):
+        r = requests.get(cls.TEST_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+
+        response = r.json()['data']
+        if not response:  # pragma: no cover
+            return None
+        return response[txid]['raw_transaction']
+
+    @classmethod
+    def get_unspent(cls, address):
+        endpoint = cls.MAIN_ADDRESS_API
+
+        unspents = []
+        offset = 0
+        unspents_per_page = 1000
+        payload = {'offset': str(offset), 'limit': str(unspents_per_page)}
+
+        r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+
+        block_height = response['context']['state']
+        response = response['data'][address]
+        script_pubkey = response['address']['script_hex']
+        total_unspents = response['address']['unspent_output_count']
+
+        while total_unspents > 0:
+            unspents.extend(
+                Unspent(
+                    utxo['value'],
+                    block_height - utxo['block_id'],
+                    script_pubkey,
+                    utxo['transaction_hash'],
+                    utxo['index'],
+                )
+                for utxo in response['utxo']
+            )
+
+            total_unspents -= unspents_per_page
+            offset += unspents_per_page
+            payload['offset'] = str(offset)
+            r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()['data'][address]
+
+        return unspents
+
+    @classmethod
+    def get_unspent_testnet(cls, address):
+        endpoint = cls.TEST_ADDRESS_API
+
+        unspents = []
+        offset = 0
+        unspents_per_page = 1000
+        payload = {'offset': str(offset), 'limit': unspents_per_page}
+
+        r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+
+        block_height = response['context']['state']
+        response = response['data'][address]
+        script_pubkey = response['address']['script_hex']
+        total_unspents = response['address']['unspent_output_count']
+
+        while total_unspents > 0:
+            unspents.extend(
+                Unspent(
+                    utxo['value'],
+                    block_height - utxo['block_id'],
+                    script_pubkey,
+                    utxo['transaction_hash'],
+                    utxo['index'],
+                )
+                for utxo in response['utxo']
+            )
+
+            total_unspents -= unspents_per_page
+            offset += unspents_per_page
+            payload['offset'] = str(offset)
+            r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()['data'][address]
+
+        return unspents
+
+    @classmethod
+    def broadcast_tx(
+        cls, tx_hex,
+    ):  # pragma: no cover
+        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        return True if r.status_code == 200 else False
+
+    @classmethod
+    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        return True if r.status_code == 200 else False
+
+
+class BlockstreamAPI:
+    MAIN_ENDPOINT = 'https://blockstream.info/api/'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/{}'
+    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/utxo'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx'
+    MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}/hex'
+    TEST_ENDPOINT = 'https://blockstream.info/testnet/api/'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/{}'
+    TEST_UNSPENT_API = TEST_ADDRESS_API + '/utxo'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx'
+    TEST_TX_API = TEST_ENDPOINT + 'tx/{}/hex'
+    TX_PUSH_PARAM = 'data'
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+        funded = response['chain_stats']['funded_txo_sum'] + response['mempool_stats']['funded_txo_sum']
+        spent = response['chain_stats']['spent_txo_sum'] + response['mempool_stats']['spent_txo_sum']
+        return funded - spent
+
+    @classmethod
+    def get_balance_testnet(cls, address):
+        r = requests.get(cls.TEST_ADDRESS_API.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+        funded = response['chain_stats']['funded_txo_sum'] + response['mempool_stats']['funded_txo_sum']
+        spent = response['chain_stats']['spent_txo_sum'] + response['mempool_stats']['spent_txo_sum']
+        return funded - spent
+
+    @classmethod
+    def get_transactions(
+        cls, address,
+    ):
+        #! Blockstream returns at most 50 mempool (unconfirmed) transactions and ignores the rest
+        mempool_endpoint = cls.MAIN_ADDRESS_API + '/txs/mempool'
+        
+        endpoint = cls.MAIN_ADDRESS_API + '/txs/chain/{}'
+
+        transactions = []
+
+        # Add mempool (unconfirmed) transactions
+        r = requests.get(mempool_endpoint.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 400:  # pragma: no cover
+            return []
+        elif r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+        unconfirmed = [tx['txid'] for tx in response]
+
+        # It is safer to raise exception if API returns exactly 50 unconfirmed
+        # transactions, as there could be more that the API is unaware of.
+        if len(unconfirmed) == 50:  # pragme: no cover
+            raise ExcessiveAddress
+
+        r = requests.get(endpoint.format(address, ''), timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 400:  # pragma: no cover
+            return []
+        elif r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+
+        # The first 25 confirmed transactions are shown with no
+        # indication of the number of total transactions.
+        total_txs = len(response)
+
+        while total_txs > 0:
+            transactions.extend(tx['txid'] for tx in response)
+
+            response = requests.get(endpoint.format(address, transactions[-1]), timeout=DEFAULT_TIMEOUT).json()
+            total_txs = len(response)
+
+        transactions.extend(unconfirmed)
+
+        return transactions
+
+    @classmethod
+    def get_transactions_testnet(cls, address):
+        endpoint = cls.TEST_ADDRESS_API + '/txs/chain/{}'
+
+        transactions = []
+
+        r = requests.get(endpoint.format(address, ''), timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 400:  # pragma: no cover
+            return []
+        elif r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
+
+        # The first 50 mempool and 25 confirmed transactions are shown with no
+        # indication of the number of total transactions.
+        total_txs = len(response)
+
+        while total_txs > 0:
+            transactions.extend(tx['txid'] for tx in response)
+
+            response = requests.get(endpoint.format(address, transactions[-1]), timeout=DEFAULT_TIMEOUT).json()
+            total_txs = len(response)
+
+        return transactions
+
+    @classmethod
+    def get_transaction_by_id(cls, txid):
+        r = requests.get(cls.MAIN_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.text
+
+    @classmethod
+    def get_transaction_by_id_testnet(cls, txid):
+        r = requests.get(cls.TEST_TX_API.format(txid), timeout=DEFAULT_TIMEOUT)
+        if r.status_code == 404:  # pragma: no cover
+            return None
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        return r.text
+
+    @classmethod
+    def get_unspent(cls, address):
+        # Get current block height:
+        r_block = requests.get(cls.MAIN_ENDPOINT + 'blocks/tip/height', timeout=DEFAULT_TIMEOUT)
+        if r_block.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        block_height = int(r_block.text)
+
+        r = requests.get(cls.MAIN_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+
+        #! BlockstreamAPI blocks addresses with "too many" UTXOs.
+        if r.status_code == 400 and r.text == "Too many history entries":
+            raise ExcessiveAddress
+        elif r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+
+        script_pubkey = bytes_to_hex(address_to_scriptpubkey(address))
+
+        return sorted(
+            [
+                Unspent(
+                    tx["value"],
+                    block_height - tx["status"]["block_height"] if tx["status"]["confirmed"] else 0,
+                    script_pubkey,
+                    tx["txid"],
+                    tx["vout"],
+                )
+                for tx in r.json()
+            ],
+            key=lambda u: u.confirmations,
+        )
+
+    @classmethod
+    def get_unspent_testnet(cls, address):
+        # Get current block height:
+        r_block = requests.get(cls.TEST_ENDPOINT + 'blocks/tip/height', timeout=DEFAULT_TIMEOUT)
+        if r_block.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        block_height = int(r_block.text)
+
+        r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+
+        if r.status_code == 400:  # pragma: no cover
+            return []
+        elif r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+
+        script_pubkey = bytes_to_hex(address_to_scriptpubkey(address))
+
+        return [
+            Unspent(
+                tx["value"],
+                block_height - tx["status"]["block_height"] if tx["status"]["confirmed"] else 0,
+                script_pubkey,
+                tx["txid"],
+                tx["vout"],
+            )
+            for tx in r.json()
+        ]
+
+    @classmethod
+    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        return True if r.status_code == 200 else False
+
+    @classmethod
+    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
+        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        return True if r.status_code == 200 else False
+
+
+class InsightAPI:  # pragma: no cover
     MAIN_ENDPOINT = ''
     MAIN_ADDRESS_API = ''
     MAIN_BALANCE_API = ''
@@ -128,7 +535,7 @@ class InsightAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API + txid, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
+        if r.status_code == 404:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -156,70 +563,109 @@ class InsightAPI:
         return True if r.status_code == 200 else False
 
 
-class BitpayAPI(InsightAPI):
-    MAIN_ENDPOINT = 'https://insight.bitpay.com/api/'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'addr/'
-    MAIN_BALANCE_API = MAIN_ADDRESS_API + '{}/balance'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/utxo'
+class BitcoreAPI(InsightAPI):
+    """ Insight API v8 """
+
+    MAIN_ENDPOINT = 'https://api.bitcore.io/api/BTC/mainnet/'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/{}'
+    MAIN_BALANCE_API = MAIN_ADDRESS_API + '/balance'
+    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/?unspent=true'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'tx/send'
-    MAIN_TX_API = MAIN_ENDPOINT + 'rawtx/'
-    TEST_ENDPOINT = 'https://test-insight.bitpay.com/api/'
-    TEST_ADDRESS_API = TEST_ENDPOINT + 'addr/'
-    TEST_BALANCE_API = TEST_ADDRESS_API + '{}/balance'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/utxo'
+    MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}'
+    MAIN_TX_AMOUNT_API = MAIN_TX_API
+    TEST_ENDPOINT = 'https://api.bitcore.io/api/BTC/testnet/'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/{}'
+    TEST_BALANCE_API = TEST_ADDRESS_API + '/balance'
+    TEST_UNSPENT_API = TEST_ADDRESS_API + '/?unspent=true'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'tx/send'
-    TEST_TX_API = TEST_ENDPOINT + 'rawtx/'
-    TX_PUSH_PARAM = 'rawtx'
+    TEST_TX_API = TEST_ENDPOINT + 'tx/{}'
+    TEST_TX_AMOUNT_API = TEST_TX_API
+    TX_PUSH_PARAM = 'rawTx'
+
+    @classmethod
+    def get_unspent(cls, address):
+        endpoint = cls.MAIN_UNSPENT_API + "&limit=100"
+
+        unspents = []
+
+        r = requests.get(endpoint.format(address), timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+
+        response = r.json()
+
+        while len(response) > 0:
+            unspents.extend(
+                Unspent(
+                    currency_to_satoshi(tx['value'], 'satoshi'),
+                    tx['confirmations'],
+                    tx['script'],
+                    tx['mintTxid'],
+                    tx['mintIndex'],
+                )
+                for tx in response
+            )
+            response = requests.get(
+                endpoint.format(address) + "&since={}".format(response[-1]['_id']), timeout=DEFAULT_TIMEOUT
+            ).json()
+
+        return unspents
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
+        r.raise_for_status()  # pragma: no cover
+        return r.json()['balance']
 
     @classmethod
     def get_balance_testnet(cls, address):
         r = requests.get(cls.TEST_BALANCE_API.format(address), timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return r.json()
-
-    @classmethod
-    def get_transactions_testnet(cls, address):
-        r = requests.get(cls.TEST_ADDRESS_API + address, timeout=DEFAULT_TIMEOUT)
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return r.json()['transactions']
-
-    @classmethod
-    def get_transaction_by_id_testnet(cls, txid):
-        r = requests.get(cls.TEST_TX_API + txid, timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 404:
-            return None
-        if r.status_code != 200:  # pragma: no cover
-            raise ConnectionError
-        return r.json()["rawtx"]
+        r.raise_for_status()  # pragma: no cover
+        return r.json()['balance']
 
     @classmethod
     def get_unspent_testnet(cls, address):
-        r = requests.get(cls.TEST_UNSPENT_API.format(address), timeout=DEFAULT_TIMEOUT)
+        endpoint = cls.TEST_UNSPENT_API + "&limit=100"
+
+        unspents = []
+
+        r = requests.get(endpoint.format(address), timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return [
-            Unspent(
-                currency_to_satoshi(tx['amount'], 'btc'),
-                tx['confirmations'],
-                tx['scriptPubKey'],
-                tx['txid'],
-                tx['vout'],
+
+        response = r.json()
+
+        while len(response) > 0:
+            unspents.extend(
+                Unspent(
+                    currency_to_satoshi(tx['value'], 'satoshi'),
+                    tx['confirmations'],
+                    tx['script'],
+                    tx['mintTxid'],
+                    tx['mintIndex'],
+                )
+                for tx in response
             )
-            for tx in r.json()
-        ]
+            response = requests.get(
+                endpoint.format(address) + "&since={}".format(response[-1]['_id']), timeout=DEFAULT_TIMEOUT
+            ).json()
+
+        return unspents
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(
+            cls.TEST_TX_PUSH_API,
+            json={cls.TX_PUSH_PARAM: tx_hex, 'network': 'testnet', 'coin': 'BCH'},
+            timeout=DEFAULT_TIMEOUT,
+        )
         return True if r.status_code == 200 else False
 
 
 class BlockchainAPI:
     ENDPOINT = 'https://blockchain.info/'
     ADDRESS_API = ENDPOINT + 'address/{}?format=json'
-    UNSPENT_API = ENDPOINT + 'unspent?active='
+    UNSPENT_API = ENDPOINT + 'unspent'
     TX_PUSH_API = ENDPOINT + 'pushtx'
     TX_API = ENDPOINT + 'rawtx/'
     TX_PUSH_PARAM = 'tx'
@@ -237,10 +683,13 @@ class BlockchainAPI:
 
         transactions = []
         offset = 0
-        payload = {'offset': str(offset)}
         txs_per_page = 50
+        payload = {'offset': str(offset)}
 
-        response = requests.get(endpoint.format(address), timeout=DEFAULT_TIMEOUT).json()
+        r = requests.get(endpoint.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
+        if r.status_code != 200:  # pragma: no cover
+            raise ConnectionError
+        response = r.json()
         total_txs = response['n_tx']
 
         while total_txs > 0:
@@ -256,7 +705,7 @@ class BlockchainAPI:
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.TX_API + txid + '?limit=0&format=hex', timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 500 and r.text == 'Transaction not found':
+        if r.status_code == 500 and r.text == 'Transaction not found':  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -264,17 +713,30 @@ class BlockchainAPI:
 
     @classmethod
     def get_unspent(cls, address):
-        r = requests.get(cls.UNSPENT_API + address, timeout=DEFAULT_TIMEOUT)
+        endpoint = cls.UNSPENT_API
 
-        if r.status_code == 500:
+        offset = 0
+        utxos_per_page = 1000
+        payload = {'active': address, 'offset': str(offset), 'limit': str(utxos_per_page)}
+
+        r = requests.get(endpoint, params=payload, timeout=DEFAULT_TIMEOUT)
+
+        if r.status_code == 500:  # pragma: no cover
             return []
         elif r.status_code != 200:  # pragma: no cover
             raise ConnectionError
 
-        return [
+        unspents = [
             Unspent(tx['value'], tx['confirmations'], tx['script'], tx['tx_hash_big_endian'], tx['tx_output_n'])
             for tx in r.json()['unspent_outputs']
-        ][::-1]
+        ]
+
+        #! BlockchainAPI only supports up to 1000 UTXOs.
+        #! Raises an exception for addresses that may contain more UTXOs.
+        if len(unspents) == 1000:
+            raise ExcessiveAddress
+
+        return unspents[::-1]
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
@@ -284,50 +746,62 @@ class BlockchainAPI:
 
 class SmartbitAPI:
     MAIN_ENDPOINT = 'https://api.smartbit.com.au/v1/blockchain/'
-    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/'
-    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '{}/unspent'
+    MAIN_ADDRESS_API = MAIN_ENDPOINT + 'address/{}'
+    MAIN_UNSPENT_API = MAIN_ADDRESS_API + '/unspent'
     MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'pushtx'
     MAIN_TX_API = MAIN_ENDPOINT + 'tx/{}/hex'
     TEST_ENDPOINT = 'https://testnet-api.smartbit.com.au/v1/blockchain/'
-    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/'
-    TEST_UNSPENT_API = TEST_ADDRESS_API + '{}/unspent'
+    TEST_ADDRESS_API = TEST_ENDPOINT + 'address/{}'
+    TEST_UNSPENT_API = TEST_ADDRESS_API + '/unspent'
     TEST_TX_PUSH_API = TEST_ENDPOINT + 'pushtx'
     TEST_TX_API = TEST_ENDPOINT + 'tx/{}/hex'
     TX_PUSH_PARAM = 'hex'
 
     @classmethod
     def get_balance(cls, address):
-        r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.MAIN_ADDRESS_API.format(address), params={'limit': '1'}, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['address']['total']['balance_int']
 
     @classmethod
     def get_balance_testnet(cls, address):
-        r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1', timeout=DEFAULT_TIMEOUT)
+        r = requests.get(cls.TEST_ADDRESS_API.format(address), params={'limit': '1'}, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return r.json()['address']['total']['balance_int']
 
     @classmethod
     def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        txs_per_page = 1000
+        payload = {'limit': str(txs_per_page)}
+        r = requests.get(cls.MAIN_ADDRESS_API.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
 
-        data = r.json()['address']
+        response = r.json()['address']
 
         transactions = []
+        next_link = None
 
-        if 'transactions' in data:
-            transactions.extend(t['txid'] for t in data['transactions'])
+        if 'transactions' in response:
+            transactions.extend(t['txid'] for t in response['transactions'])
+            next_link = response['transaction_paging']['next_link']
+
+        while next_link:
+            r = requests.get(next_link, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()['address']
+            transactions.extend(t['txid'] for t in response['transactions'])
+            next_link = response['transaction_paging']['next_link']
 
         return transactions
 
     @classmethod
     def get_transaction_by_id(cls, txid):
         r = requests.get(cls.MAIN_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -335,23 +809,35 @@ class SmartbitAPI:
 
     @classmethod
     def get_transactions_testnet(cls, address):
-        r = requests.get(cls.TEST_ADDRESS_API + address + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        txs_per_page = 1000
+        payload = {'limit': str(txs_per_page)}
+        r = requests.get(cls.TEST_ADDRESS_API.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
 
-        data = r.json()['address']
+        response = r.json()['address']
 
         transactions = []
+        next_link = None
 
-        if 'transactions' in data:
-            transactions.extend(t['txid'] for t in data['transactions'])
+        if 'transactions' in response:
+            transactions.extend(t['txid'] for t in response['transactions'])
+            next_link = response['transaction_paging']['next_link']
+
+        while next_link:
+            r = requests.get(next_link, params=payload, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()['address']
+            transactions.extend(t['txid'] for t in response['transactions'])
+            next_link = response['transaction_paging']['next_link']
 
         return transactions
 
     @classmethod
     def get_transaction_by_id_testnet(cls, txid):
         r = requests.get(cls.TEST_TX_API.format(txid) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
-        if r.status_code == 400:
+        if r.status_code == 400:  # pragma: no cover
             return None
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
@@ -359,35 +845,93 @@ class SmartbitAPI:
 
     @classmethod
     def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_UNSPENT_API.format(address) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        txs_per_page = 1000
+        payload = {'limit': str(txs_per_page)}
+        r = requests.get(cls.MAIN_UNSPENT_API.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return [
-            Unspent(
-                currency_to_satoshi(tx['value'], 'btc'),
-                tx['confirmations'],
-                tx['script_pub_key']['hex'],
-                tx['txid'],
-                tx['n'],
+
+        response = r.json()
+
+        unspents = []
+        next_link = None
+
+        if 'unspent' in response:
+            unspents.extend(
+                Unspent(
+                    currency_to_satoshi(tx['value'], 'btc'),
+                    tx['confirmations'],
+                    tx['script_pub_key']['hex'],
+                    tx['txid'],
+                    tx['n'],
+                )
+                for tx in response['unspent']
             )
-            for tx in r.json()['unspent']
-        ]
+            next_link = response['paging']['next_link']
+
+        while next_link:
+            r = requests.get(next_link, params=payload, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()
+            unspents.extend(
+                Unspent(
+                    currency_to_satoshi(tx['value'], 'btc'),
+                    tx['confirmations'],
+                    tx['script_pub_key']['hex'],
+                    tx['txid'],
+                    tx['n'],
+                )
+                for tx in response['unspent']
+            )
+            next_link = response['paging']['next_link']
+
+        return unspents
 
     @classmethod
     def get_unspent_testnet(cls, address):
-        r = requests.get(cls.TEST_UNSPENT_API.format(address) + '?limit=1000', timeout=DEFAULT_TIMEOUT)
+        txs_per_page = 1000
+        payload = {'limit': str(txs_per_page)}
+        r = requests.get(cls.TEST_UNSPENT_API.format(address), params=payload, timeout=DEFAULT_TIMEOUT)
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
-        return [
-            Unspent(
-                currency_to_satoshi(tx['value'], 'btc'),
-                tx['confirmations'],
-                tx['script_pub_key']['hex'],
-                tx['txid'],
-                tx['n'],
+
+        response = r.json()
+
+        unspents = []
+        next_link = None
+
+        if 'unspent' in response:
+            unspents.extend(
+                Unspent(
+                    currency_to_satoshi(tx['value'], 'btc'),
+                    tx['confirmations'],
+                    tx['script_pub_key']['hex'],
+                    tx['txid'],
+                    tx['n'],
+                )
+                for tx in response['unspent']
             )
-            for tx in r.json()['unspent']
-        ]
+            next_link = response['paging']['next_link']
+
+        while next_link:
+            r = requests.get(next_link, params=payload, timeout=DEFAULT_TIMEOUT)
+            if r.status_code != 200:  # pragma: no cover
+                raise ConnectionError
+            response = r.json()
+            unspents.extend(
+                Unspent(
+                    currency_to_satoshi(tx['value'], 'btc'),
+                    tx['confirmations'],
+                    tx['script_pub_key']['hex'],
+                    tx['txid'],
+                    tx['n'],
+                )
+                for tx in response['unspent']
+            )
+            next_link = response['paging']['next_link']
+
+        return unspents
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
@@ -406,34 +950,71 @@ class NetworkAPI:
         requests.exceptions.ConnectionError,
         requests.exceptions.Timeout,
         requests.exceptions.ReadTimeout,
+        ExcessiveAddress,
     )
 
-    GET_BALANCE_MAIN = [BitpayAPI.get_balance, SmartbitAPI.get_balance, BlockchainAPI.get_balance]
+    GET_BALANCE_MAIN = [
+        BlockchairAPI.get_balance,
+        BlockstreamAPI.get_balance,
+        BitcoreAPI.get_balance,
+        SmartbitAPI.get_balance,
+        BlockchainAPI.get_balance,
+    ]
     GET_TRANSACTIONS_MAIN = [
-        BitpayAPI.get_transactions,  # Limit 1000
+        BlockchairAPI.get_transactions,  # Limit 1000
+        BlockstreamAPI.get_transactions,  # Limit 1000
         SmartbitAPI.get_transactions,  # Limit 1000
-        BlockchainAPI.get_transactions,
-    ]  # No limit, requires multiple requests
+        BlockchainAPI.get_transactions,  # No limit, requires multiple requests
+    ]
     GET_TRANSACTION_BY_ID_MAIN = [
-        BitpayAPI.get_transaction_by_id,
+        BlockchairAPI.get_transaction_by_id,
+        BlockstreamAPI.get_transaction_by_id,
         SmartbitAPI.get_transaction_by_id,
         BlockchainAPI.get_transaction_by_id,
     ]
     GET_UNSPENT_MAIN = [
-        BitpayAPI.get_unspent,  # No limit
+        BlockchairAPI.get_unspent,
+        BitcoreAPI.get_unspent,  # No limit
         SmartbitAPI.get_unspent,  # Limit 1000
+        BlockstreamAPI.get_unspent,
         BlockchainAPI.get_unspent,
-    ]  # Limit 250
-    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx, SmartbitAPI.broadcast_tx, BlockchainAPI.broadcast_tx]  # Limit 5/minute
+    ]
+    BROADCAST_TX_MAIN = [
+        BlockchairAPI.broadcast_tx,
+        BlockstreamAPI.broadcast_tx,
+        BitcoreAPI.broadcast_tx,
+        SmartbitAPI.broadcast_tx,  # Limit 5/minute
+        BlockchainAPI.broadcast_tx,
+    ]
 
-    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet, SmartbitAPI.get_balance_testnet]
+    GET_BALANCE_TEST = [
+        BlockchairAPI.get_balance_testnet,
+        BlockstreamAPI.get_balance_testnet,
+        BitcoreAPI.get_balance_testnet,
+        SmartbitAPI.get_balance_testnet,
+    ]
     GET_TRANSACTIONS_TEST = [
-        BitpayAPI.get_transactions_testnet,  # Limit 1000
-        SmartbitAPI.get_transactions_testnet,
-    ]  # Limit 1000
-    GET_TRANSACTION_BY_ID_TEST = [BitpayAPI.get_transaction_by_id_testnet, SmartbitAPI.get_transaction_by_id_testnet]
-    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet, SmartbitAPI.get_unspent_testnet]  # No limit  # Limit 1000
-    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet, SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
+        BlockchairAPI.get_transactions_testnet,  # Limit 1000
+        BlockstreamAPI.get_transactions_testnet,
+        SmartbitAPI.get_transactions_testnet,  # Limit 1000
+    ]
+    GET_TRANSACTION_BY_ID_TEST = [
+        BlockchairAPI.get_transaction_by_id_testnet,
+        BlockstreamAPI.get_transaction_by_id_testnet,
+        SmartbitAPI.get_transaction_by_id_testnet,
+    ]
+    GET_UNSPENT_TEST = [
+        BlockchairAPI.get_unspent_testnet,
+        BitcoreAPI.get_unspent_testnet,  # No limit
+        SmartbitAPI.get_unspent_testnet,  # Limit 1000
+        BlockstreamAPI.get_unspent_testnet,
+    ]
+    BROADCAST_TX_TEST = [
+        BlockchairAPI.broadcast_tx_testnet,
+        BlockstreamAPI.broadcast_tx_testnet,
+        BitcoreAPI.broadcast_tx_testnet,
+        SmartbitAPI.broadcast_tx_testnet,  # Limit 5/minute
+    ]
 
     @classmethod
     def connect_to_node(cls, user, password, host='localhost', port=8332, use_https=False, testnet=False):
