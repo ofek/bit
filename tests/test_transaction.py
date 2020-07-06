@@ -624,6 +624,32 @@ class TestSanitizeTxData:
                 version='main',
             )
 
+    def test_no_combine_with_absolute_fee(self):
+        # Based on simplifications branch_and_bound roughly reduces
+        # to this formula with one input
+        # amount + overhead*fee <= unspent - unspent.vsize*fee < amount + overhead*fee + input*fee + output*fee
+        # amount + 40*fee <= unspent - 148*fee < amount + 40*fee + 182*fee
+        # amount < unspent - 188*f < amount + 182*f
+
+        fee = 8000
+        unspents_original = [Unspent(2000000, 0, '', '', 0)]
+        outputs_original = [(BITCOIN_ADDRESS_TEST, 100000, 'satoshi')]
+
+        unspents, outputs = sanitize_tx_data(
+            unspents_original,
+            outputs_original,
+            fee=fee,
+            absolute_fee=True,
+            leftover=RETURN_ADDRESS,
+            combine=False,
+            message=None,
+            version='test',
+        )
+
+        assert unspents == unspents_original
+        assert len(outputs) == 2
+        assert sum(u.amount for u in unspents) - sum(o[1] for o in outputs) == fee
+
 
 class TestCreateSignedTransaction:
     def test_matching(self):
