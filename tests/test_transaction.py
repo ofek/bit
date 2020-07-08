@@ -629,7 +629,7 @@ class TestSanitizeTxData:
         # to this formula with one input
         # amount + overhead*fee <= unspent - unspent.vsize*fee < amount + overhead*fee + input*fee + output*fee
         # amount + 40*fee <= unspent - 148*fee < amount + 40*fee + 182*fee
-        # amount < unspent - 188*f < amount + 182*f
+        # amount <= unspent - 188*fee < amount + 182*fee
 
         fee = 8000
         unspents_original = [Unspent(2000000, 0, '', '', 0)]
@@ -947,14 +947,14 @@ class TestEstimateTxFee:
 class TestSelectCoins:
     def test_perfect_match(self):
         unspents, remaining = select_coins(
-            100000000, 0, [34, 34], 0, absolute_fee=True, consolidate=False, unspents=UNSPENTS_SEGWIT
+            100000000, 0, [34, 34], 0, absolute_fee=False, consolidate=False, unspents=UNSPENTS_SEGWIT
         )
         assert len(unspents) == 1
         assert remaining == 0
 
     def test_perfect_match_with_range(self):
         unspents, remaining = select_coins(
-            99960000, 200, [34, 34], 0, absolute_fee=True, consolidate=False, unspents=UNSPENTS_SEGWIT
+            99960000, 200, [34, 34], 0, absolute_fee=False, consolidate=False, unspents=UNSPENTS_SEGWIT
         )
         assert len(unspents) == 1
         assert remaining == 0
@@ -962,7 +962,7 @@ class TestSelectCoins:
     def test_random_draw(self):
         print(UNSPENTS_SEGWIT)
         unspents, remaining = select_coins(
-            150000000, 0, [34, 34], 0, absolute_fee=True, consolidate=False, unspents=UNSPENTS_SEGWIT
+            150000000, 0, [34, 34], 0, absolute_fee=False, consolidate=False, unspents=UNSPENTS_SEGWIT
         )
         assert all([u in UNSPENTS_SEGWIT for u in unspents])
         assert remaining == 50000000

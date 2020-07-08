@@ -282,7 +282,8 @@ class PrivateKey(BaseKey):
         :type leftover: ``str``
         :param combine: Whether or not Bit should use all available UTXOs to
                         make future transactions smaller and therefore reduce
-                        fees. By default Bit will consolidate UTXOs.
+                        fees. By default Bit will consolidate UTXOs. Note: When
+                        setting :param absolute_fee: this is ignored.
         :type combine: ``bool``
         :param message: A message to include in the transaction. This will be
                         stored in the blockchain forever. Due to size limits,
