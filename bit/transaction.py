@@ -297,7 +297,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False, co
     sorted_unspents = sorted(unspents, key=lambda u: u.amount, reverse=True)
     selected_coins = []
 
-    if not consolidate:
+    if not consolidate and not absolute_fee:
         # Trying to find a perfect match using Branch-and-Bound:
         selected_coins = branch_and_bound(
             d=0, selected_coins=[], effective_value=0, target=target, fee=fee, sorted_unspents=sorted_unspents
