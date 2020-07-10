@@ -77,7 +77,7 @@ sort the public keys internally in lexicographical order similar to how
 `Electrum`_ behaves.
 If the public keys are provided with a list, then the ordering of the public
 keys of that list are used, similar to how Bitcoin Core behaves.
-Calling :param:`~bit.MultiSig.public_keys` will always return a list with the
+Calling :func:`~bit.MultiSig.public_keys` will always return a list with the
 public keys in the order they are being used by in the multisignature contract.
 
 Public Point
@@ -100,7 +100,7 @@ Public Key
 ----------
 
 A public key is a public point serialized to bytes. By default all keys will
-use the compressed version unless :ref:`you explicitly need otherwise <hextowif>`.
+use the compressed version unless :ref:`you explicitly need otherwise <bytestowif>`.
 This reduces the size of each transaction and thus fees.
 
 Access it like so:

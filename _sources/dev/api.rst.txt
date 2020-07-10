@@ -43,10 +43,18 @@ Network
     :members:
     :undoc-members:
 
-.. autoclass:: bit.network.services.BitpayAPI
+.. autoclass:: bit.network.services.BitcoreAPI
     :members:
     :undoc-members:
     :inherited-members:
+
+.. autoclass:: bit.network.services.BlockchairAPI
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.services.BlockstreamAPI
+    :members:
+    :undoc-members:
 
 .. autoclass:: bit.network.services.BlockchainAPI
     :members:
@@ -95,3 +103,5 @@ Exceptions
 ----------
 
 .. autoexception:: bit.exceptions.InsufficientFunds
+.. autoexception:: bit.exceptions.BitcoinNodeException
+.. autoexception:: bit.exceptions.ExcessiveAddress

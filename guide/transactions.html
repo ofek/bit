@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Transactions &#8212; Bit 0.5.2 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions &#8212; Bit 0.6.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Exchange Rates" href="rates.html" />
@@ -136,7 +137,7 @@ will allow your transaction to be confirmed as soon as possible.</p>
 <p>It is also possible to specify an absolute fee value instead. This is done by
 activating the absolute fee flag and re-purposing the fee parameter with the
 absolute fee value of e.g. 150 satoshis for the transaction:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">absolute_fee</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">fee</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">absolute_fee</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For more information about transaction fees <a class="reference external" href="https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care">read this</a>.</p>
@@ -146,7 +147,7 @@ absolute fee value of e.g. 150 satoshis for the transaction:</p>
 <p>By default Bit will use all of your available UTXOs to make future transactions
 smaller and therefore reduce fees.</p>
 <p>If you don’t desire this behavior and only wish to use what is needed, do this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">create_transaction</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the consolidation is disabled, Bit will use the <a class="reference external" href="http://murch.one/wp-content/uploads/2016/11/erhardt2016coinselection.pdf">Branch-and-Bound</a> algorithm
@@ -262,6 +263,7 @@ supply your own list of unspent transaction outputs by doing either:</p>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="keys.html">Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html#using-a-remote-bitcoin-core-node">Using a Remote Bitcoin Core Node</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Transactions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#creating-and-signing">Creating and Signing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#batching">Batching</a></li>
@@ -307,15 +309,15 @@ supply your own list of unspent transaction outputs by doing either:</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+<script>$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 
 <!-- Alabaster (krTheme++) Hacks -->
 

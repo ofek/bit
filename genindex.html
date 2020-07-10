@@ -1,18 +1,18 @@
 
-
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Index &#8212; Bit 0.5.2 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index &#8212; Bit 0.6.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -57,14 +57,14 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dev/api.html#bit.MultiSig.address">address (bit.MultiSig attribute)</a>
+      <li><a href="dev/api.html#bit.MultiSig.address">address() (bit.MultiSig property)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.MultiSigTestnet.address">(bit.MultiSigTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.MultiSigTestnet.address">(bit.MultiSigTestnet property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKey.address">(bit.PrivateKey attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKey.address">(bit.PrivateKey property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.address">(bit.PrivateKeyTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.address">(bit.PrivateKeyTestnet property)</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.network.services.BlockchainAPI.ADDRESS_API">ADDRESS_API (bit.network.services.BlockchainAPI attribute)</a>
@@ -101,15 +101,26 @@
       </ul></li>
       <li><a href="dev/api.html#bit.wallet.BaseKey">BaseKey (class in bit.wallet)</a>
 </li>
-      <li><a href="dev/api.html#module-bit">bit (module)</a>
+      <li>
+    bit
+
+      <ul>
+        <li><a href="dev/api.html#module-bit">module</a>
 </li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI">BitpayAPI (class in bit.network.services)</a>
+      </ul></li>
+      <li><a href="dev/api.html#bit.exceptions.BitcoinNodeException">BitcoinNodeException</a>
+</li>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI">BitcoreAPI (class in bit.network.services)</a>
 </li>
       <li><a href="dev/api.html#bit.network.rates.BitpayRates">BitpayRates (class in bit.network.rates)</a>
 </li>
       <li><a href="dev/api.html#bit.network.services.BlockchainAPI">BlockchainAPI (class in bit.network.services)</a>
 </li>
       <li><a href="dev/api.html#bit.network.rates.BlockchainRates">BlockchainRates (class in bit.network.rates)</a>
+</li>
+      <li><a href="dev/api.html#bit.network.services.BlockchairAPI">BlockchairAPI (class in bit.network.services)</a>
+</li>
+      <li><a href="dev/api.html#bit.network.services.BlockstreamAPI">BlockstreamAPI (class in bit.network.services)</a>
 </li>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.BRL_RATES">BRL_RATES (bit.network.rates.RatesAPI attribute)</a>
 </li>
@@ -126,9 +137,13 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.broadcast_tx">broadcast_tx() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.broadcast_tx">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.broadcast_tx">(bit.network.services.BitcoreAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.broadcast_tx">(bit.network.services.BlockchainAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.broadcast_tx">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.broadcast_tx">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.broadcast_tx">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -140,7 +155,11 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.broadcast_tx_testnet">broadcast_tx_testnet() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.broadcast_tx_testnet">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.broadcast_tx_testnet">(bit.network.services.BitcoreAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.broadcast_tx_testnet">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.broadcast_tx_testnet">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.broadcast_tx_testnet">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -205,6 +224,8 @@
       </ul></li>
       <li><a href="dev/api.html#bit.network.meta.Unspent.confirmations">confirmations (bit.network.meta.Unspent attribute)</a>
 </li>
+      <li><a href="dev/api.html#bit.network.NetworkAPI.connect_to_node">connect_to_node() (bit.network.NetworkAPI class method)</a>
+</li>
       <li><a href="dev/api.html#bit.MultiSig.create_transaction">create_transaction() (bit.MultiSig method)</a>
 
       <ul>
@@ -251,8 +272,6 @@
 </li>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.EUR_RATES">EUR_RATES (bit.network.rates.RatesAPI attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.network.rates.BitpayRates.eur_to_satoshi">eur_to_satoshi() (bit.network.rates.BitpayRates class method)</a>
 
       <ul>
@@ -261,6 +280,10 @@
         <li><a href="dev/api.html#bit.network.rates.RatesAPI.eur_to_satoshi">(bit.network.rates.RatesAPI class method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dev/api.html#bit.exceptions.ExcessiveAddress">ExcessiveAddress</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -322,17 +345,21 @@
       <ul>
         <li><a href="dev/api.html#bit.MultiSigTestnet.get_balance">(bit.MultiSigTestnet method)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKey.get_balance">(bit.PrivateKey method)</a>
-</li>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.get_balance">(bit.PrivateKeyTestnet method)</a>
-</li>
         <li><a href="dev/api.html#bit.network.NetworkAPI.get_balance">(bit.network.NetworkAPI class method)</a>
 </li>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_balance">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.get_balance">(bit.network.services.BitcoreAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_balance">(bit.network.services.BlockchainAPI class method)</a>
 </li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_balance">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_balance">(bit.network.services.BlockstreamAPI class method)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_balance">(bit.network.services.SmartbitAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.PrivateKey.get_balance">(bit.PrivateKey method)</a>
+</li>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.get_balance">(bit.PrivateKeyTestnet method)</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.network.NetworkAPI.GET_BALANCE_MAIN">GET_BALANCE_MAIN (bit.network.NetworkAPI attribute)</a>
@@ -342,7 +369,11 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.get_balance_testnet">get_balance_testnet() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_balance_testnet">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.get_balance_testnet">(bit.network.services.BitcoreAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_balance_testnet">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_balance_testnet">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_balance_testnet">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -354,9 +385,13 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.get_transaction_by_id">get_transaction_by_id() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transaction_by_id">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.get_transaction_by_id">(bit.network.services.BitcoreAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_transaction_by_id">(bit.network.services.BlockchainAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_transaction_by_id">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_transaction_by_id">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_transaction_by_id">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -368,7 +403,9 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.get_transaction_by_id_testnet">get_transaction_by_id_testnet() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transaction_by_id_testnet">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_transaction_by_id_testnet">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_transaction_by_id_testnet">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_transaction_by_id_testnet">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -380,17 +417,21 @@
       <ul>
         <li><a href="dev/api.html#bit.MultiSigTestnet.get_transactions">(bit.MultiSigTestnet method)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKey.get_transactions">(bit.PrivateKey method)</a>
-</li>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.get_transactions">(bit.PrivateKeyTestnet method)</a>
-</li>
         <li><a href="dev/api.html#bit.network.NetworkAPI.get_transactions">(bit.network.NetworkAPI class method)</a>
 </li>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transactions">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.get_transactions">(bit.network.services.BitcoreAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_transactions">(bit.network.services.BlockchainAPI class method)</a>
 </li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_transactions">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_transactions">(bit.network.services.BlockstreamAPI class method)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_transactions">(bit.network.services.SmartbitAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.PrivateKey.get_transactions">(bit.PrivateKey method)</a>
+</li>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.get_transactions">(bit.PrivateKeyTestnet method)</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.network.NetworkAPI.GET_TRANSACTIONS_MAIN">GET_TRANSACTIONS_MAIN (bit.network.NetworkAPI attribute)</a>
@@ -400,7 +441,9 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.get_transactions_testnet">get_transactions_testnet() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_transactions_testnet">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_transactions_testnet">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_transactions_testnet">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_transactions_testnet">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -408,9 +451,13 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.get_unspent">get_unspent() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_unspent">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.get_unspent">(bit.network.services.BitcoreAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.get_unspent">(bit.network.services.BlockchainAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_unspent">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_unspent">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_unspent">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -422,7 +469,11 @@
       <li><a href="dev/api.html#bit.network.NetworkAPI.get_unspent_testnet">get_unspent_testnet() (bit.network.NetworkAPI class method)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.network.services.BitpayAPI.get_unspent_testnet">(bit.network.services.BitpayAPI class method)</a>
+        <li><a href="dev/api.html#bit.network.services.BitcoreAPI.get_unspent_testnet">(bit.network.services.BitcoreAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.get_unspent_testnet">(bit.network.services.BlockchairAPI class method)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.get_unspent_testnet">(bit.network.services.BlockstreamAPI class method)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.get_unspent_testnet">(bit.network.services.SmartbitAPI class method)</a>
 </li>
@@ -529,38 +580,65 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_ADDRESS_API">MAIN_ADDRESS_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.MAIN_ADDRESS_API">MAIN_ADDRESS_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.MAIN_ADDRESS_API">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.MAIN_ADDRESS_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.MAIN_ADDRESS_API">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_BALANCE_API">MAIN_BALANCE_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.MAIN_BALANCE_API">MAIN_BALANCE_API (bit.network.services.BitcoreAPI attribute)</a>
 </li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_ENDPOINT">MAIN_ENDPOINT (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.MAIN_ENDPOINT">MAIN_ENDPOINT (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.MAIN_ENDPOINT">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.MAIN_ENDPOINT">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.MAIN_ENDPOINT">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_TX_API">MAIN_TX_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.MAIN_TX_AMOUNT_API">MAIN_TX_AMOUNT_API (bit.network.services.BitcoreAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.MAIN_TX_API">MAIN_TX_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.MAIN_TX_API">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.MAIN_TX_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.MAIN_TX_API">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_TX_PUSH_API">MAIN_TX_PUSH_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.MAIN_TX_PUSH_API">MAIN_TX_PUSH_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.MAIN_TX_PUSH_API">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.MAIN_TX_PUSH_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.MAIN_TX_PUSH_API">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.MAIN_UNSPENT_API">MAIN_UNSPENT_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.MAIN_UNSPENT_API">MAIN_UNSPENT_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.MAIN_UNSPENT_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.MAIN_UNSPENT_API">(bit.network.services.SmartbitAPI attribute)</a>
+</li>
+      </ul></li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="dev/api.html#module-bit">bit</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.MultiSig">MultiSig (class in bit)</a>
@@ -627,20 +705,20 @@
         <li><a href="dev/api.html#bit.wallet.BaseKey.pub_to_hex">(bit.wallet.BaseKey method)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.PrivateKey.public_key">public_key (bit.PrivateKey attribute)</a>
+      <li><a href="dev/api.html#bit.PrivateKey.public_key">public_key() (bit.PrivateKey property)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.public_key">(bit.PrivateKeyTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.public_key">(bit.PrivateKeyTestnet property)</a>
 </li>
-        <li><a href="dev/api.html#bit.wallet.BaseKey.public_key">(bit.wallet.BaseKey attribute)</a>
+        <li><a href="dev/api.html#bit.wallet.BaseKey.public_key">(bit.wallet.BaseKey property)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.PrivateKey.public_point">public_point (bit.PrivateKey attribute)</a>
+      <li><a href="dev/api.html#bit.PrivateKey.public_point">public_point() (bit.PrivateKey property)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.public_point">(bit.PrivateKeyTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.public_point">(bit.PrivateKeyTestnet property)</a>
 </li>
-        <li><a href="dev/api.html#bit.wallet.BaseKey.public_point">(bit.wallet.BaseKey attribute)</a>
+        <li><a href="dev/api.html#bit.wallet.BaseKey.public_point">(bit.wallet.BaseKey property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -675,36 +753,36 @@
 </li>
       <li><a href="dev/api.html#bit.network.meta.Unspent.script">script (bit.network.meta.Unspent attribute)</a>
 </li>
-      <li><a href="dev/api.html#bit.MultiSig.scriptcode">scriptcode (bit.MultiSig attribute)</a>
+      <li><a href="dev/api.html#bit.MultiSig.scriptcode">scriptcode() (bit.MultiSig property)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.MultiSigTestnet.scriptcode">(bit.MultiSigTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.MultiSigTestnet.scriptcode">(bit.MultiSigTestnet property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKey.scriptcode">(bit.PrivateKey attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKey.scriptcode">(bit.PrivateKey property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.scriptcode">(bit.PrivateKeyTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.scriptcode">(bit.PrivateKeyTestnet property)</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.network.meta.Unspent.segwit">segwit (bit.network.meta.Unspent attribute)</a>
 </li>
-      <li><a href="dev/api.html#bit.MultiSig.segwit_address">segwit_address (bit.MultiSig attribute)</a>
+      <li><a href="dev/api.html#bit.MultiSig.segwit_address">segwit_address() (bit.MultiSig property)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.MultiSigTestnet.segwit_address">(bit.MultiSigTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.MultiSigTestnet.segwit_address">(bit.MultiSigTestnet property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKey.segwit_address">(bit.PrivateKey attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKey.segwit_address">(bit.PrivateKey property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_address">(bit.PrivateKeyTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_address">(bit.PrivateKeyTestnet property)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.MultiSig.segwit_scriptcode">segwit_scriptcode (bit.MultiSig attribute)</a>
+      <li><a href="dev/api.html#bit.MultiSig.segwit_scriptcode">segwit_scriptcode() (bit.MultiSig property)</a>
 
       <ul>
-        <li><a href="dev/api.html#bit.MultiSigTestnet.segwit_scriptcode">(bit.MultiSigTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.MultiSigTestnet.segwit_scriptcode">(bit.MultiSigTestnet property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKey.segwit_scriptcode">(bit.PrivateKey attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKey.segwit_scriptcode">(bit.PrivateKey property)</a>
 </li>
-        <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_scriptcode">(bit.PrivateKeyTestnet attribute)</a>
+        <li><a href="dev/api.html#bit.PrivateKeyTestnet.segwit_scriptcode">(bit.PrivateKeyTestnet property)</a>
 </li>
       </ul></li>
       <li><a href="dev/api.html#bit.network.rates.RatesAPI.SEK_RATES">SEK_RATES (bit.network.rates.RatesAPI attribute)</a>
@@ -773,35 +851,55 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_ADDRESS_API">TEST_ADDRESS_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TEST_ADDRESS_API">TEST_ADDRESS_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.TEST_ADDRESS_API">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.TEST_ADDRESS_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TEST_ADDRESS_API">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_BALANCE_API">TEST_BALANCE_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TEST_BALANCE_API">TEST_BALANCE_API (bit.network.services.BitcoreAPI attribute)</a>
 </li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_ENDPOINT">TEST_ENDPOINT (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TEST_ENDPOINT">TEST_ENDPOINT (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.TEST_ENDPOINT">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.TEST_ENDPOINT">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TEST_ENDPOINT">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_TX_API">TEST_TX_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TEST_TX_AMOUNT_API">TEST_TX_AMOUNT_API (bit.network.services.BitcoreAPI attribute)</a>
+</li>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TEST_TX_API">TEST_TX_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.TEST_TX_API">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.TEST_TX_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TEST_TX_API">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_TX_PUSH_API">TEST_TX_PUSH_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TEST_TX_PUSH_API">TEST_TX_PUSH_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.TEST_TX_PUSH_API">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.TEST_TX_PUSH_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TEST_TX_PUSH_API">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TEST_UNSPENT_API">TEST_UNSPENT_API (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TEST_UNSPENT_API">TEST_UNSPENT_API (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.TEST_UNSPENT_API">(bit.network.services.BlockstreamAPI attribute)</a>
+</li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TEST_UNSPENT_API">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
       </ul></li>
@@ -823,6 +921,8 @@
         <li><a href="dev/api.html#bit.wallet.BaseKey.to_bytes">(bit.wallet.BaseKey method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.PrivateKey.to_der">to_der() (bit.PrivateKey method)</a>
 
       <ul>
@@ -833,8 +933,6 @@
       </ul></li>
       <li><a href="dev/api.html#bit.network.meta.Unspent.to_dict">to_dict() (bit.network.meta.Unspent method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dev/api.html#bit.PrivateKey.to_hex">to_hex() (bit.PrivateKey method)</a>
 
       <ul>
@@ -879,10 +977,14 @@
 </li>
       <li><a href="dev/api.html#bit.network.services.BlockchainAPI.TX_PUSH_API">TX_PUSH_API (bit.network.services.BlockchainAPI attribute)</a>
 </li>
-      <li><a href="dev/api.html#bit.network.services.BitpayAPI.TX_PUSH_PARAM">TX_PUSH_PARAM (bit.network.services.BitpayAPI attribute)</a>
+      <li><a href="dev/api.html#bit.network.services.BitcoreAPI.TX_PUSH_PARAM">TX_PUSH_PARAM (bit.network.services.BitcoreAPI attribute)</a>
 
       <ul>
         <li><a href="dev/api.html#bit.network.services.BlockchainAPI.TX_PUSH_PARAM">(bit.network.services.BlockchainAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockchairAPI.TX_PUSH_PARAM">(bit.network.services.BlockchairAPI attribute)</a>
+</li>
+        <li><a href="dev/api.html#bit.network.services.BlockstreamAPI.TX_PUSH_PARAM">(bit.network.services.BlockstreamAPI attribute)</a>
 </li>
         <li><a href="dev/api.html#bit.network.services.SmartbitAPI.TX_PUSH_PARAM">(bit.network.services.SmartbitAPI attribute)</a>
 </li>
@@ -997,6 +1099,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/keys.html">Keys</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/network.html">Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/network.html#using-a-remote-bitcoin-core-node">Using a Remote Bitcoin Core Node</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/transactions.html">Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/rates.html">Exchange Rates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/fees.html">Fees</a></li>
@@ -1023,15 +1126,15 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+<script>$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 
 <!-- Alabaster (krTheme++) Hacks -->
 

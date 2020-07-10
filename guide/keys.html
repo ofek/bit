@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Keys &#8212; Bit 0.5.2 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keys &#8212; Bit 0.6.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Network" href="network.html" />
@@ -92,7 +93,7 @@ sort the public keys internally in lexicographical order similar to how
 <a class="reference external" href="https://electrum.org">Electrum</a> behaves.
 If the public keys are provided with a list, then the ordering of the public
 keys of that list are used, similar to how Bitcoin Core behaves.
-Calling <a href="#id2"><span class="problematic" id="id3">:param:`~bit.MultiSig.public_keys`</span></a> will always return a list with the
+Calling <code class="xref py py-func docutils literal notranslate"><span class="pre">public_keys()</span></code> will always return a list with the
 public keys in the order they are being used by in the multisignature contract.</p>
 </div>
 <div class="section" id="public-point">
@@ -110,7 +111,7 @@ from the point.</p>
 <div class="section" id="public-key">
 <h2>Public Key<a class="headerlink" href="#public-key" title="Permalink to this headline">¶</a></h2>
 <p>A public key is a public point serialized to bytes. By default all keys will
-use the compressed version unless <span class="xref std std-ref">you explicitly need otherwise</span>.
+use the compressed version unless <a class="reference internal" href="advanced.html#bytestowif"><span class="std std-ref">you explicitly need otherwise</span></a>.
 This reduces the size of each transaction and thus fees.</p>
 <p>Access it like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">public_key</span>
@@ -168,7 +169,7 @@ want to force the use of a particular class, you can do this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bit</span> <span class="kn">import</span> <span class="n">wif_to_key</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">wif_to_key</span><span class="p">(</span><span class="s1">&#39;cU6s7jckL3bZUUkb3Q2CD9vNu8F1o58K5R5a3JFtidoccMbhEGKZ&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 <span class="go">&lt;PrivateKeyTestnet: muUFbvTKDEokGTVUjScMhw1QF2rtv5hxCz&gt;</span>
 </pre></div>
 </div>
@@ -316,6 +317,7 @@ want to force the use of a particular class, you can do this:</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="network.html">Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html#using-a-remote-bitcoin-core-node">Using a Remote Bitcoin Core Node</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transactions.html">Transactions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rates.html">Exchange Rates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fees.html">Fees</a></li>
@@ -351,15 +353,15 @@ want to force the use of a particular class, you can do this:</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
+<script>$('#searchbox').show(0);</script><!-- From https://github.com/kennethreitz/requests/blob/master/docs/_templates/hacks.html -->
 
 <!-- Alabaster (krTheme++) Hacks -->
 
