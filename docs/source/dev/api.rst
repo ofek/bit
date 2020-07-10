@@ -43,7 +43,7 @@ Network
     :members:
     :undoc-members:
 
-.. autoclass:: bit.network.services.BitCoreAPI
+.. autoclass:: bit.network.services.BitcoreAPI
     :members:
     :undoc-members:
     :inherited-members:

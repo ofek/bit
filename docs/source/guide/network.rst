@@ -149,7 +149,7 @@ meant as a full-fledged blockchain explorer and does only keep track of
 addresses associated with its wallet.
 
 Transaction Database Index and ``txindex``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------
 
 By default Bitcoin Core does not maintain any transaction-level data except for
 those transactions
@@ -163,7 +163,7 @@ option does not allow querying for arbitrary data on addresses, but only for
 those that are added to the wallet in for Bitcoin Core to be fetched.
 
 Configuring Bitcoin Core
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 To use Bitcoin Core as a remote node it must accept remote procedure call (RPC)
 methods from the host running Bit. A username and password for the RPC must be
@@ -198,7 +198,7 @@ A default configuration file can be found inside the Bitcoin Core directory
 under `share/examples/bitcoin.conf <https://github.com/bitcoin/bitcoin/blob/master/share/examples/bitcoin.conf>`_.
 
 Connecting To The Node
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 Connecting to a remote Bitcoin Core node from Bit is straight forward. It can be
 done by calling :func:`~bit.network.services.NetworkAPI.connect_to_node`, e.g.
@@ -213,13 +213,13 @@ It is possible to connect to both a testnet and mainnet node by calling
 arguments accordingly.
 
 Using The Remote Bitcoin Core Node
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------
 
 After connecting to the remote node all API calls done by
 :class:`~bit.network.services.NetworkAPI` are seamlessly redirected to it.
 
 Adding An Address To The Internal Wallet Of A Node
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------------------
 
 Bit will poll the node for data on an address using Bitcoin Core's internal
 wallet. An address to poll must therefore first be imported to Bitcoin Core's
