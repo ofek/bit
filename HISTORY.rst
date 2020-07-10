@@ -4,6 +4,13 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.6.2 (2020-07-10)
+------------------
+
+- Fix of critical bug that could lead to paying high fees (see PR #116)
+- Better fee calculation by estimating transaction sizes for multisig correctly
+- Lots of Network API improvements: Removed deprecated Bitpay API and added Blockstream, Blockchair and Bitcore.
+
 0.6.1 (2020-02-16)
 ------------------
 
@@ -40,7 +47,7 @@ Unreleased (see `master <https://github.com/ofek/bit>`_)
 0.4.3 (2018-03-11)
 ------------------
 
-- Fixed fee calculation when ``combine=False`
+- Fixed fee calculation when ``combine=False``
 - **Breaking:** Exceptions will now be raised when using pay2sh addresses (until implemented)
 
 0.4.2 (2017-12-09)
