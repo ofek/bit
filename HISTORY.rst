@@ -4,6 +4,13 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.6.2 (2020-07-10)
+------------------
+
+- Fix of critical bug that could lead to paying high fees (see PR #116)
+- Better fee calculation by estimating transaction sizes for multisig correctly
+- Lots of Network API improvements: Removed deprecated Bitpay API and added Blockstream, Blockchair and Bitcore.
+
 0.6.1 (2020-02-16)
 ------------------
 
