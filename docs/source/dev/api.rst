@@ -43,10 +43,18 @@ Network
     :members:
     :undoc-members:
 
-.. autoclass:: bit.network.services.BitpayAPI
+.. autoclass:: bit.network.services.BitCoreAPI
     :members:
     :undoc-members:
     :inherited-members:
+
+.. autoclass:: bit.network.services.BlockchairAPI
+    :members:
+    :undoc-members:
+
+.. autoclass:: bit.network.services.BlockstreamAPI
+    :members:
+    :undoc-members:
 
 .. autoclass:: bit.network.services.BlockchainAPI
     :members:
