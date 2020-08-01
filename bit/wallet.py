@@ -330,6 +330,7 @@ class PrivateKey(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
+        replace_by_fee=False
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
@@ -362,6 +363,8 @@ class PrivateKey(BaseKey):
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
+        :type replace_by_fee: ``bool``
         :returns: The transaction ID.
         :rtype: ``str``
         """
@@ -375,6 +378,7 @@ class PrivateKey(BaseKey):
             message=message,
             unspents=unspents,
             message_is_hex=message_is_hex,
+            replace_by_fee=replace_by_fee
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -652,6 +656,7 @@ class PrivateKeyTestnet(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
+        replace_by_fee=False
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
@@ -682,6 +687,8 @@ class PrivateKeyTestnet(BaseKey):
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the testnet blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
+        :type replace_by_fee: ``bool``
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
@@ -705,7 +712,7 @@ class PrivateKeyTestnet(BaseKey):
             message_is_hex=message_is_hex,
         )
 
-        return create_new_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs, replace_by_fee=replace_by_fee)
 
     def send(
         self,
@@ -717,6 +724,7 @@ class PrivateKeyTestnet(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
+        replace_by_fee=False
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
@@ -749,6 +757,8 @@ class PrivateKeyTestnet(BaseKey):
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the testnet blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
+        :type replace_by_fee: ``bool``
         :returns: The transaction ID.
         :rtype: ``str``
         """
@@ -762,6 +772,7 @@ class PrivateKeyTestnet(BaseKey):
             message=message,
             unspents=unspents,
             message_is_hex=message_is_hex,
+            replace_by_fee=replace_by_fee
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -1079,6 +1090,7 @@ class MultiSig:
         message=None,
         unspents=None,
         message_is_hex=False,
+        replace_by_fee=False
     ):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
@@ -1109,6 +1121,8 @@ class MultiSig:
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the testnet blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
+        :type replace_by_fee: ``bool``
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
@@ -1132,7 +1146,7 @@ class MultiSig:
             message_is_hex=message_is_hex,
         )
 
-        return create_new_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs, replace_by_fee=replace_by_fee)
 
     @classmethod
     def prepare_transaction(
@@ -1400,6 +1414,7 @@ class MultiSigTestnet:
         message=None,
         unspents=None,
         message_is_hex=False,
+        replace_by_fee=False
     ):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
@@ -1430,6 +1445,8 @@ class MultiSigTestnet:
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the testnet blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
+        :type replace_by_fee: ``bool``
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
@@ -1453,7 +1470,7 @@ class MultiSigTestnet:
             message_is_hex=message_is_hex,
         )
 
-        return create_new_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs, replace_by_fee=replace_by_fee)
 
     @classmethod
     def prepare_transaction(
