@@ -262,6 +262,7 @@ class PrivateKey(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
+        replace_by_fee=False
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
@@ -292,6 +293,8 @@ class PrivateKey(BaseKey):
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
+        :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
+        :type replace_by_fee: ``bool``
         :returns: The signed transaction as hex.
         :rtype: ``str``
         """
@@ -315,7 +318,7 @@ class PrivateKey(BaseKey):
             message_is_hex=message_is_hex,
         )
 
-        return create_new_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs, replace_by_fee=replace_by_fee)
 
     def send(
         self,

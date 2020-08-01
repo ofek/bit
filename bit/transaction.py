@@ -709,7 +709,7 @@ def sign_tx(private_key, tx, *, unspents):
     return tx.to_hex()
 
 
-def create_new_transaction(private_key, unspents, outputs):
+def create_new_transaction(private_key, unspents, outputs, replace_by_fee=False):
 
     version = VERSION_1
     lock_time = LOCK_TIME
@@ -722,7 +722,8 @@ def create_new_transaction(private_key, unspents, outputs):
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder='little')
         amount = int(unspent.amount).to_bytes(8, byteorder='little')
-        inputs.append(TxIn(script_sig, txid, txindex, amount=amount, segwit_input=unspent.segwit))
+        sequence = SEQUENCE if not replace_by_fee else 0xFFFFFFFD .to_bytes(4, byteorder='little')
+        inputs.append(TxIn(script_sig, txid, txindex, amount=amount, segwit_input=unspent.segwit, sequence=sequence))
 
     tx_unsigned = TxObj(version, inputs, outputs, lock_time)
 
