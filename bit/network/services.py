@@ -242,7 +242,7 @@ class BlockchairAPI:
             unspents.extend(
                 Unspent(
                     utxo['value'],
-                    block_height - utxo['block_id'],
+                    block_height - utxo['block_id'] + 1 if utxo['block_id'] != -1 else 0,
                     script_pubkey,
                     utxo['transaction_hash'],
                     utxo['index'],
