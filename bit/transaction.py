@@ -387,6 +387,7 @@ def sanitize_tx_data(
     min_change=0,
     version='main',
     message_is_hex=False,
+    replace_by_fee=False
 ):
     """
     sanitize_tx_data()
@@ -432,6 +433,10 @@ def sanitize_tx_data(
         consolidate=combine,
         unspents=unspents,
     )
+
+    if replace_by_fee:
+        for unspent in unspents:
+            unspent.opt_in_for_RBF()
 
     if remaining > 0:
         outputs.append((leftover, remaining))
@@ -722,7 +727,8 @@ def create_new_transaction(private_key, unspents, outputs):
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder='little')
         amount = int(unspent.amount).to_bytes(8, byteorder='little')
-        inputs.append(TxIn(script_sig, txid, txindex, amount=amount, segwit_input=unspent.segwit))
+        inputs.append(TxIn(script_sig, txid, txindex, amount=amount, segwit_input=unspent.segwit,
+                           sequence=unspent.sequence))
 
     tx_unsigned = TxObj(version, inputs, outputs, lock_time)
 

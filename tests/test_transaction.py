@@ -164,6 +164,20 @@ FINAL_TX_MULTISIG_MANY = (
     '864509ed63044d8f1bcd53b8def1247bd2bbe056ff81b23e8c09280f52ae0000000000'
 )
 
+FINAL_TX_RBF = (
+    '02000000000102a98d0073d91755d4546b9333f9e72fec479213837b55c83bce880c4a618'
+    '78b5d0000000000fdffffffb8b4f5dfd99f2667dede84744ca6e239eeb9b71aa7fc515500'
+    '0b0dc0703b29ca0000000000fdffffff023c5d0600000000001600144c1ceab26bfef44a0'
+    '71babfc97d643c348cb0aea89d807000000000017a914b8a698e9e73abb5dce9733b6438d'
+    '5df52b08d95e870247304402206922dd7d3398e2d684e1b2f6788a6f4fce7c18a0893c95d'
+    '40e911eab876bd56002206220d48209cc0ef354d08c33e42d85ef89db2b93bb8797d934f5'
+    'd61a8292179001210206df1075d93ab7e915b0a154b5542f35c8284bc1f97340e578088ba'
+    '6f0b59a13024730440220669b8d9dd154fcf98fa3b80cc808ed00766a39d1c6da766bec00'
+    'e0b4d69acbe202204c523ccd333b71c725ead45ac7b1b77cbd30d766f666538fd5fae12e8'
+    '2e78c190121028fa5ee86dee1c9a29677c819bcbbe5d4a64c19079a55ab3ae3a37372fc4d'
+    '2df700c40900'
+)
+
 INPUTS = [
     TxIn(
         (
@@ -265,7 +279,24 @@ UNSPENTS_MULTISIG_MANY = [
         'p2sh',
     ),
 ]
+UNSPENTS_RBF = [
+    Unspent(
+            0,
+            1,
+            'irrelevant',
+            '5d8b87614a0c88ce3bc8557b83139247ec2fe7f933936b54d45517d973008da9',
+            0, type='p2wkh'),
+    Unspent(
+            0,
+            1,
+            'irrelevant',
+            'ca293b70c00d0b005551fca71ab7b9ee39e2a64c7484dede67269fd9dff5b4b8',
+            0,
+            type='p2wkh',
+    ),
+]
 OUTPUTS = [('n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi', 50000), ('mtrNwJxS1VyHYn3qBY1Qfsm3K3kh1mGRMS', 83658760)]
+OUTPUTS_RBF = [('bc1qfsww4vntlm6y5pcm407f04jrcdyvkzh2zxegeq', 417084), ('3JXMqE1rzezAjjvmwhJfBdjsLFmFoCiwCX', 514185)]
 MESSAGES = [(b'hello', 0), (b'there', 0)]
 OUTPUT_BLOCK = (
     '50c30000000000001976a914e7c1345fc8f87c68170b3aa798a956c2fe6a9eff88ac'
@@ -1056,3 +1087,33 @@ class TestCalcTxId:
 
     def test_calc_txid_segwit(self):
         assert calc_txid(SEGWIT_TX_1) == 'a103ed36e9afee8b4001b1c3970ba8cd9839ff95e8b8af3fbe6016f6287bf9c6'
+
+
+class TestReplaceByFee:
+    def test_opt_in_for_RBF(self):
+        # test based on tx 4162a41175658e76ae5d22f02739932c9997caaeaeaa1e1db30f352f926aa97a, mined in block 640001
+
+        unspents = []
+        for unspent in UNSPENTS_RBF:
+            replaceable_unspent = Unspent.from_dict(unspent.to_dict())
+            replaceable_unspent.opt_in_for_RBF()
+            unspents.append(replaceable_unspent)
+
+        rbf_tx = create_new_transaction(PrivateKey(), unspents, OUTPUTS_RBF)
+        START = 8 # exclude transaction version
+        END = len(rbf_tx) - 12 # exlude locktime and 2x one byte of empty witness
+        assert rbf_tx[START:END] == FINAL_TX_RBF[START:END]
+
+    def test_dont_overwrite_relative_locktime(self):
+        # opting in for RBF shouldn't overwrite a relative locktime
+        unspents = []
+        for unspent in UNSPENTS_RBF:
+            locked_unspent = Unspent.from_dict(unspent.to_dict())
+            locked_unspent.sequence = 0x00090000.to_bytes(4, byteorder='little')
+            locked_unspent.opt_in_for_RBF()
+            unspents.append(locked_unspent)
+
+        rbf_tx = create_new_transaction(PrivateKey(), unspents, OUTPUTS_RBF)
+        START = 8  # exclude transaction version
+        END = len(rbf_tx) - 12  # exlude locktime and 2x one byte of empty witness
+        assert rbf_tx[START:END] != FINAL_TX_RBF[START:END]
