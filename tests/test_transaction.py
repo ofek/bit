@@ -1109,7 +1109,7 @@ class TestReplaceByFee:
         unspents = []
         for unspent in UNSPENTS_RBF:
             locked_unspent = Unspent.from_dict(unspent.to_dict())
-            locked_unspent.sequence = 0x00090000.to_bytes(4, byteorder='little')
+            locked_unspent.sequence = 50000
             locked_unspent.opt_in_for_RBF()
             unspents.append(locked_unspent)
 

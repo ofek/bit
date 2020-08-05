@@ -727,8 +727,9 @@ def create_new_transaction(private_key, unspents, outputs):
         txid = hex_to_bytes(unspent.txid)[::-1]
         txindex = unspent.txindex.to_bytes(4, byteorder='little')
         amount = int(unspent.amount).to_bytes(8, byteorder='little')
+        sequence = unspent.sequence.to_bytes(4, byteorder='little')
         inputs.append(TxIn(script_sig, txid, txindex, amount=amount, segwit_input=unspent.segwit,
-                           sequence=unspent.sequence))
+                           sequence=sequence))
 
     tx_unsigned = TxObj(version, inputs, outputs, lock_time)
 

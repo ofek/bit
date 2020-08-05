@@ -27,7 +27,8 @@ class Unspent:
 
     __slots__ = ('amount', 'confirmations', 'script', 'txid', 'txindex', 'type', 'vsize', 'segwit', 'sequence')
 
-    def __init__(self, amount, confirmations, script, txid, txindex, type='p2pkh', vsize=None, segwit=None, sequence=SEQUENCE):
+    def __init__(self, amount, confirmations, script, txid, txindex, type='p2pkh', vsize=None, segwit=None,
+                 sequence=int.from_bytes(SEQUENCE, byteorder='little')):
         self.amount = amount
         self.confirmations = confirmations
         self.script = script
@@ -63,7 +64,7 @@ class Unspent:
             repr(self.txid),
             repr(self.txindex),
             repr(self.segwit),
-            repr(int.from_bytes(self.sequence, byteorder='little'))
+            repr(self.sequence)
         )
 
     def set_type(self, type, vsize=0):
@@ -73,5 +74,5 @@ class Unspent:
         return self
 
     def opt_in_for_RBF(self):
-        if int.from_bytes(self.sequence, byteorder='little') > 0xFFFFFFFD:
-            self.sequence = 0xFFFFFFFD.to_bytes(4, byteorder='little')
+        if self.sequence > 4294967293:
+            self.sequence = 4294967293

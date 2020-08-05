@@ -435,7 +435,6 @@ class PrivateKey(BaseKey):
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
         :type replace_by_fee: ``bool``
         :returns: JSON storing data required to create an offline transaction.
@@ -835,7 +834,6 @@ class PrivateKeyTestnet(BaseKey):
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
         :type replace_by_fee: ``bool``
         :returns: JSON storing data required to create an offline transaction.
@@ -1210,7 +1208,6 @@ class MultiSig:
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the blockchain itself.
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
         :type replace_by_fee: ``bool``
         :returns: JSON storing data required to create an offline transaction.
@@ -1539,7 +1536,6 @@ class MultiSigTestnet:
         :type message: ``str``
         :param unspents: The UTXOs to use as the inputs. By default Bit will
                          communicate with the blockchain itself.
-        :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :type unspents: ``list`` of :class:`~bit.network.meta.Unspent`
         :param replace_by_fee: Whether to opt-in for replace-by-fee (BIP 125).
         :type replace_by_fee: ``bool``
