@@ -140,6 +140,11 @@ absolute fee value of e.g. 150 satoshis for the transaction:
 
     >>> key.create_transaction(..., fee=150, absolute_fee=True)
 
+You can create a replaceable transaction whose fee can be later increased by a minimum of 1 sat/B (`BIP 125`_):
+
+    >>> key.send(..., replace_by_fee=True)
+    >>> key.create_transaction(..., replace_by_fee=True)
+
 For more information about transaction fees `read this`_.
 
 Unspent Consolidation
@@ -215,3 +220,4 @@ Each item must be an instance of :class:`~bit.network.meta.Unspent`.
 .. _read this: https://blog.blockchain.com/2016/12/15/bitcoin-transaction-fees-what-are-they-why-should-you-care
 .. _Branch-and-Bound: http://murch.one/wp-content/uploads/2016/11/erhardt2016coinselection.pdf
 .. _unspent transaction output: https://en.bitcoin.it/wiki/Transaction#Input
+.. _BIP 125: https://github.com/bitcoin/bips/blob/master/bip-0125.mediawiki
