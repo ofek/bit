@@ -26,7 +26,8 @@ class TestUnspent:
         unspent = Unspent(10000, 7, 'script', 'txid', 0)
 
         assert repr(unspent) == (
-            "Unspent(amount=10000, confirmations=7, " "script='script', txid='txid', txindex=0, " "segwit=False)"
+            "Unspent(amount=10000, confirmations=7, " "script='script', txid='txid', txindex=0, " "segwit=False, "
+            "sequence=4294967295)"
         )
 
     def test_set_type(self):
