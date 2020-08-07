@@ -4,6 +4,12 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.7.0 (2020-08-06)
+------------------
+
+- Fix Unspent.confirmations from Blockchair API
+- Add support for replace-by-fee (BIP 125)
+
 0.6.2 (2020-07-10)
 ------------------
 
