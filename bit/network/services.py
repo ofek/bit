@@ -285,7 +285,7 @@ class BlockchairAPI:
             unspents.extend(
                 Unspent(
                     utxo['value'],
-                    block_height - utxo['block_id'],
+                    block_height - utxo['block_id'] + 1 if utxo['block_id'] != -1 else 0,
                     script_pubkey,
                     utxo['transaction_hash'],
                     utxo['index'],
@@ -460,7 +460,7 @@ class BlockstreamAPI:
             [
                 Unspent(
                     tx["value"],
-                    block_height - tx["status"]["block_height"] if tx["status"]["confirmed"] else 0,
+                    block_height - tx["status"]["block_height"] + 1 if tx["status"]["confirmed"] else 0,
                     script_pubkey,
                     tx["txid"],
                     tx["vout"],
@@ -490,7 +490,7 @@ class BlockstreamAPI:
         return [
             Unspent(
                 tx["value"],
-                block_height - tx["status"]["block_height"] if tx["status"]["confirmed"] else 0,
+                block_height - tx["status"]["block_height"] + 1 if tx["status"]["confirmed"] else 0,
                 script_pubkey,
                 tx["txid"],
                 tx["vout"],
