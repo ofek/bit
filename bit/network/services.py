@@ -107,11 +107,11 @@ class RPCMethod:
 class BlockchairAPI:
     MAIN_ENDPOINT = 'https://api.blockchair.com/bitcoin/'
     MAIN_ADDRESS_API = MAIN_ENDPOINT + 'dashboards/address/{}'
-    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'dashboards/push/transaction'
+    MAIN_TX_PUSH_API = MAIN_ENDPOINT + 'push/transaction'
     MAIN_TX_API = MAIN_ENDPOINT + 'raw/transaction/{}'
     TEST_ENDPOINT = 'https://api.blockchair.com/bitcoin/testnet/'
     TEST_ADDRESS_API = TEST_ENDPOINT + 'dashboards/address/{}'
-    TEST_TX_PUSH_API = TEST_ENDPOINT + 'dashboards/push/transaction'
+    TEST_TX_PUSH_API = TEST_ENDPOINT + 'push/transaction'
     TEST_TX_API = TEST_ENDPOINT + 'raw/transaction/{}'
     TX_PUSH_PARAM = 'data'
 
