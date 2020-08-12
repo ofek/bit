@@ -4,6 +4,12 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.7.1 (2020-08-11)
+------------------
+
+- Fix testnet Unspent.confirmations from Blockchair API
+- Support change in Blockchair's push txn endpoint
+
 0.7.0 (2020-08-06)
 ------------------
 
