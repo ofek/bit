@@ -4,6 +4,11 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.7.2 (2020-09-22)
+------------------
+
+- Downgrade priority of BitCoreAPI endpoints
+
 0.7.1 (2020-08-11)
 ------------------
 
