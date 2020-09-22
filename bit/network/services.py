@@ -973,11 +973,11 @@ class NetworkAPI:
         BlockchainAPI.get_transaction_by_id,
     ]
     GET_UNSPENT_MAIN = [
-        BlockchairAPI.get_unspent,
-        BitcoreAPI.get_unspent,  # No limit
-        SmartbitAPI.get_unspent,  # Limit 1000
         BlockstreamAPI.get_unspent,
+        BlockchairAPI.get_unspent,
+        SmartbitAPI.get_unspent,  # Limit 1000
         BlockchainAPI.get_unspent,
+        BitcoreAPI.get_unspent,  # No limit
     ]
     BROADCAST_TX_MAIN = [
         BlockchairAPI.broadcast_tx,
@@ -1004,10 +1004,10 @@ class NetworkAPI:
         SmartbitAPI.get_transaction_by_id_testnet,
     ]
     GET_UNSPENT_TEST = [
-        BlockchairAPI.get_unspent_testnet,
-        BitcoreAPI.get_unspent_testnet,  # No limit
-        SmartbitAPI.get_unspent_testnet,  # Limit 1000
         BlockstreamAPI.get_unspent_testnet,
+        BlockchairAPI.get_unspent_testnet,
+        SmartbitAPI.get_unspent_testnet,  # Limit 1000
+        BitcoreAPI.get_unspent_testnet,  # No limit
     ]
     BROADCAST_TX_TEST = [
         BlockchairAPI.broadcast_tx_testnet,
