@@ -116,7 +116,7 @@ derive your address and is needed in the construction of every transaction.
 Addresses
 ---------
 
-All keys possess a :func:`~bit.PrivateKey.address` property which is derived from your public key:
+All keys possess a :attr:`~bit.PrivateKey.address` property which is derived from your public key:
 
 .. code-block:: python
 
@@ -126,7 +126,7 @@ All keys possess a :func:`~bit.PrivateKey.address` property which is derived fro
 This is what you share with others to receive payments.
 
 Bit also allows to use nested Segwit addresses, which can be displayed with the
-:func:`~bit.PrivateKey.segwit_address` property:
+:attr:`~bit.PrivateKey.segwit_address` property:
 
 .. code-block:: python
 
@@ -134,7 +134,7 @@ Bit also allows to use nested Segwit addresses, which can be displayed with the
     '3DYf8JL9F6Lmz98gpvYMH5qVMXAEazSEEn'
 
 The address of a multisignature key can be displayed in similar manner using the
-same properties :func:`~bit.MultiSig.address` and :func:`~bit.MultiSig.segwit_address`:
+same properties :attr:`~bit.MultiSig.address` and :attr:`~bit.MultiSig.segwit_address`:
 
 .. code-block:: python
 
