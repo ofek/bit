@@ -9,7 +9,7 @@ from requests.exceptions import ConnectionError, HTTPError, Timeout
 DEFAULT_FEE_FAST = 72
 DEFAULT_FEE_HOUR = 62
 DEFAULT_CACHE_TIME = 60 * 10
-URL = 'https://bitcoinfees.earn.com/api/v1/fees/recommended'
+URL = 'https://mempool.space/api/v1/fees/recommended'
 
 
 def set_fee_cache_time(seconds):
