@@ -19,10 +19,10 @@ def set_service_timeout(seconds):
 
 
 class RPCHost:
-    def __init__(self, user, password, host, port, use_https):
+    def __init__(self, user, password, host, port, use_https, path):
         self._session = requests.Session()
-        self._url = "http{s}://{user}:{password}@{host}:{port}/".format(
-            s="s" if use_https else "", user=user, password=password, host=host, port=port,
+        self._url = "http{s}://{user}:{password}@{host}:{port}/{path}".format(
+            s="s" if use_https else "", user=user, password=password, host=host, port=port, path=path
         )
         self._headers = {"content-type": "application/json"}
         self._session.verify = use_https
@@ -1017,7 +1017,7 @@ class NetworkAPI:
     ]
 
     @classmethod
-    def connect_to_node(cls, user, password, host='localhost', port=8332, use_https=False, testnet=False):
+    def connect_to_node(cls, user, password, host='localhost', port=8332, use_https=False, testnet=False, path=""):
         """Connect to a remote Bitcoin node instead of using web APIs.
         Allows to connect to a testnet and mainnet Bitcoin node simultaneously.
 
@@ -1039,7 +1039,7 @@ class NetworkAPI:
         :returns: The node exposing its RPCs for direct interaction.
         :rtype: ``RPCHost``
         """
-        node = RPCHost(user=user, password=password, host=host, port=port, use_https=use_https)
+        node = RPCHost(user=user, password=password, host=host, port=port, use_https=use_https, path=path)
 
         # Inject remote node into NetworkAPI
         if testnet is False:

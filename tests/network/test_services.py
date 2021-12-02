@@ -277,7 +277,7 @@ class TestNetworkAPI:
         n.connect_to_node(user="user", password="password")
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False, ""))
                 for call in n.GET_BALANCE_MAIN
             )
             == 1
@@ -285,7 +285,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_MAIN)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False, ""))
                 for call in n.GET_TRANSACTIONS_MAIN
             )
             == 1
@@ -293,7 +293,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_MAIN)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False, ""))
                 for call in n.GET_TRANSACTION_BY_ID_MAIN
             )
             == 1
@@ -301,7 +301,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_MAIN)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False, ""))
                 for call in n.GET_UNSPENT_MAIN
             )
             == 1
@@ -309,7 +309,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_MAIN)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False))
+                both_rpchosts_equal(call.__self__, RPCHost("user", "password", "localhost", 8332, False, ""))
                 for call in n.BROADCAST_TX_MAIN
             )
             == 1
@@ -330,7 +330,7 @@ class TestNetworkAPI:
         n.connect_to_node(user="usr", password="pass", host="host", port=18443, use_https=True, testnet=True)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True, ""))
                 for call in n.GET_BALANCE_TEST
             )
             == 1
@@ -338,7 +338,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_BALANCE_TEST)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True, ""))
                 for call in n.GET_TRANSACTIONS_TEST
             )
             == 1
@@ -346,7 +346,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTIONS_TEST)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True, ""))
                 for call in n.GET_TRANSACTION_BY_ID_TEST
             )
             == 1
@@ -354,7 +354,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_TRANSACTION_BY_ID_TEST)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True, ""))
                 for call in n.GET_UNSPENT_TEST
             )
             == 1
@@ -362,7 +362,7 @@ class TestNetworkAPI:
         assert all(isinstance(call.__self__, RPCHost) for call in n.GET_UNSPENT_TEST)
         assert (
             sum(
-                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True))
+                both_rpchosts_equal(call.__self__, RPCHost("usr", "pass", "host", 18443, True, ""))
                 for call in n.BROADCAST_TX_TEST
             )
             == 1
@@ -645,13 +645,13 @@ class TestSmartbitAPI:
 
 class TestRPCHost:
     def test_init(self):
-        node = RPCHost("user", "password", "host", 8333, True)
+        node = RPCHost("user", "password", "host", 8333, True, "")
         assert node._url == "https://user:password@host:8333/"
         assert isinstance(node._session, requests.Session)
         assert node._session.verify is True
         assert node._headers == {"content-type": "application/json"}
 
-        node = RPCHost("usr", "pass", "other", 18443, False)
+        node = RPCHost("usr", "pass", "other", 18443, False, "")
         assert node._url == "http://usr:pass@other:18443/"
         assert isinstance(node._session, requests.Session)
         assert node._session.verify is False
@@ -663,87 +663,87 @@ class TestRPCHost:
         assert RPCHost.__getattr__(None, "rpc_method")._host is None
 
     def test_get_balance_return_type(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert isinstance(node.get_balance(MAIN_ADDRESS_USED1), int)
 
     def test_get_balance_main_unused(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert node.get_balance(MAIN_ADDRESS_UNUSED) == 0
 
     def test_get_balance_test_unused(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert node.get_balance_testnet(TEST_ADDRESS_UNUSED) == 0
 
     def test_get_balance_main_used(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert node.get_balance(MAIN_ADDRESS_USED1) == 123456789
 
     def test_get_balance_test_used(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert node.get_balance_testnet(TEST_ADDRESS_USED2) == 123456789
 
     def test_get_transactions_return_type(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert iter(node.get_transactions(MAIN_ADDRESS_USED1))
 
     def test_get_transactions_main_used(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert len(node.get_transactions(MAIN_ADDRESS_USED1)) == 2
 
     def test_get_transactions_main_unused(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert len(node.get_transactions(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_transactions_test_used(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert len(node.get_transactions_testnet(TEST_ADDRESS_USED2)) == 3
 
     def test_get_transactions_test_unused(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert len(node.get_transactions_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_get_transaction_by_id_main(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert node.get_transaction_by_id(MAIN_TX_VALID)
 
     def test_get_transaction_by_id_test(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert node.get_transaction_by_id_testnet(TEST_TX_VALID)
 
     def test_get_unspent_return_type(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert iter(node.get_unspent(MAIN_ADDRESS_USED1))
 
     def test_get_unspent_used(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert len(node.get_unspent(MAIN_ADDRESS_USED1)) == 2
 
     def test_get_unspent_unused(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert len(node.get_unspent(MAIN_ADDRESS_UNUSED)) == 0
 
     def test_get_unspent_test_used(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert len(node.get_unspent_testnet(TEST_ADDRESS_USED2)) == 2
 
     def test_get_unspent_test_unused(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert len(node.get_unspent_testnet(TEST_ADDRESS_UNUSED)) == 0
 
     def test_broadcast_tx(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert node.broadcast_tx("01000000000000000000") is True
 
     def test_broadcast_tx_fail(self):
-        node = MockRPCHost("user", "password", "host", 8333, True)
+        node = MockRPCHost("user", "password", "host", 8333, True, "")
         assert node.broadcast_tx("00000000000000000000") is False
 
     def test_broadcast_tx_test(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert node.broadcast_tx_testnet("01000000000000000000") is True
 
     def test_broadcast_tx_test_fail(self):
-        node = MockRPCHost("user", "password", "host", 18443, False)
+        node = MockRPCHost("user", "password", "host", 18443, False, "")
         assert node.broadcast_tx_testnet("00000000000000000000") is False
 
 
@@ -755,7 +755,7 @@ class TestRPCMethod(unittest.TestCase):
 
     @requests_mock.mock()
     def test_call_success(self, m):
-        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False))
+        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False, ""))
         m.register_uri(
             'POST',
             'http://user:password@host:18443/',
@@ -767,7 +767,7 @@ class TestRPCMethod(unittest.TestCase):
         )
         self.assertEqual(method("arg1", 2), True)
 
-        method = RPCMethod("other_rpc_method", RPCHost("user", "password", "host", 18443, False))
+        method = RPCMethod("other_rpc_method", RPCHost("user", "password", "host", 18443, False, ""))
         m.register_uri(
             'POST',
             'http://user:password@host:18443/',
@@ -781,7 +781,7 @@ class TestRPCMethod(unittest.TestCase):
 
     @requests_mock.mock()
     def test_call_fails_status_code(self, m):
-        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False))
+        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False, ""))
         m.register_uri(
             'POST', 'http://user:password@host:18443/', status_code=201, reason="testing failing status code"
         )
@@ -790,7 +790,7 @@ class TestRPCMethod(unittest.TestCase):
 
     @requests_mock.mock()
     def test_call_fails_unsupported_command(self, m):
-        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False))
+        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "host", 18443, False, ""))
         m.register_uri(
             'POST',
             'http://user:password@host:18443/',
@@ -802,7 +802,7 @@ class TestRPCMethod(unittest.TestCase):
             method()
 
     def test_call_fails_connection(self):
-        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "some_invalid_host", 18443, False))
+        method = RPCMethod("some_rpc_method", RPCHost("user", "password", "some_invalid_host", 18443, False, ""))
         with pytest.raises(ConnectionError):
             method()
 
