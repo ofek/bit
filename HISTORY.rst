@@ -4,6 +4,12 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+0.8.0 (2021-12-04)
+------------------
+
+- Add custom URL route functionality for connecting to nodes
+- Change fee provider
+
 0.7.2 (2020-09-22)
 ------------------
 
