@@ -1,4 +1,4 @@
-import logging
+from bit.logger import logger
 from collections import namedtuple
 from itertools import islice
 import math
@@ -194,7 +194,7 @@ def estimate_tx_fee(in_size, n_in, out_size, n_out, satoshis, segwit=False):
 
     estimated_fee = estimated_size * satoshis
 
-    logging.debug('Estimated fee: {} satoshis for {} bytes'.format(estimated_fee, estimated_size))
+    logger.debug('Estimated fee: {} satoshis for {} bytes'.format(estimated_fee, estimated_size))
 
     return estimated_fee
 
