@@ -415,7 +415,7 @@ class PrivateKey(BaseKey):
                            compressed public key. This influences the fee.
         :type compressed: ``bool``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
