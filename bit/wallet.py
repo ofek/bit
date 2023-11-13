@@ -107,7 +107,7 @@ class BaseKey:
         return self._pk.public_key.verify(signature, data)
 
     def pub_to_hex(self):
-        """:rtype: ``str`` """
+        """:rtype: ``str``"""
         return bytes_to_hex(self.public_key)
 
     def to_hex(self):
@@ -262,7 +262,7 @@ class PrivateKey(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
@@ -273,7 +273,7 @@ class PrivateKey(BaseKey):
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -316,7 +316,7 @@ class PrivateKey(BaseKey):
             absolute_fee=absolute_fee,
             version=self.version,
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -331,7 +331,7 @@ class PrivateKey(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
@@ -344,7 +344,7 @@ class PrivateKey(BaseKey):
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -379,7 +379,7 @@ class PrivateKey(BaseKey):
             message=message,
             unspents=unspents,
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         NetworkAPI.broadcast_tx(tx_hex)
@@ -399,7 +399,7 @@ class PrivateKey(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
@@ -450,7 +450,7 @@ class PrivateKey(BaseKey):
             absolute_fee=absolute_fee,
             version='main',
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
@@ -661,7 +661,7 @@ class PrivateKeyTestnet(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction.
 
@@ -672,7 +672,7 @@ class PrivateKeyTestnet(BaseKey):
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -715,7 +715,7 @@ class PrivateKeyTestnet(BaseKey):
             absolute_fee=absolute_fee,
             version=self.version,
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -730,7 +730,7 @@ class PrivateKeyTestnet(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the testnet blockchain. This accepts the same arguments as
@@ -743,7 +743,7 @@ class PrivateKeyTestnet(BaseKey):
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -778,7 +778,7 @@ class PrivateKeyTestnet(BaseKey):
             message=message,
             unspents=unspents,
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         NetworkAPI.broadcast_tx_testnet(tx_hex)
@@ -798,7 +798,7 @@ class PrivateKeyTestnet(BaseKey):
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
@@ -814,7 +814,7 @@ class PrivateKeyTestnet(BaseKey):
                            compressed public key. This influences the fee.
         :type compressed: ``bool``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.earn.com>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -849,7 +849,7 @@ class PrivateKeyTestnet(BaseKey):
             absolute_fee=absolute_fee,
             version='test',
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
@@ -961,7 +961,6 @@ class MultiSig:
     """
 
     def __init__(self, private_key, public_keys, m):
-
         if private_key.instance != 'PrivateKey':
             raise TypeError('MultiSig only accepts a PrivateKey class to assign a private key.')
 
@@ -1070,9 +1069,7 @@ class MultiSig:
         # Converting to vSize for Segwit: outpoint size + scriptSig size + witness vSize:
         add_np2wsh_vsize = 36 + 40 + (1 + p2sh_size) / 4
 
-        self.unspents[:] = list(
-            map(lambda u: u.set_type('p2sh', add_p2sh_vsize), NetworkAPI.get_unspent(self.address))
-        )
+        self.unspents[:] = list(map(lambda u: u.set_type('p2sh', add_p2sh_vsize), NetworkAPI.get_unspent(self.address)))
         if self.segwit_address:
             self.unspents += list(
                 map(lambda u: u.set_type('np2wsh', add_np2wsh_vsize), NetworkAPI.get_unspent(self.segwit_address))
@@ -1100,7 +1097,7 @@ class MultiSig:
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
@@ -1111,7 +1108,7 @@ class MultiSig:
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -1154,7 +1151,7 @@ class MultiSig:
             absolute_fee=absolute_fee,
             version=self.version,
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -1172,7 +1169,7 @@ class MultiSig:
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Prepares a P2SH transaction for offline signing.
 
@@ -1188,7 +1185,7 @@ class MultiSig:
                            compressed public key. This influences the fee.
         :type compressed: ``bool``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -1223,7 +1220,7 @@ class MultiSig:
             absolute_fee=absolute_fee,
             version='main',
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
@@ -1287,7 +1284,6 @@ class MultiSigTestnet:
     """
 
     def __init__(self, private_key, public_keys, m):
-
         if private_key.instance != 'PrivateKeyTestnet':
             raise TypeError('MultiSigTesnet only accepts PrivateKeyTestnet class to assign a private key.')
 
@@ -1429,7 +1425,7 @@ class MultiSigTestnet:
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Creates a signed P2SH transaction.
 
@@ -1440,7 +1436,7 @@ class MultiSigTestnet:
                         must be :ref:`supported <supported currencies>`.
         :type outputs: ``list`` of ``tuple``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -1483,7 +1479,7 @@ class MultiSigTestnet:
             absolute_fee=absolute_fee,
             version=self.version,
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         return create_new_transaction(self, unspents, outputs)
@@ -1501,7 +1497,7 @@ class MultiSigTestnet:
         message=None,
         unspents=None,
         message_is_hex=False,
-        replace_by_fee=False
+        replace_by_fee=False,
     ):  # pragma: no cover
         """Prepares a P2SH transaction for offline signing.
 
@@ -1517,7 +1513,7 @@ class MultiSigTestnet:
                            compressed public key. This influences the fee.
         :type compressed: ``bool``
         :param fee: The number of satoshi per byte to pay to miners. By default
-                    Bit will poll `<https://bitcoinfees.21.co>`_ and use a fee
+                    Bit will poll `<https://mempool.space/api/v1/fees/recommended>`_ and use a fee
                     that will allow your transaction to be confirmed as soon as
                     possible.
         :type fee: ``int``
@@ -1552,7 +1548,7 @@ class MultiSigTestnet:
             absolute_fee=absolute_fee,
             version='test',
             message_is_hex=message_is_hex,
-            replace_by_fee=replace_by_fee
+            replace_by_fee=replace_by_fee,
         )
 
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
