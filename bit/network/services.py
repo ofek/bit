@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 from decimal import Decimal, getcontext
+import blockcypher
 
 from bit.constants import BTC
 from bit.network import currency_to_satoshi
@@ -944,6 +945,16 @@ class SmartbitAPI:
         return True if r.status_code == 200 else False
 
 
+class BlockcypherApi:
+    @classmethod
+    def get_count_confirmations(cls, txid):
+        return blockcypher.get_num_confirmations(txid)
+
+    @classmethod
+    def count_confirmations_testnet(cls, txid):
+        return blockcypher.get_num_confirmations(txid, coin_symbol="btc-testnet")
+
+
 class NetworkAPI:
     IGNORED_ERRORS = (
         ConnectionError,
@@ -986,6 +997,9 @@ class NetworkAPI:
         SmartbitAPI.broadcast_tx,  # Limit 5/minute
         BlockchainAPI.broadcast_tx,
     ]
+    GET_COUNT_CONFIRMATIONS_MAIN = [
+        BlockcypherApi.get_count_confirmations
+    ]
 
     GET_BALANCE_TEST = [
         BlockchairAPI.get_balance_testnet,
@@ -1014,6 +1028,9 @@ class NetworkAPI:
         BlockstreamAPI.broadcast_tx_testnet,
         BitcoreAPI.broadcast_tx_testnet,
         SmartbitAPI.broadcast_tx_testnet,  # Limit 5/minute
+    ]
+    GET_COUNT_CONFIRMATIONS_TEST = [
+        BlockcypherApi.count_confirmations_testnet
     ]
 
     @classmethod
@@ -1248,5 +1265,25 @@ class NetworkAPI:
 
         if success is False:
             raise ConnectionError('Transaction broadcast failed, or Unspents were already used.')
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def get_count_confirmations(cls, txid):
+        for api_call in cls.GET_COUNT_CONFIRMATIONS_MAIN:
+            try:
+                return api_call(txid)
+            except cls.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def get_count_confirmations_testnet(cls, txid):
+        for api_call in cls.GET_COUNT_CONFIRMATIONS_TEST:
+            try:
+                return api_call(txid)
+            except cls.IGNORED_ERRORS:
+                pass
 
         raise ConnectionError('All APIs are unreachable.')
