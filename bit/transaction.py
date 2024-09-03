@@ -313,6 +313,7 @@ def select_coins(target, fee, output_size, min_change, *, absolute_fee=False, co
             # To have a deterministic way of inserting inputs when
             # consolidating, we only shuffle the unspents otherwise.
             shuffle(unspents)
+        estimated_fee = 0
         while unspents:
             selected_coins.append(unspents.pop(0))
             estimated_fee = estimate_tx_fee(
