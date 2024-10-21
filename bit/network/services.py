@@ -91,7 +91,7 @@ class RPCMethod:
         return RPCMethod(new_method, self._host)
 
     def __call__(self, *args):
-        payload = json.dumps({"method": self._rpc_method, "params": list(args), "jsonrpc": "2.0"})
+        payload = json.dumps({"method": self._rpc_method, "params": list(args), "jsonrpc": "2.0", "id": None})
         try:
             response = self._host._session.post(self._host._url, headers=self._host._headers, data=payload)
         except requests.exceptions.ConnectionError:
