@@ -500,12 +500,12 @@ class BlockstreamAPI:
 
     @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.MAIN_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.MAIN_TX_PUSH_API, data=tx_hex, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, data={cls.TX_PUSH_PARAM: tx_hex}, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.TEST_TX_PUSH_API, data=tx_hex, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -980,11 +980,7 @@ class NetworkAPI:
         BitcoreAPI.get_unspent,  # No limit
     ]
     BROADCAST_TX_MAIN = [
-        BlockchairAPI.broadcast_tx,
         BlockstreamAPI.broadcast_tx,
-        BitcoreAPI.broadcast_tx,
-        SmartbitAPI.broadcast_tx,  # Limit 5/minute
-        BlockchainAPI.broadcast_tx,
     ]
 
     GET_BALANCE_TEST = [
@@ -1010,10 +1006,7 @@ class NetworkAPI:
         BitcoreAPI.get_unspent_testnet,  # No limit
     ]
     BROADCAST_TX_TEST = [
-        BlockchairAPI.broadcast_tx_testnet,
         BlockstreamAPI.broadcast_tx_testnet,
-        BitcoreAPI.broadcast_tx_testnet,
-        SmartbitAPI.broadcast_tx_testnet,  # Limit 5/minute
     ]
 
     @classmethod
