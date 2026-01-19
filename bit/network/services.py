@@ -505,7 +505,7 @@ class BlockstreamAPI:
 
     @classmethod
     def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        r = requests.post(cls.TEST_TX_PUSH_API, data= tx_hex, timeout=DEFAULT_TIMEOUT)
+        r = requests.post(cls.TEST_TX_PUSH_API, data=tx_hex, timeout=DEFAULT_TIMEOUT)
         return True if r.status_code == 200 else False
 
 
@@ -981,7 +981,6 @@ class NetworkAPI:
     ]
     BROADCAST_TX_MAIN = [
         BlockstreamAPI.broadcast_tx,
-        BlockchainAPI.broadcast_tx,
     ]
 
     GET_BALANCE_TEST = [
