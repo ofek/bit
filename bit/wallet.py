@@ -453,6 +453,7 @@ class PrivateKey(BaseKey):
             replace_by_fee=replace_by_fee,
         )
 
+        outputs = [(bytes_to_hex(dest) if isinstance(dest, bytes) else dest, amount) for dest, amount in outputs]
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
 
         return json.dumps(data, separators=(',', ':'))
@@ -474,7 +475,7 @@ class PrivateKey(BaseKey):
             assert unspents is None
 
             unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
-            outputs = data['outputs']
+            outputs = [(hex_to_bytes(dest) if amount == 0 else dest, amount) for dest, amount in data['outputs']]
 
             return create_new_transaction(self, unspents, outputs)
         except:  # May be hex-encoded transaction using batching:
@@ -852,6 +853,7 @@ class PrivateKeyTestnet(BaseKey):
             replace_by_fee=replace_by_fee,
         )
 
+        outputs = [(bytes_to_hex(dest) if isinstance(dest, bytes) else dest, amount) for dest, amount in outputs]
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
 
         return json.dumps(data, separators=(',', ':'))
@@ -873,7 +875,7 @@ class PrivateKeyTestnet(BaseKey):
             assert unspents is None
 
             unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
-            outputs = data['outputs']
+            outputs = [(hex_to_bytes(dest) if amount == 0 else dest, amount) for dest, amount in data['outputs']]
 
             return create_new_transaction(self, unspents, outputs)
         except:  # May be hex-encoded transaction using batching:
@@ -1223,6 +1225,7 @@ class MultiSig:
             replace_by_fee=replace_by_fee,
         )
 
+        outputs = [(bytes_to_hex(dest) if isinstance(dest, bytes) else dest, amount) for dest, amount in outputs]
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
 
         return json.dumps(data, separators=(',', ':'))
@@ -1244,7 +1247,7 @@ class MultiSig:
             assert unspents is None
 
             unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
-            outputs = data['outputs']
+            outputs = [(hex_to_bytes(dest) if amount == 0 else dest, amount) for dest, amount in data['outputs']]
 
             return create_new_transaction(self, unspents, outputs)
         except:  # May be hex-encoded partially-signed transaction or using batching:
@@ -1551,6 +1554,7 @@ class MultiSigTestnet:
             replace_by_fee=replace_by_fee,
         )
 
+        outputs = [(bytes_to_hex(dest) if isinstance(dest, bytes) else dest, amount) for dest, amount in outputs]
         data = {'unspents': [unspent.to_dict() for unspent in unspents], 'outputs': outputs}
 
         return json.dumps(data, separators=(',', ':'))
@@ -1572,7 +1576,7 @@ class MultiSigTestnet:
             assert unspents is None
 
             unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
-            outputs = data['outputs']
+            outputs = [(hex_to_bytes(dest) if amount == 0 else dest, amount) for dest, amount in data['outputs']]
 
             return create_new_transaction(self, unspents, outputs)
         except:  # May be hex-encoded partially-signed transaction or using batching:

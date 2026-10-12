@@ -4,6 +4,8 @@ Release History
 Unreleased (see `master <https://github.com/ofek/bit>`_)
 --------------------------------------------------------
 
+- Fix preparing and signing offline transactions containing messages.
+
 0.8.0 (2021-12-04)
 ------------------
 
